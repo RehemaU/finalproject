@@ -70,7 +70,7 @@ body {
 	      <a class="nav-link" href="/">로그인입니다요~!</a> 
 	    </li> 
 	    <li class="nav-item"> 
-	      <a class="nav-link" href="/user/regForm">회원가입</a> 
+	      <a class="nav-link" href="/user/regForm">회원가입입니다만???????</a> 
 	    </li> 
   </ul> 
 </nav>
