@@ -67,7 +67,7 @@ body {
 <nav class="navbar navbar-expand-sm bg-secondary navbar-dark mb-3"> 
 	<ul class="navbar-nav"> 
 	    <li class="nav-item"> 
-	      <a class="nav-link" href="/">로그인11111111111111111</a> 
+	      <a class="nav-link" href="/">로그222222222221</a> 
 	    </li> 
 	    <li class="nav-item"> 
 	      <a class="nav-link" href="/user/regForm">회원가입</a> 
