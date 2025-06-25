@@ -2,9 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.sist.manager.dao.AccommodationDao">
+<mapper namespace="com.sist.web.dao.AccommodationDao">
 
-    <resultMap id="accomResultMap" type="com.sist.manager.model.Accommodation">
+    <resultMap id="accomResultMap" type="com.sist.web.model.Accommodation">
         <id column="ACCOMM_ID" property="accomId"/>
         <result column="REGION_ID" property="regionId"/>
         <result column="SIGUNGU_CODE" property="sigunguCode"/>
@@ -23,7 +23,7 @@
         <result column="ACCOMM_AVG" property="accomAvg"/>
     </resultMap>
 
-    <insert id="insertAccommodation" parameterType="com.sist.manager.model.Accommodation">
+    <insert id="insertAccommodation" parameterType="com.sist.web.model.Accommodation">
 	    INSERT INTO T_ACCOMM (
 	        ACCOMM_ID, UNIFIED_ID, REGION_ID, SIGUNGU_CODE, ZIPCODE, SELLER_ID, ACCOMM_STATUS,
 	        ACCOMM_NAME, ACCOMM_TEL, ACCOMM_ADD, ACCOMM_ADD2, ACCOMM_DES,
@@ -50,5 +50,9 @@
 	<select id="existsAccommodation" parameterType="String" resultType="int">
         SELECT COUNT(*) FROM T_ACCOMM WHERE ACCOMM_ID = #{accomId}
 	</select>
+	
+	<update id="updateAccommodationDescription">
+		UPDATE T_ACCOMM SET ACCOMM_DES = #{accomDes} WHERE ACCOMM_ID = #{accomId}
+	</update>
 	
 </mapper>

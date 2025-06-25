@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sist.web.dao.TourDao">
+
+    <!-- ResultMap -->
+    <resultMap id="tourResultMap" type="com.sist.web.model.Tour">
+        <id column="TOUR_ID" property="tourId"/>
+        <result column="UNIFIED_ID" property="unifiedId"/>
+        <result column="REGION_ID" property="regionId"/>
+        <result column="TOUR_NAME" property="tourName"/>
+        <result column="TOUR_LAT" property="tourLat"/>
+        <result column="TOUR_LON" property="tourLon"/>
+        <result column="TOUR_ADD" property="tourAdd"/>
+        <result column="TOUR_DES" property="tourDes"/>
+        <result column="SIGUNGU_ID" property="sigunguId"/>
+    </resultMap>
+
+    <!-- Insert (중복방지 방식 동일 적용) -->
+    <insert id="insertTour" parameterType="com.sist.web.model.Tour">
+        INSERT INTO T_TOUR (
+            TOUR_ID, UNIFIED_ID, REGION_ID, TOUR_NAME, TOUR_LAT, TOUR_LON, TOUR_ADD, TOUR_DES, SIGUNGU_ID
+        )
+        SELECT 
+            #{tourId},
+            CONCAT('T_', TO_CHAR(TOUR_SEQ.NEXTVAL)),
+            #{regionId},
+            #{tourName},
+            #{tourLat},
+            #{tourLon},
+            #{tourAdd},
+            #{tourDes, jdbcType=CLOB},
+            #{sigunguId}
+        FROM dual
+        WHERE NOT EXISTS (
+            SELECT 1 FROM T_TOUR WHERE TOUR_ID = #{tourId}
+        )
+    </insert>
+
+    <!-- 전체 조회 -->
+    <select id="getAllTours" resultMap="tourResultMap">
+        SELECT * FROM T_TOUR
+    </select>
+
+    <!-- 존재여부 체크 -->
+    <select id="existsTour" parameterType="String" resultType="int">
+        SELECT COUNT(*) FROM T_TOUR WHERE TOUR_ID = #{tourId}
+    </select>
+
+</mapper>
