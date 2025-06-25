@@ -68,35 +68,41 @@ public class CalanderController {
 
     @RequestMapping(value = "/schedule/saveDetail", method = RequestMethod.POST)
     public String saveDetail(HttpServletRequest request, HttpSession session) {
-        String[] spotIds = request.getParameterValues("spotIds[]");
+        String[] spotIds    = request.getParameterValues("spotIds[]");
         String[] startTimes = request.getParameterValues("startTimes[]");
-        String[] endTimes = request.getParameterValues("endTimes[]");
+        String[] endTimes   = request.getParameterValues("endTimes[]");
+        String[] dayNos     = request.getParameterValues("dayNos[]");
 
         String listId = (String) session.getAttribute("currentListId");
 
-        if (spotIds == null || startTimes == null || endTimes == null) {
+        if (spotIds == null || startTimes == null || endTimes == null || dayNos == null) {
             System.out.println("🚨 필수 파라미터 누락");
             return "redirect:/schedule/addDetail";
         }
 
         try {
             for (int i = 0; i < spotIds.length; i++) {
-                // ⭐️ 여기서 String -> int로 변환
-            	String spotId = spotIds[i];
+                String spotId  = spotIds[i];
+                Date   st      = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(startTimes[i]);
+                Date   et      = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(endTimes[i]);
+                int    dayNo   = Integer.parseInt(dayNos[i]);
 
-                Date startTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(startTimes[i]);
-                Date endTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(endTimes[i]);
-
-                Calander cal = new Calander(UUID.randomUUID().toString(), listId, spotId, startTime, endTime);
+                // 📌 dayNo를 생성자에서 바로 세팅
+                Calander cal = new Calander(
+                    UUID.randomUUID().toString(),
+                    listId,
+                    spotId,
+                    st,
+                    et,
+                    dayNo
+                );
                 calanderService.saveDetail(cal);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return "redirect:/schedule/list";
     }
-
 
     @RequestMapping(value = "/schedule/list", method = RequestMethod.GET)
     public String scheduleList(ModelMap model, HttpSession session) {

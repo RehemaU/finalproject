@@ -18,6 +18,8 @@ public class Calander implements Serializable {
 	    private String locationName;
 	    private String lat;
 	    private String lon;
+	    private String calanderSpotName;
+	    private int calDayNo;
 
 
 	    // 기본 생성자
@@ -30,14 +32,47 @@ public class Calander implements Serializable {
 	    }
 
 	    // ✅ Date 타입을 받는 생성자 추가 (SimpleDateFormat으로 변환)
-	    public Calander(String calanderId, String calanderListId, String spotId, Date startTime, Date endTime) {
-	        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	        this.calanderId = calanderId;
-	        this.calanderListId = calanderListId;
-	        this.spotId = spotId;
-	        this.calanderStartTime = sdf.format(startTime);
-	        this.calanderEndTime = sdf.format(endTime);
+	    public Calander(String calanderId, String calanderListId, String spotId,
+                Date startTime, Date endTime, int calDayNo) {
+   SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+   this.calanderId      = calanderId;
+   this.calanderListId  = calanderListId;
+   this.spotId          = spotId;
+   this.calanderStartTime = sdf.format(startTime);
+   this.calanderEndTime   = sdf.format(endTime);
+   this.calDayNo        = calDayNo;
+}
+	    @Override
+	    public String toString() {
+	        return "Calander{" +
+	                "calanderId='" + calanderId + '\'' +
+	                ", calanderListId='" + calanderListId + '\'' +
+	                ", spotId='" + spotId + '\'' +
+	                ", calanderStartTime='" + calanderStartTime + '\'' +
+	                ", calanderEndTime='" + calanderEndTime + '\'' +
+	                ", calDayNo=" + calDayNo +
+	                ", locationName='" + locationName + '\'' +
+	                ", lat='" + lat + '\'' +
+	                ", lon='" + lon + '\'' +
+	                '}';
 	    }
+
+	    public int getCalDayNo() {
+	        return calDayNo;
+	    }
+
+	    public void setCalDayNo(int calDayNo) {
+	        this.calDayNo = calDayNo;
+	    }
+
+	    public String getCalanderSpotName() {
+	        return calanderSpotName;
+	    }
+
+	    public void setCalanderSpotName(String calanderSpotName) {
+	        this.calanderSpotName = calanderSpotName;
+	    }
+
 	    public String getLat() {
 	        return lat;
 	    }
