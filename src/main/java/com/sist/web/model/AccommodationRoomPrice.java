@@ -3,8 +3,6 @@ package com.sist.web.model;
 public class AccommodationRoomPrice {
     private String accommRoomPriceId;
     private String accommRoomId;
-    private String accommRoomPriceStart;
-    private String accommRoomPriceEnd;
     private int accommRoomPriceWeekday;
     private int accommRoomPriceFriday;
     private int accommRoomPriceSaturday;
@@ -26,21 +24,7 @@ public class AccommodationRoomPrice {
 		this.accommRoomId = accommRoomId;
 	}
 
-	public String getAccommRoomPriceStart() {
-		return accommRoomPriceStart;
-	}
-
-	public void setAccommRoomPriceStart(String accommRoomPriceStart) {
-		this.accommRoomPriceStart = accommRoomPriceStart;
-	}
-
-	public String getAccommRoomPriceEnd() {
-		return accommRoomPriceEnd;
-	}
-
-	public void setAccommRoomPriceEnd(String accommRoomPriceEnd) {
-		this.accommRoomPriceEnd = accommRoomPriceEnd;
-	}
+	
 
 	public int getAccommRoomPriceWeekday() {
 		return accommRoomPriceWeekday;
@@ -74,13 +58,10 @@ public class AccommodationRoomPrice {
 		this.accommRoomPriceSunday = accommRoomPriceSunday;
 	}
 
-	public AccommodationRoomPrice(String accommRoomPriceId, String accommRoomId, String accommRoomPriceStart,
-                                   String accommRoomPriceEnd, int accommRoomPriceWeekday, int accommRoomPriceFriday,
+	public AccommodationRoomPrice(String accommRoomPriceId, String accommRoomId, int accommRoomPriceWeekday, int accommRoomPriceFriday,
                                    int accommRoomPriceSaturday, int accommRoomPriceSunday) {
         this.accommRoomPriceId = accommRoomPriceId;
         this.accommRoomId = accommRoomId;
-        this.accommRoomPriceStart = accommRoomPriceStart;
-        this.accommRoomPriceEnd = accommRoomPriceEnd;
         this.accommRoomPriceWeekday = accommRoomPriceWeekday;
         this.accommRoomPriceFriday = accommRoomPriceFriday;
         this.accommRoomPriceSaturday = accommRoomPriceSaturday;
