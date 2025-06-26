@@ -22,12 +22,36 @@ public class AccommodationController {
     @Autowired
     private AccommodationService accommodationService;
     
+
     @Autowired
     private SigunguService sigunguService;
     
     @Autowired
     private RegionService regionService;
     
+
+    @GetMapping("/list")
+    public String accommodationList() {
+    	
+    	return "";
+    }
+
+    @GetMapping("/syncAccommodation")
+    public String syncAccommodation() {
+
+        try {
+            accommodationService.syncAllAccommodations();  // 전체 시군구별 숙박 동기화 실행
+            return "전체 숙박 동기화 완료.";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "에러 발생: " + e.getMessage();
+        }
+    }
+    @GetMapping("/accommodation/listAll")
+    public List<Accommodation> getAllAccommodations() {
+        return accommodationService.getAllAccommodations(); // DB에서 전체 숙소 조회
+    }
+
     
     @GetMapping("/accomm/list")
     public String listPage(Model model) {

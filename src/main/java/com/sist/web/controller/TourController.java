@@ -1,8 +1,11 @@
 package com.sist.web.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import com.sist.web.model.Tour;
 import com.sist.web.service.TourService;
 
 @RestController
@@ -22,4 +25,10 @@ public class TourController {
             return "에러 발생: " + e.getMessage();
         }
     }
+    @GetMapping("/listAll")
+    public List<Tour> getAllTours() {
+        return tourService.getAllTours();
+    }
+    
+    
 }

@@ -2,6 +2,7 @@ package com.sist.web.dao;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import com.sist.web.model.UserCoupon;
@@ -17,10 +18,14 @@ public interface UserCouponDao {
 
     // 마이페이지: 내가 발급받은 쿠폰 목록
     public List<UserCoupon> selectUserCouponList(String userId);
+    
+    public int existsUserCoupon(@Param("userId") String userId, @Param("couponId") String couponId);
 
     // 특정 쿠폰 상세 조회
     public UserCoupon selectUserCouponById(String userCouponId);
 
     // 쿠폰 사용 처리
     public int updateUserCouponUse(String userCouponId);
+    
+    
 }

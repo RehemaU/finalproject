@@ -69,10 +69,10 @@ public class CalanderController {
 
     @RequestMapping(value = "/schedule/saveDetail", method = RequestMethod.POST)
     public String saveDetail(HttpServletRequest request, HttpSession session) {
-        String[] spotIds    = request.getParameterValues("spotIds[]");
-        String[] startTimes = request.getParameterValues("startTimes[]");
-        String[] endTimes   = request.getParameterValues("endTimes[]");
-        String[] dayNos     = request.getParameterValues("dayNos[]");
+        String[] spotIds    = request.getParameterValues("spotIds");
+        String[] startTimes = request.getParameterValues("startTimes");
+        String[] endTimes   = request.getParameterValues("endTimes");
+        String[] dayNos     = request.getParameterValues("dayNos");
 
         String listId = (String) session.getAttribute("currentListId");
 
