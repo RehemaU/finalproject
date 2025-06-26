@@ -14,7 +14,7 @@ public class Coupon implements Serializable {
     private String couponCreatedate;  // 생성일 (문자열)
     private int couponExpiredate;   // 만료일 계산 기준 (며칠)
     private String couponPlace;       // 사용처 (예: ACCOMM, TOUR 등)
-    private int couponCount;          // 총 수량
+    private int couponCount;          // 총 수량!
 
     public Coupon() 
     {
