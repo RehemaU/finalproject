@@ -3,7 +3,11 @@ package com.sist.web.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sist.web.dao.AccommodationDao;
+import com.sist.web.dao.AccommodationRoomDao;
+import com.sist.web.dao.SigunguDao;
 import com.sist.web.model.Accommodation;
+import com.sist.web.model.AccommodationRoom;
+import com.sist.web.model.Sigungu;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,44 +22,155 @@ import java.util.List;
 @Service
 public class AccommodationService {
     private static final String BASE_URL = "http://apis.data.go.kr/B551011/KorService2/searchStay2";
-    private static final String SERVICE_KEY =
-            "MHbE44hd7kHCOFVk5VucNc1XiPWTzxPAraI2RBlclEk8DFoZtBZWPX1gTMSVJ5j1U6ggq3bD6eViUAyxJfBpdQ==";
+    private static final String SERVICE_KEY = "FI/5+Yaw6f0s/3FPHecXtwv8WvGz4xVfTDwKdI9Poe+KV9qTGaG+wGoh2khuWd7w4mUKPGC1dIsyvNORXpkrrQ==";
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     private AccommodationDao accommodationDao;
+    @Autowired
+    private AccommodationRoomDao accommodationRoomDao;
+    @Autowired
+    private SigunguDao sigunguDao;  // 시도+시군구 리스트 조회용
+    
+    
+    public List<String> getAllAccommIds() {
+        return accommodationRoomDao.getAllAccommIds();
+    }
+    
+    // 전체 수집 시작
+    public void syncAllAccommodations() throws Exception {
+        List<Sigungu> sigunguList = sigunguDao.getAllSigungu();
 
-    public List<Accommodation> fetchAccommodation(int pageNo, int numOfRows, String sigunguCode) throws Exception {
-        // 서비스키 직접 인코딩
+        boolean startSync = false;
+        String startRegionId = "37";
+        String startSigunguId = "13";
+
+        for (Sigungu sigungu : sigunguList) {
+            String regionId = sigungu.getRegionId();
+            String sigunguId = sigungu.getSigunguId();
+
+            if (!startSync) {
+                if (regionId.equals(startRegionId)) {
+                    if (sigunguId.equals(startSigunguId)) {
+                        startSync = true; // 이 시군구부터 시작
+                    } else {
+                        continue; // 아직 시작 안함, 건너뜀
+                    }
+                } else {
+                    continue; // 시작 지역 도달 전이므로 건너뜀
+                }
+            }
+
+            System.out.println("Sync start: regionId=" + regionId + ", sigunguId=" + sigunguId);
+            syncAccommodationByRegionSigungu(regionId, sigunguId);
+        }
+    }
+    
+
+    // 한 시도+시군구 조합 숙박 동기화 (페이징 자동 처리)
+    public void syncAccommodationByRegionSigungu(String regionId, String sigunguId) throws Exception {
+        String rawQuery = "serviceKey=" + URLEncoder.encode(SERVICE_KEY, StandardCharsets.UTF_8.name()) +
+                "&MobileOS=ETC" +
+                "&MobileApp=MyApp" +
+                "&_type=json" +
+                "&areaCode=" + regionId +
+                "&sigunguCode=" + sigunguId +
+                "&pageNo=1" +
+                "&numOfRows=1000"; 
+
+        String fullUrl = BASE_URL + "?" + rawQuery;
+        URI uri = URI.create(fullUrl);
+
+        String response = restTemplate.getForObject(uri, String.class);
+        if (response != null && response.trim().startsWith("<")) {
+            throw new RuntimeException("API 호출 실패: " + response);
+        }
+
+        JsonNode root = objectMapper.readTree(response).path("response").path("body");
+        JsonNode itemsNode = root.path("items").path("item");
+
+        List<Accommodation> pageData = new ArrayList<>();
+        if (itemsNode.isArray()) {
+            for (JsonNode node : itemsNode) {
+                Accommodation accom = objectMapper.treeToValue(node, Accommodation.class);
+                accom.setSellerId("admin");
+                accom.setAccomStatus("Y");
+                accom.setAccomAvg(0);
+                pageData.add(accom);
+            }
+        }
+
+        saveAccommodationList(pageData);
+        System.out.println(regionId + "-" + sigunguId + " 저장 완료, 수집 개수: " + pageData.size());
+    }
+
+    public Accommodation fetchAccommodationDescription(String accommId) throws Exception {
         String encodedKey = URLEncoder.encode(SERVICE_KEY, StandardCharsets.UTF_8.name());
 
-        // 쿼리 파라미터 직접 조립
         String rawQuery = "serviceKey=" + encodedKey +
-                          "&MobileOS=ETC" +
-                          "&MobileApp=MyApp" +
-                          "&_type=json" +
-                          "&sigunguCode=" + sigunguCode +
-                          "&pageNo=" + pageNo +
-                          "&numOfRows=" + numOfRows;
+		                "&MobileOS=ETC" +
+		                "&MobileApp=MyApp" + 
+                          "&contentId="  + accommId +
+                          "&_type=json";
+        String fullUrl = "http://apis.data.go.kr/B551011/KorService2/detailCommon2" + "?" + rawQuery;
+        URI uri = URI.create(fullUrl);
+
+
+        String response = restTemplate.getForObject(uri, String.class);
+        if (response == null || response.trim().isEmpty()) {
+            return new Accommodation();
+        }
+        if (response.trim().startsWith("<")) {
+            throw new RuntimeException("객실 API 호출 실패: " + response);
+        }
+
+        JsonNode itemsNode = objectMapper.readTree(response)
+            .path("response")
+            .path("body")
+            .path("items")
+            .path("item");
+
+        if (itemsNode.isArray() && itemsNode.size() > 0) {
+            // 배열인 경우 → 첫 번째 요소만 사용
+            JsonNode firstItem = itemsNode.get(0);
+            return objectMapper.treeToValue(firstItem, Accommodation.class);
+        } else if (!itemsNode.isArray()) {
+            // 단일 객체인 경우
+            return objectMapper.treeToValue(itemsNode, Accommodation.class);
+        } else {
+            // 데이터 없음
+            return new Accommodation();
+        }
+    }
+    
+    // 한 페이지 수집
+    public List<Accommodation> fetchAccommodation(int pageNo, int numOfRows, String regionId, String sigunguCode) throws Exception {
+        String rawQuery = "serviceKey=" + SERVICE_KEY +
+                "&MobileOS=ETC" +
+                "&MobileApp=MyApp" +
+                "&_type=json" +
+                "&areaCode=" + regionId +        // ← 추가
+                "&sigunguCode=" + sigunguCode +
+                "&pageNo=" + pageNo +
+                "&numOfRows=" + numOfRows;
 
         String fullUrl = BASE_URL + "?" + rawQuery;
         URI uri = URI.create(fullUrl);
 
         System.out.println("요청 URL = " + fullUrl);
 
-        String response = restTemplate.getForObject(uri, String.class);
+        // byte로 받아서 인코딩 처리 (깨짐 방지)
+        byte[] responseBytes = restTemplate.getForObject(uri, byte[].class);
+        String response = new String(responseBytes, "EUC-KR");
 
         if (response != null && response.trim().startsWith("<")) {
             throw new RuntimeException("API 호출 실패: " + response);
         }
 
         JsonNode itemsNode = objectMapper.readTree(response)
-                .path("response")
-                .path("body")
-                .path("items")
-                .path("item");
+                .path("response").path("body").path("items").path("item");
 
         List<Accommodation> resultList = new ArrayList<>();
         if (itemsNode.isArray()) {
@@ -69,13 +184,16 @@ public class AccommodationService {
         }
         return resultList;
     }
+    
+    
 
     public void saveAccommodationList(List<Accommodation> list) {
         for (Accommodation accom : list) {
             accommodationDao.insertAccommodation(accom);
         }
     }
-    public List<Accommodation> getAllAccommodations() {
-        return accommodationDao.getAllAccommodations(); // DAO에서 전체 조회
+    
+    public void updateAccommodationDescription(Accommodation accomm) {
+        accommodationDao.updateAccommodationDescription(accomm);
     }
-}
+   }

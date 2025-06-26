@@ -18,22 +18,40 @@ public class AccommodationController {
 
     @GetMapping("/syncAccommodation")
     public String syncAccommodation() {
-        int totalCount = 0;
+
         try {
-            for (int page = 3901; page <= 3904; page++) { 
-                List<Accommodation> list = accommodationService.fetchAccommodation(1, 20,"" + page);
-                accommodationService.saveAccommodationList(list);
-                totalCount += list.size();
-            }
-            return "동기화 완료: " + totalCount + "건 저장됨.";
+            accommodationService.syncAllAccommodations();  // 전체 시군구별 숙박 동기화 실행
+            return "전체 숙박 동기화 완료.";
         } catch (Exception e) {
             e.printStackTrace();
             return "에러 발생: " + e.getMessage();
         }
     }
- // 📍 숙소 전체 리스트를 JSON 형태로 반환 (마커용)추서영이함
-    @GetMapping("/accommodation/listAll")
-    public List<Accommodation> getAllAccommodations() {
-        return accommodationService.getAllAccommodations(); // DB에서 전체 숙소 조회
+    
+    @GetMapping("/syncAccommodationDescription")
+    public String syncAccommodationDescription() {
+    	try {
+    		int count = 0;
+    		List<String> accommIdList = accommodationService.getAllAccommIds();
+    		if (accommIdList == null) {
+                return "숙소 ID 리스트가 null 입니다.";
+            }
+            if (accommIdList.isEmpty()) {
+                return "숙소 ID 리스트가 비어있습니다.";
+            }
+            for(String accommId : accommIdList) {
+            	if(accommId == null) {
+            		return "숙소 ID NULL 발생";
+            	}
+            	accommodationService.updateAccommodationDescription(accommodationService.fetchAccommodationDescription(accommId));
+            	count++;
+            }
+            return "숙소 설명 update 건수 : " + count;
+    	} catch(Exception e) {
+    		e.printStackTrace();
+    		return "에러 발생 : " + e.getMessage();
+    	}
+    	
     }
 }
+

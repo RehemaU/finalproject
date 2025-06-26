@@ -51,4 +51,11 @@
         SELECT COUNT(*) FROM T_ACCOMM WHERE ACCOMM_ID = #{accomId}
 	</select>
 	
+<<<<<<< HEAD
+=======
+	<update id="updateAccommodationDescription">
+		UPDATE T_ACCOMM SET ACCOMM_DES = #{accomDes} WHERE ACCOMM_ID = #{accomId}
+	</update>
+	
+>>>>>>> refs/heads/master
 </mapper>

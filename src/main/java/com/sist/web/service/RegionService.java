@@ -34,7 +34,8 @@ public class RegionService {
                           "&MobileOS=ETC" +
                           "&MobileApp=MyApp" +
                           "&_type=json" +
-                          "&pageNo=" + pageNo +
+
+                           "&pageNo=" + pageNo +
                           "&numOfRows=" + numOfRows;
 
         String fullUrl = BASE_URL + "?" + rawQuery;
@@ -69,7 +70,7 @@ public class RegionService {
     
     public void syncAllRegions() throws Exception {
         // 1. 시도 먼저 수집
-        List<Region> topRegions = fetchRegions(0, 100);
+        List<Region> topRegions = fetchRegions(1, 100);
         saveRegionList(topRegions);
 
         // 2. 시군구 반복 수집
@@ -83,43 +84,46 @@ public class RegionService {
     
 
     public List<Region> fetchSubRegions(int areaCode) throws Exception {
-        String encodedKey = URLEncoder.encode(SERVICE_KEY, StandardCharsets.UTF_8.name());
-
-        String rawQuery = "serviceKey=" + encodedKey +
-                          "&MobileOS=ETC" +
-                          "&MobileApp=MyApp" +
-                          "&_type=json" +
-                          "&areaCode=" + areaCode;
-
-        String fullUrl = BASE_URL + "?" + rawQuery;
-        URI uri = URI.create(fullUrl);
-
-        System.out.println("시군구 API 요청 URL = " + fullUrl);
-
-        String response = restTemplate.getForObject(uri, String.class);
-
-        if (response != null && response.trim().startsWith("<")) {
-            throw new RuntimeException("시군구 API 호출 실패: " + response);
-        }
-
-        JsonNode itemsNode = objectMapper.readTree(response)
-                .path("response").path("body").path("items").path("item");
-
+    	String encodedKey = URLEncoder.encode(SERVICE_KEY, StandardCharsets.UTF_8.name());
         List<Region> resultList = new ArrayList<>();
-        if (itemsNode.isArray()) {
-            for (JsonNode node : itemsNode) {
-                Region region = new Region();
-                int code = node.path("code").asInt();
-                String name = node.path("name").asText();
+        int pageNo = 1;
+        int totalCount = 0;
 
-                // REGION_ID 계산 (부모코드 * 100 + code)
-                region.setRegionId(String.valueOf(areaCode * 100 + code));
-                region.setRegionName(name);
-                region.setRegionLon("0");
-                region.setRegionLat("0");
-                resultList.add(region);
+        do {
+            String rawQuery = "serviceKey=" + encodedKey +
+                              "&MobileOS=ETC" +
+                              "&MobileApp=MyApp" +
+                              "&_type=json" +
+                              "&areaCode=" + areaCode +
+                              "&numOfRows=100" +
+                              "&pageNo=" + pageNo;
+
+            String fullUrl = BASE_URL + "?" + rawQuery;
+            URI uri = URI.create(fullUrl);
+
+            String response = restTemplate.getForObject(uri, String.class);
+
+            if (response != null && response.trim().startsWith("<")) {
+                throw new RuntimeException("시군구 API 호출 실패: " + response);
             }
-        }
+
+            JsonNode root = objectMapper.readTree(response).path("response").path("body");
+            JsonNode itemsNode = root.path("items").path("item");
+            totalCount = root.path("totalCount").asInt();
+
+            if (itemsNode.isArray()) {
+                for (JsonNode node : itemsNode) {
+                    Region region = new Region();
+                    region.setRegionId(node.path("code").asText());
+                    region.setRegionName(node.path("name").asText());
+                    region.setRegionLon("0");
+                    region.setRegionLat("0");
+                    resultList.add(region);
+                }
+            }
+            pageNo++;
+        } while ((pageNo - 1) * 100 < totalCount);
+
         return resultList;
     }
 

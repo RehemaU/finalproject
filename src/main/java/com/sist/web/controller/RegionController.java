@@ -42,4 +42,19 @@ public class RegionController {
             return "에러 발생: " + e.getMessage();
         }
     }
+
+    
+    @GetMapping("/syncRegion/subRegions")
+    public String syncsubRegions() {
+        try {
+        	for(int i=1; i<=39; i++) {
+        		regionService.fetchSubRegions(i);
+        	}
+            
+            return "전체 지역 동기화 완료!";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "에러 발생: " + e.getMessage();
+        }
+    }
 }
