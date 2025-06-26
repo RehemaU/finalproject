@@ -196,4 +196,7 @@ public class AccommodationService {
     public void updateAccommodationDescription(Accommodation accomm) {
         accommodationDao.updateAccommodationDescription(accomm);
     }
+    public List<Accommodation> getAllAccommodations() {
+        return accommodationDao.getAllAccommodations(); // DAO에서 전체 조회
+    }
    }
