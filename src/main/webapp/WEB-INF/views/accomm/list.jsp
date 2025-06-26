@@ -16,7 +16,6 @@
         </c:forEach>
       </select>
     </div>
-
     <!-- 시/군/구 필터 -->
     <div>
       <label for="region2" class="block font-medium">시·군·구 선택</label>
