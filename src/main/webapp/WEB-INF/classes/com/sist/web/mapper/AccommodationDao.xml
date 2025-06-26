@@ -62,7 +62,7 @@
 	</select>
 	
 	<!-- 광역시/도 코드, 시군구코드 (추가하면서) 가져오기 -->
-	<select id="searchBySigunguCodes" resultMap="accomResultMap" parameterType="map">
+	<select id="searchByConditions" resultMap="accomResultMap" parameterType="map">
 	  SELECT * FROM T_ACCOMM
 	  <where>
 	  	<if test="regionIds!= null and regionIds.size() > 0">

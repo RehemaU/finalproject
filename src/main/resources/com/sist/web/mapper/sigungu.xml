@@ -22,11 +22,19 @@
               AND SIGUNGU_ID = #{sigunguId}
         )
     </insert>
-
+	
+	<!-- 모든 시군구 가져오기 -->
     <select id="getAllSigungu" resultMap="sigunguResultMap">
         SELECT * FROM T_SIGUNGU
     </select>
-
+	
+	<!-- 광역시/도에 맞는 시군구 가져오기 -->
+	<select id = "getSigunguByRegionID" parameterType = "String" resultMap = "sigunguResultMap">
+		SELECT *
+		FROM T_SIGUNGU 
+		WHERE REGION_ID = #{regionId}
+	</select>
+	
     <select id="existsSigungu" parameterType="map" resultType="int">
         SELECT COUNT(*) FROM T_SIGUNGU 
         WHERE REGION_ID = #{regionId}
