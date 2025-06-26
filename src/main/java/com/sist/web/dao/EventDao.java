@@ -7,5 +7,7 @@ import com.sist.web.model.Event;
 @Repository("eventDao")
 public interface EventDao {
 	
-	public Event selectEventById(String userId);
+	public Event selectEventById(String eventId);
+	
+	int countEvent();
 }

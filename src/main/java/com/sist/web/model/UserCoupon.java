@@ -93,6 +93,7 @@ public class UserCoupon implements Serializable {
 	public void setUserCouponExpiredate(String userCouponExpiredate) {
 		this.userCouponExpiredate = userCouponExpiredate;
 	}
+
 	
 	
 	

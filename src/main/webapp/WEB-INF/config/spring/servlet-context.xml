@@ -82,7 +82,7 @@
 	<!-- 컨트롤러에서 리턴하는 뷰 이름에 접두사, 접미사를 붙여서 JSP페이지의 경로를 찾는다. -->
     <bean id="internalResourceViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" /> <!-- JSTL 사용 -->
-        <property name="prefix" value="/WEB-INF/views" /> <!-- 접두사 -->
+        <property name="prefix" value="/WEB-INF/views/" /> <!-- 접두사 -->
         <property name="suffix" value=".jsp" />           <!-- 접미사 -->
         <property name="order" value="1" />               <!-- 순서 -->
     </bean>
