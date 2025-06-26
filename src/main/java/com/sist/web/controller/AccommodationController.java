@@ -33,7 +33,10 @@ public class AccommodationController {
             return "에러 발생: " + e.getMessage();
         }
     }
-    
+    @GetMapping("/accommodation/listAll")
+    public List<Accommodation> getAllAccommodations() {
+        return accommodationService.getAllAccommodations(); // DB에서 전체 숙소 조회
+    }
     
     
     

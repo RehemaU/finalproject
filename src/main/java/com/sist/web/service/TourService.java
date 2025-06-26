@@ -104,4 +104,9 @@ public class TourService {
             tourDao.insertTour(tour);
         }
     }
+    
+    public List<Tour> getAllTours() {
+        return tourDao.getAllTours();
+    }
+    
 }
