@@ -5,7 +5,6 @@
 
 <body>
   <%@ include file="/WEB-INF/views/include/navigation.jsp" %> <%-- 공통 Header/Nav --%>
-
   <main class="wrap">
     <!-- ========== INTRO GRID ========== -->
     <section class="grid">

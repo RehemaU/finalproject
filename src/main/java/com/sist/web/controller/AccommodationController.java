@@ -12,7 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/accomm")
 public class AccommodationController {
-
+	// 커밋용 추가
     @Autowired
     private AccommodationService accommodationService;
     
