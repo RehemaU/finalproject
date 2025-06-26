@@ -71,9 +71,14 @@ body {
 	    </li> 
 	    <li class="nav-item"> 
 	      <a class="nav-link" href="/user/regForm">회원가입입니다만???????</a> 
-	    </li> 
+	    </li>
+	    <!-- ✅ 쿠폰 발급 테스트용 메뉴 추가 -->
+	    <li class="nav-item">
+	      <a class="nav-link" href="/event/coupontest">쿠폰 발급</a> 
+	    </li>
   </ul> 
 </nav>
+
 
 <div class="container">
 
