@@ -50,7 +50,7 @@
 
   <!-- 저장된 객실 전체 조회 -->
   <select id="getAllAccommodationRooms" resultMap="accomRoomResultMap">
-    SELECT * FROM T_ACCOMM_ROOM
+    SELECT ACCOMM_ROOM_ID, ACCOMM_ROOM_STANDARD_PRICE FROM T_ACCOMM_ROOM
   </select>
   
     <select id="getAllAccommIds" resultType="string">
