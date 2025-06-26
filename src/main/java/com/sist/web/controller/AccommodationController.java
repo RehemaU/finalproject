@@ -12,7 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/accomm")
 public class AccommodationController {
-
+	// 커밋용 추가
     @Autowired
     private AccommodationService accommodationService;
     
@@ -20,6 +20,18 @@ public class AccommodationController {
     public String accommodationList() {
     	
     	return "";
+    }
+
+    @GetMapping("/syncAccommodation")
+    public String syncAccommodation() {
+
+        try {
+            accommodationService.syncAllAccommodations();  // 전체 시군구별 숙박 동기화 실행
+            return "전체 숙박 동기화 완료.";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "에러 발생: " + e.getMessage();
+        }
     }
     
     
