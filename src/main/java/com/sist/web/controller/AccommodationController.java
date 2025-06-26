@@ -31,7 +31,7 @@ public class AccommodationController {
             return "에러 발생: " + e.getMessage();
         }
     }
- // 📍 숙소 전체 리스트를 JSON 형태로 반환 (마커용)
+ // 📍 숙소 전체 리스트를 JSON 형태로 반환 (마커용)추서영이함
     @GetMapping("/accommodation/listAll")
     public List<Accommodation> getAllAccommodations() {
         return accommodationService.getAllAccommodations(); // DB에서 전체 숙소 조회
