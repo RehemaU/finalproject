@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,6 +98,12 @@ public class CalanderController {
                     dayNo
                 );
                 calanderService.saveDetail(cal);
+                System.out.println("✅ 일정 저장 진입됨");
+                System.out.println("→ spotIds: " + Arrays.toString(spotIds));
+                System.out.println("→ startTimes: " + Arrays.toString(startTimes));
+                System.out.println("→ endTimes: " + Arrays.toString(endTimes));
+                System.out.println("→ dayNos: " + Arrays.toString(dayNos));
+                System.out.println("→ listId: " + listId);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -112,6 +119,10 @@ public class CalanderController {
         return "/schedule/scheduleList";
     }
     
-    
+	@RequestMapping(value = "/schedule/menu", method=RequestMethod.GET)
+	public String scheduleMenu(HttpServletRequest request, HttpServletResponse response)
+	{
+		return "/schedule/menu";
+	}
     
 }

@@ -20,6 +20,7 @@ public class Calander implements Serializable {
 	    private String lon;
 	    private String calanderSpotName;
 	    private int calDayNo;
+	    private String imageUrl;
 
 
 	    // 기본 생성자
@@ -57,7 +58,15 @@ public class Calander implements Serializable {
 	                '}';
 	    }
 
-	    public int getCalDayNo() {
+	    public String getImageUrl() {
+			return imageUrl;
+		}
+
+		public void setImageUrl(String imageUrl) {
+			this.imageUrl = imageUrl;
+		}
+
+		public int getCalDayNo() {
 	        return calDayNo;
 	    }
 
