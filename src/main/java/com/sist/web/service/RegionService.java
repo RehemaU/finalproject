@@ -34,6 +34,7 @@ public class RegionService {
                           "&MobileOS=ETC" +
                           "&MobileApp=MyApp" +
                           "&_type=json" +
+
                            "&pageNo=" + pageNo +
                           "&numOfRows=" + numOfRows;
 

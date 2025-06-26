@@ -48,7 +48,7 @@
 	<select id="existsAccommodation" parameterType="String" resultType="int">
         SELECT COUNT(*) FROM T_ACCOMM WHERE ACCOMM_ID = #{accomId}
 	</select>
-	
+
 	<update id="updateAccommodationDescription">
 		UPDATE T_ACCOMM SET ACCOMM_DES = #{accomDes} WHERE ACCOMM_ID = #{accomId}
 	</update>
