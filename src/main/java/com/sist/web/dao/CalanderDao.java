@@ -1,0 +1,12 @@
+package com.sist.web.dao;
+
+import java.util.List;
+
+import com.sist.web.model.Calander;
+import com.sist.web.model.CalanderList;
+
+public interface CalanderDao {
+    void insertCalanderList(CalanderList list);
+    void insertCalander(Calander detail);
+    List<Calander> getCalanderWithUnifiedSpotName(String listId);  // 정확한 시그니처
+}

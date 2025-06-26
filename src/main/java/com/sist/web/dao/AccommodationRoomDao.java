@@ -12,4 +12,5 @@ public interface AccommodationRoomDao {
     int existsAccommodationRoom(String accommRoomId);  // 중복 확인
     void insertAccommodationRoom(AccommodationRoom room);  // insert
     Long getNextAccommRoomSeq();  // 시퀀스 nextval
+    List<AccommodationRoom> getAllAccommodationRooms();
 }

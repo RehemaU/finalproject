@@ -18,7 +18,8 @@
             SELECT 1 FROM T_REGION WHERE REGION_ID = #{regionId}
         )
     </insert>
-
+	
+	<!-- Region 객체들 가져오기 (시/도) -->
     <select id="getAllRegions" resultMap="regionResultMap">
         SELECT * FROM T_REGION
     </select>

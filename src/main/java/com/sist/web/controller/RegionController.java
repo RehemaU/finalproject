@@ -42,6 +42,7 @@ public class RegionController {
             return "에러 발생: " + e.getMessage();
         }
     }
+
     
     @GetMapping("/syncRegion/subRegions")
     public String syncsubRegions() {

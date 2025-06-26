@@ -22,6 +22,7 @@ public class AccommodationRoomService {
     private AccommodationRoomDao accommodationRoomDao;
 
 
+
     public List<String> getAllAccommIds() {
         return accommodationRoomDao.getAllAccommIds();
     }

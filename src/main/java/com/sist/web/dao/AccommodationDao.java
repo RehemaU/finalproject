@@ -7,5 +7,6 @@ import com.sist.web.model.Accommodation;
 public interface AccommodationDao {
     void insertAccommodation(Accommodation accom);
     List<Accommodation> getAllAccommodations();  // 예시용
+
     void updateAccommodationDescription(Accommodation accomm);
 }

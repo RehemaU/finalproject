@@ -40,19 +40,45 @@
 	        SELECT 1 FROM T_ACCOMM WHERE ACCOMM_ID = #{accomId}
 	    )
 	</insert>
-
+	<!-- 모든 숙소 가져오기 -->
     <select id="getAllAccommodations" resultMap="accomResultMap">
         SELECT * FROM T_ACCOMM
     </select>
     
-
-	
 	<select id="existsAccommodation" parameterType="String" resultType="int">
         SELECT COUNT(*) FROM T_ACCOMM WHERE ACCOMM_ID = #{accomId}
 	</select>
-	
+
 	<update id="updateAccommodationDescription">
 		UPDATE T_ACCOMM SET ACCOMM_DES = #{accomDes} WHERE ACCOMM_ID = #{accomId}
 	</update>
+	
+	<!-- 여기부터 기능구현(이전까진 API관련) -->
+	
+	<!-- 상세정보띄울떄 객체 가져오는용도(/list/view와 같음) -->
+	<select id = "selectAccommodation" parameterType = "String" resultType = "com.sist.web.model.Accommodation">
+		SELECT * FROM T_ACCOMM
+		WHERE ACCOMM_ID = #{accomId};
+	</select>
+	
+	<!-- 광역시/도 코드, 시군구코드 (추가하면서) 가져오기 -->
+	<select id="searchByConditions" resultMap="accomResultMap" parameterType="map">
+	  SELECT * FROM T_ACCOMM
+	  <where>
+	  	<if test="regionIds!= null and regionIds.size() > 0">
+	      AND SIGUNGU_CODE IN
+	      <foreach collection="sigunguCodes" item="code" open="(" separator="," close=")">
+	        #{sigunguCode}
+	      </foreach>
+	    </if>
+	    <if test="sigunguCodes != null and sigunguCodes.size() > 0">
+	      AND SIGUNGU_CODE IN
+	      <foreach collection="sigunguCodes" item="code" open="(" separator="," close=")">
+	        #{sigunguCode}
+	      </foreach>
+	    </if>
+	  </where>
+	</select>
+	
 	
 </mapper>
