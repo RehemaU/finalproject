@@ -40,8 +40,8 @@ public class TourService {
         List<Sigungu> sigunguList = sigunguDao.getAllSigungu();
 
         boolean startSync = false;
-        String startRegionId = "37";
-        String startSigunguId = "13";
+        String startRegionId = "2";
+        String startSigunguId = "8";
 
         for (Sigungu sigungu : sigunguList) {
             String regionId = sigungu.getRegionId();
@@ -74,7 +74,7 @@ public class TourService {
                 "&areaCode=" + regionId +
                 "&sigunguCode=" + sigunguId +
                 "&pageNo=1" +
-                "&numOfRows=1000";
+                "&numOfRows=20";
 
         String fullUrl = BASE_URL + "?" + rawQuery;
         URI uri = URI.create(fullUrl);

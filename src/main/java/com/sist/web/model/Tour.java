@@ -31,8 +31,19 @@ public class Tour {
 
     @JsonProperty("sigungucode")
     private String sigunguId;
+    
+    @JsonProperty("firstImage")
+    private String tourImage;
+    
+    public String getTourImage() {
+		return tourImage;
+	}
 
-    public Tour() {}
+	public void setTourImage(String tourImage) {
+		this.tourImage = tourImage;
+	}
+
+	public Tour() {}
 
     public Tour(String tourId, String unifiedId, String regionId, String tourName,
                 double tourLat, double tourLon, String tourAdd, String tourDes, String sigunguId) {

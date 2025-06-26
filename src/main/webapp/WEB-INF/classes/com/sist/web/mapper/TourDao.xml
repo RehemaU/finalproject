@@ -15,12 +15,13 @@
         <result column="TOUR_ADD" property="tourAdd"/>
         <result column="TOUR_DES" property="tourDes"/>
         <result column="SIGUNGU_ID" property="sigunguId"/>
+        <result column="TOUR_IMAGE" property="tourImage"/>
     </resultMap>
 
     <!-- Insert (중복방지 방식 동일 적용) -->
     <insert id="insertTour" parameterType="com.sist.web.model.Tour">
         INSERT INTO T_TOUR (
-            TOUR_ID, UNIFIED_ID, REGION_ID, TOUR_NAME, TOUR_LAT, TOUR_LON, TOUR_ADD, TOUR_DES, SIGUNGU_ID
+            TOUR_ID, UNIFIED_ID, REGION_ID, TOUR_NAME, TOUR_LAT, TOUR_LON, TOUR_ADD, TOUR_DES, SIGUNGU_ID, TOUR_IMAGE
         )
         SELECT 
             #{tourId},
@@ -31,7 +32,8 @@
             #{tourLon},
             #{tourAdd},
             #{tourDes, jdbcType=CLOB},
-            #{sigunguId}
+            #{sigunguId},
+            #{tourImage}
         FROM dual
         WHERE NOT EXISTS (
             SELECT 1 FROM T_TOUR WHERE TOUR_ID = #{tourId}
