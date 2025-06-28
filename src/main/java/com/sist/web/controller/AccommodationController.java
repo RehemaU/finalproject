@@ -48,6 +48,7 @@ public class AccommodationController {
         }
     }
     @GetMapping("/accommodation/listAll")
+    @ResponseBody
     public List<Accommodation> getAllAccommodations() {
         return accommodationService.getAllAccommodations(); // DB에서 전체 숙소 조회
     }

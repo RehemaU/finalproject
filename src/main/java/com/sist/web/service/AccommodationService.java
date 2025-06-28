@@ -202,8 +202,11 @@ public class AccommodationService {
     
     public List<Accommodation> findBySigunguList(List<Sigungu> sigunguList) {
         return accommodationDao.searchBySigungu(sigunguList);
+    }
+    
     public List<Accommodation> getAllAccommodations() {
         return accommodationDao.getAllAccommodations(); // DAO에서 전체 조회
 
     }
+    
    }

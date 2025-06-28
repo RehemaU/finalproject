@@ -1,206 +1,164 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="java.util.List" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%
-    session.setAttribute("userId", "test");
-    List<String> selectedDates = (List<String>) session.getAttribute("selectedDates");
-    String listName = (String) session.getAttribute("listName");
-    String calanderListId = (String) session.getAttribute("calanderListId");
-%>
+<%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core"        %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"   %>
+
 <!DOCTYPE html>
+<%@ include file="/WEB-INF/views/include/head2.jsp" %>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title><c:out value="${listName != null ? listName : 'Create Schedule'}" /> · MYTRIP</title>
+  <title>일정 만들기 · MYTRIP</title>
 
-  <!-- 폰트 & 스타일 -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+  <!-- Pretendard + Montserrat -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
 
-  <!-- Litepicker -->
-  <link href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css" rel="stylesheet">
+  <!-- Tailwind / Swiper / Litepicker -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.dark.css">
   <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/bundle.js"></script>
 
   <style>
-    :root {
-      --txt:#111;--sub:#767676;--bg:#fdfdfd;--bd:#e4e4e4;
-      --accent:#000;--radius:14px;--max:1440px;--gutter:48px;
-    }
-    * {margin:0;padding:0;box-sizing:border-box}
-    body {font-family:'Pretendard',sans-serif;background:#fff;color:var(--txt);}
-    a {text-decoration:none;color:inherit}
-
-    header {
-      position:sticky;top:0;z-index:1000;background:#fff;
-      border-bottom:1px solid #ebebeb;padding:30px var(--gutter) 10px;
-    }
-    .wrap {max-width:var(--max);margin:0 auto;padding:0 var(--gutter);}
-    .flex {display:flex;align-items:center;justify-content:space-between;}
-    .logo {font-family:'Montserrat',sans-serif;font-size:32px;font-weight:700;}
-    .util {gap:26px;font-size:13px;text-transform:uppercase;}
-    .util a {opacity:.82;transition:.2s;} .util a:hover {opacity:1;}
-
-    .tagline {
-      padding:38px 0 22px;display:flex;gap:32px;flex-wrap:wrap;
-    }
-    .tag-item {
-      position:relative;font-size:36px;font-weight:700;white-space:nowrap;cursor:pointer;
-    }
-    .tag-item::after {
-      content:'';position:absolute;left:0;bottom:-6px;width:100%;height:3px;
-      background:#000;transform:scaleX(0);transform-origin:left;transition:.25s;
-    }
-    .tag-item:hover::after {transform:scaleX(1);}
-
-    .gnb {
-      padding:14px 0 18px;gap:36px;
-      font-size:15px;font-weight:500;white-space:nowrap;overflow-x:auto;
-      border-bottom:1px solid #ebebeb;
-    }
-    .gnb a {flex-shrink:0;opacity:.75;} .gnb a:hover {opacity:1;}
-
-    .container {
-      display:flex;gap:40px;max-width:var(--max);
-      margin:48px auto;padding:0 var(--gutter);
-    }
-    .left {flex:0 0 32%;}
-    .right {flex:1 1 0%;display:flex;justify-content:center;}
-
-    form {
-      background:#fff;border:1px solid var(--bd);border-radius:12px;
-      padding:40px 48px;box-shadow:0 12px 24px rgba(0,0,0,.05);
-    }
-    form h3 {font-size:24px;margin-bottom:24px}
-    label {display:block;margin:22px 0 8px;font-weight:600}
-    input,select,button {
-      width:100%;padding:14px;border:1px solid #ccc;
-      border-radius:8px;font-size:15px;
-    }
-    button {
-      margin-top:26px;background:#000;color:#fff;font-weight:600;cursor:pointer;
-      transition:.2s;
-    }
-    button:hover {background:#222}
-
-    .calendar-box {
-      background:#fff;border:1px solid var(--bd);border-radius:12px;
-      padding:28px 30px;box-shadow:0 12px 24px rgba(0,0,0,.05);
-    }
-    .calendar-box h4 {
-      margin-bottom:20px;font-size:20px;font-weight:700;text-align:center
-    }
-
-    @media(max-width:880px){
-      .container {flex-direction:column}
-      .left,.right {flex:none}
-    }
+    body{font-family:'Pretendard',sans-serif;color:#111}
+    h2{font-family:'Montserrat',sans-serif;font-size:34px;font-weight:800;margin-bottom:32px}
+    .form-box{max-width:680px;width:92%;background:#fff;border:1px solid #dcdcdc;border-radius:18px;padding:56px 64px;box-shadow:0 20px 48px rgba(0,0,0,.06)}
+    .form-box label{font-size:17px;font-weight:600;margin-top:24px}
+    .form-box input,.form-box select{width:100%;padding:18px;font-size:17px;border:1px solid #bbb;border-radius:10px;margin-top:8px}
+    .form-box button{padding:18px;background:#000;color:#fff;font-size:17px;font-weight:700;border-radius:10px;margin-top:36px;transition:.25s}
+    .form-box button:hover{background:#222}
+    #calendarArea .container__main{font-size:16px}
+    .swiper-slide{display:flex;align-items:center;justify-content:center;min-height:100vh}
   </style>
 </head>
-<body>
+<body class="bg-[#f5f5f5]">
+  <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
 
-<!-- HEADER -->
-<header>
-  <div class="wrap flex">
-    <a href="/" class="logo">MYTRIP</a>
-    <nav class="util flex">
-      <a href="/mypage">MY PAGE</a><a href="/likes">MY LIKE</a>
-      <a href="/bag">BAG</a><a href="/login">LOGIN</a>
-    </nav>
+  <!-- Swiper -->
+  <div class="swiper mySwiper">
+    <div class="swiper-wrapper">
+<!-- STEP 0 : 일정 시작 선택 -->
+<section class="swiper-slide bg-white">
+  <div class="form-box text-center">
+<h1 style="font-size: 40px;">To do your Trip Plan !</h1>
+    <p class="text-gray-500 mt-2 mb-8">당신의 여행을 더욱 즐겁게</p>
+
+    <div class="flex flex-col gap-4">
+      <!-- 내 일정 보기 -->
+      <a href="${pageContext.request.contextPath}/schedule/list" 
+         class="block py-4 px-6 bg-[#eee] text-[#111] font-semibold rounded-lg hover:bg-[#ddd] transition">
+        내가 만든 일정 목록
+      </a>
+
+      <!-- 새 일정 만들기 -->
+      <button onclick="swiper.slideNext()" 
+              class="py-4 px-6 bg-[#000] text-white font-semibold rounded-lg hover:bg-[#222] transition">
+        새 일정 생성
+      </button>
+    </div>
   </div>
+</section>
+      <!-- STEP 1 : 날짜 -->
+      <section class="swiper-slide bg-[#fafafa]">
+        <div class="form-box text-center">
+          <h2>STEP&nbsp;1 · 날짜 선택</h2>
+          <input type="text" id="dateInput" style="display:none">
+          <div id="calendarArea"></div>
+        </div>
+      </section>
 
-  <div class="wrap tagline">
-    <a class="tag-item" href="/walkthrough">Walkthrough</a>
-    <a class="tag-item" href="/tour">Explore</a>
-    <a class="tag-item" href="/stay">Stay</a>
-    <a class="tag-item" href="/schedule">Plan</a>
-    <a class="tag-item" href="/review">Share</a>
-  </div>
+      <!-- STEP 2 : 기본 정보 -->
+      <section class="swiper-slide bg-white">
+        <form class="form-box" method="post" action="${pageContext.request.contextPath}/schedule/saveList">
+          <h2>STEP&nbsp;2 · 기본 정보</h2>
 
-  <nav class="wrap gnb flex">
-    <a href="/tour">TOUR</a><a href="/stay">STAY</a><a href="/schedule">SCHEDULE</a>
-    <a href="/review">REVIEW</a><a href="/coupon">COUPON</a>
-    <a href="/event">EVENT</a><a href="/qna">Q&A</a>
-  </nav>
-</header>
+          <!-- 시·도 -->
+          <label>시·도 선택
+            <select id="region1" name="regionId" required>
+              <option value="">-- 시·도 선택 --</option>
+              <c:forEach var="r" items="${regionList}">
+                <option value="${r.regionId}">${r.regionName}</option>
+              </c:forEach>
+            </select>
+          </label>
 
-<!-- MAIN -->
-<div class="container">
+          <!-- 시·군·구 -->
+          <label>시·군·구 선택
+            <select id="region2" name="sigunguId" required>
+              <option value="">-- 시·군·구 선택 --</option>
+            </select>
+          </label>
 
-  <!-- LEFT: 기본 입력 폼 -->
-  <div class="left">
-    <form id="scheduleForm" method="post" action="${pageContext.request.contextPath}/schedule/saveList">
-      <h3>여행지 & 날짜 선택</h3>
+          <!-- 제목 -->
+          <label>일정 제목
+            <input id="listName" name="listName" placeholder="예: 여름 제주 여행" required>
+          </label>
 
-      <label for="region">지역</label>
-      <select id="region" name="region" required>
-        <option value="">-- 지역을 선택하세요 --</option>
-        <option>서울</option><option>부산</option><option>제주</option><option>강원</option>
-      </select>
+          <!-- 히든 -->
+          <input type="hidden" id="startDate"     name="startDate">
+          <input type="hidden" id="endDate"       name="endDate">
+          <input type="hidden" id="selectedDates" name="selectedDates">
 
-      <label for="listName">일정 제목</label>
-      <input type="text" id="listName" name="listName" required>
-
-      <label for="startDate">시작일</label>
-      <input type="date" id="startDate" readonly required>
-
-      <label for="endDate">종료일</label>
-      <input type="date" id="endDate" readonly required>
-
-      <input type="hidden" name="selectedDates" id="selectedDates">
-
-      <button type="submit">다음 단계 →</button>
-    </form>
-  </div>
-
-  <!-- RIGHT: 달력 -->
-  <div class="right">
-    <div class="calendar-box">
-      <h4>날짜를 선택하세요</h4>
-      <input type="text" id="dateInput" style="display:none;">
-      <div id="calendarArea"></div>
+          <div class="flex justify-between gap-4 mt-10">
+            <button type="button" onclick="swiper.slidePrev()" class="w-1/2 bg-[#eee] text-[#333] font-semibold py-4 rounded-lg hover:bg-[#ddd]">← 날짜 선택</button>
+            <button type="submit" class="w-1/2 bg-[#000] text-white font-bold py-4 rounded-lg hover:bg-[#222]">다음 단계 →</button>
+          </div>
+        </form>
+      </section>
     </div>
   </div>
 
-</div>
-
-<!-- SCRIPT -->
-<script>
-const picker = new Litepicker({
-  element: document.getElementById('dateInput'),
-  inlineMode: true,
-  container: document.getElementById('calendarArea'),
-  singleMode: false,
-  lang: 'ko',
-  numberOfMonths: 2,
-  numberOfColumns: 2,
-  tooltipText: { one: '일', other: '일' },
-  tooltipPosition: 'bottom',
-  setup: (pickerInstance) => {
-    pickerInstance.on('selected', (startDate, endDate) => {
-      if (!startDate || !endDate) return;
-      document.getElementById('startDate').value = startDate.format('YYYY-MM-DD');
-      document.getElementById('endDate').value = endDate.format('YYYY-MM-DD');
-
-      const arr = [], s = startDate.clone();
-      while (s.isSameOrBefore(endDate, 'day')) {
-        arr.push(s.format('YYYY-MM-DD'));
-        s.add(1, 'day');
+  <!-- JS ---------------------------------------------------->
+  <script>
+    /* ───── Swiper & Litepicker ───── */
+    const swiper = new Swiper('.mySwiper',{allowTouchMove:false,speed:300});
+    const picker = new Litepicker({
+      element: document.getElementById('dateInput'),
+      inlineMode:true, container:document.getElementById('calendarArea'),
+      singleMode:false, lang:'ko', numberOfMonths:2, numberOfColumns:2, theme:'dark',
+      setup:p=>{
+        p.on('selected',(s,e)=>{
+          if(!s||!e) return;
+          const fmt=d=>d.format('YYYY-MM-DD');
+          startDate.value = fmt(s); endDate.value = fmt(e);
+          const arr=[],cur=s.clone();
+          while(cur.isSameOrBefore(e,'day')){arr.push(fmt(cur));cur.add(1,'day');}
+          selectedDates.value = JSON.stringify(arr);
+          swiper.slideNext();
+        });
       }
-      document.getElementById('selectedDates').value = JSON.stringify(arr);
     });
-  }
-});
 
-document.getElementById('scheduleForm').addEventListener('submit', (e) => {
-  const sd = document.getElementById('startDate').value;
-  const ed = document.getElementById('endDate').value;
-  if (!sd || !ed) {
-    alert('날짜를 먼저 선택하세요!');
-    e.preventDefault();
-  }
-});
-</script>
+    /* ───── sigungu 데이터 ───── */
+    const sigunguData=[];
+    <c:forEach var="s" items="${sigunguList}">
+      sigunguData.push({
+        regionId   : "${fn:trim(s.regionId)}",
+        sigunguId  : "${fn:trim(s.sigunguId)}",
+        sigunguName: "${fn:escapeXml(s.sigunguName)}"
+      });
+    </c:forEach>
+
+    /* ───── 시·군·구 드롭다운 ───── */
+    document.addEventListener("DOMContentLoaded",()=>{
+      const region1=document.getElementById("region1");
+      const region2=document.getElementById("region2");
+
+      const updateSigunguOptions=()=>{
+        const regionId=region1.value.trim();
+        region2.innerHTML='<option value="">-- 시·군·구 선택 --</option>';
+        sigunguData
+          .filter(s=>s.regionId===regionId)
+          .forEach(s=>{
+            const opt=document.createElement("option");
+            opt.value=s.sigunguId; opt.textContent=s.sigunguName;
+            region2.appendChild(opt);
+          });
+      };
+
+      region1.addEventListener("change",updateSigunguOptions);
+    });
+  </script>
 </body>
 </html>
