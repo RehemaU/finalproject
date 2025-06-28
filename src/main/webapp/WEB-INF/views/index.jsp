@@ -5,12 +5,12 @@
 
 <body>
   <%@ include file="/WEB-INF/views/include/navigation.jsp" %> <%-- 공통 Header/Nav --%>
-
   <main class="wrap">
     <!-- ========== INTRO GRID ========== -->
     <section class="grid">
       <div class="hero"><h2></h2></div>
 
+<<<<<<< HEAD
       <article class="card">
         <div class="card-img"></div>
         <div class="card-body">
@@ -18,7 +18,24 @@
           <p>지역별 추천 스팟과 숙소를 한눈에 확인해보세요.</p>
         </div>
       </article>
+=======
+<nav class="navbar navbar-expand-sm bg-secondary navbar-dark mb-3"> 
+	<ul class="navbar-nav"> 
+	    <li class="nav-item"> 
+	      <a class="nav-link" href="/">로그인입니다요~!</a> 
+	    </li> 
+	    <li class="nav-item"> 
+	      <a class="nav-link" href="/user/regForm">회원가입입니다만???????</a> 
+	    </li>
+	    <!-- ✅ 쿠폰 발급 테스트용 메뉴 추가 -->
+	    <li class="nav-item">
+	      <a class="nav-link" href="/event/coupontest">쿠폰 발급</a> 
+	    </li>
+  </ul> 
+</nav>
+>>>>>>> refs/heads/CYW
 
+<<<<<<< HEAD
       <div class="stack">
         <article class="card">
           <div class="card-img"></div>
@@ -36,6 +53,10 @@
         </article>
       </div>
     </section>
+=======
+
+<div class="container">
+>>>>>>> refs/heads/CYW
 
     <!-- ========== HOT TOUR ========== -->
     <h3 class="section-title">HOT · TOUR</h3>

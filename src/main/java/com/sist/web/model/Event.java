@@ -14,7 +14,7 @@ public class Event implements Serializable {
     private String couponId;
     private String eventTitle;
     private String eventContent;
-    private String eventRegDate;
+    private String eventRegdate;
     private int eventCount;
 
     public Event() 
@@ -24,7 +24,7 @@ public class Event implements Serializable {
         this.couponId = "";
         this.eventTitle = "";
         this.eventContent = "";
-        this.eventRegDate = ""; // DB에서 SYSDATE로 처리할 경우 null 허용
+        this.eventRegdate = ""; // DB에서 SYSDATE로 처리할 경우 null 허용
         this.eventCount = 0;
     }
 
@@ -68,12 +68,12 @@ public class Event implements Serializable {
 		this.eventContent = eventContent;
 	}
 
-	public String getEventRegDate() {
-		return eventRegDate;
+	public String getEventRegdate() {
+		return eventRegdate;
 	}
 
-	public void setEventRegDate(String eventRegDate) {
-		this.eventRegDate = eventRegDate;
+	public void setEventRegdate(String eventRegdate) {
+		this.eventRegdate = eventRegdate;
 	}
 
 	public int getEventCount() {
@@ -83,7 +83,8 @@ public class Event implements Serializable {
 	public void setEventCount(int eventCount) {
 		this.eventCount = eventCount;
 	}
-	    
+
+	
 	
 	
 }

@@ -136,4 +136,8 @@ public class RegionService {
             regionDao.insertRegion(region);
         }
     }
+    
+    public List<Region> getAllRegions(){
+    	return regionDao.getAllRegions();
+    }
 }

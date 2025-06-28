@@ -30,7 +30,7 @@
     </mvc:annotation-driven>
     
     <!-- url 매핑 시작 (이미지, 자바스트립트, 스타일시트 디렉토리)-->
-    <mvc:resources mapping="/resources/**" location="/WEB-INF/views/resources/" />
+	<mvc:resources mapping="/resources/**" location="/WEB-INF/views/resources/" />
     <!-- url 매핑 종료 -->
     
 	<!-- Interceptors 시작 -->
