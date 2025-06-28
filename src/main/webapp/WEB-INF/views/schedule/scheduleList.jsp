@@ -1,8 +1,14 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%
+    String listName       = (String) session.getAttribute("listName");
+
+%>
 <!DOCTYPE html>
 <html lang="ko">
+  <%@ include file="/WEB-INF/views/include/head.jsp" %>   <%-- 공통 head --%>
+
 <head>
   <meta charset="UTF-8">
   <title>일정 보기</title>
@@ -31,7 +37,9 @@
   </style>
 </head>
 <body>
-<h2>🗺 저장된 일정</h2>
+  <%@ include file="/WEB-INF/views/include/navigation.jsp" %> <%-- 공통 Header/Nav --%>
+<br>
+<h2><%= listName %></h2>
 
 <!-- ✅ 0. 전체 Calander 객체 디버깅 -->
 
