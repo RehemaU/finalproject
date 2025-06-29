@@ -21,10 +21,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.google.gson.JsonObject;
 import com.sist.web.service.EditorService;
+import com.sist.web.service.PcommentService;
 import com.sist.web.util.HttpUtil;
+import com.sist.common.model.FileData;
 import com.sist.common.util.StringUtil;
 import com.sist.web.model.*;
 
@@ -37,6 +40,8 @@ public class EditorController
 
 	@Autowired
 	private EditorService editorService;
+	@Autowired
+	private PcommentService pcommentService;
 	
 	private static final int LIST_COUNT = 10; 	// 한 페이지의 게시물 수
 	private static final int PAGE_COUNT = 2;	// 페이징 수
@@ -48,7 +53,11 @@ public class EditorController
 	{
 		return "/editor/planeditor";
 	}
-	
+	@RequestMapping(value = "/editor/planmenu", method=RequestMethod.GET)
+	public String Menu(HttpServletRequest request, HttpServletResponse response)
+	{
+		return "/editor/planmenu";
+	}
 
 	
 	//--------------------------------------------------------------
@@ -114,7 +123,7 @@ public class EditorController
 	    
 	    editor.setPlanTitle(planTitle);
 	    editor.setPlanContent(planContent);
-	    editor.setTCalanderListId("e6cdfef5-0e6d-40fc-bae4-17203c893a75");
+	    editor.setTCalanderListId("5a4a9643-4160-4323-8ac7-2500360a4b86");
 
 	    logger.info("제목: " + planTitle);
 	    logger.info("내용: " + planContent);
@@ -224,9 +233,12 @@ public class EditorController
 		
 		Editor editor = null;
 		
+		List<Pcomment> list = null;
+		
 		if(planId > 0)
 		{
 			editor = editorService.editorSelect(planId);
+			list = pcommentService.pcommentList(planId);
 		}
 		
 		model.addAttribute("planId", planId);
@@ -235,10 +247,138 @@ public class EditorController
 		model.addAttribute("searchValue", searchValue);
 		model.addAttribute("curPage", curPage);
 		model.addAttribute("editor", editor);
+		model.addAttribute("list", list);
 		
 		return "/editor/planview";
 	}
 	
+	//게시글 수정 페이지 조회
+	@RequestMapping(value="/editor/planupdate")
+	public String planUpdate(ModelMap model, HttpServletRequest request, HttpServletResponse response)
+	{
+		//게시물번호
+		int planId = HttpUtil.get(request, "planId", 0);
+		//정렬방식
+		String listType = HttpUtil.get(request, "listType", "");
+		//조회항목
+		String searchType = HttpUtil.get(request, "searchType", "");
+		//조회값
+		String searchValue = HttpUtil.get(request, "searchValue", "");
+		//현재페이지
+		long curPage = HttpUtil.get(request, "curPage", (long)1);
+		
+		Editor editor = null;
+		
+		if(planId > 0)
+		{
+			editor = editorService.editorSelect(planId);
+		}
+		
+		model.addAttribute("listType", listType);
+		model.addAttribute("searchType", searchType);
+		model.addAttribute("searchValue", searchValue);
+		model.addAttribute("curPage", curPage);
+		model.addAttribute("editor", editor);
+		
+		return "/editor/planupdate";
+	}
 	
+	//게시글 수정
+	@RequestMapping(value = "/editor/planupdateProc", method = RequestMethod.POST)
+	@ResponseBody
+	public Response<JsonObject> updateAjax(@RequestBody Editor editor) {
+	    Response<JsonObject> res = new Response<>();
 
+	    if (editor == null) {
+	        res.setResponse(400, "요청 본문이 없습니다.");
+	        return res;
+	    }
+
+	    String planId = editor.getPlanId();
+	    String planTitle = editor.getPlanTitle();
+	    String planContent = editor.getPlanContent();
+
+
+	    JsonObject data = new JsonObject();
+	    data.addProperty("title", planTitle);
+	    data.addProperty("content", planContent);
+	    data.addProperty("planId", planId);
+	    
+	    editor.setPlanTitle(planTitle);
+	    editor.setPlanContent(planContent);
+	    editor.setPlanId(planId);
+
+	    logger.info("id: "+planId);
+	    logger.info("제목: " + planTitle);
+	    logger.info("내용: " + planContent);
+
+	    try
+	    {
+	    	int num = editorService.editorUpdate(editor);
+	    	
+	    	if(num > 0)
+	    	{
+	    		res.setResponse(200, "success");	    		
+	    	}
+	    	else
+	    	{
+	    		res.setResponse(400, "Fail: Not inserted");
+	    	}
+	    }
+	    catch(Exception e)
+	    {
+	    	logger.error("에러메시지", e);
+	    	res.setResponse(400, e.getMessage());
+	    }
+	    
+	    return res;
+	}
+
+	//게시물 삭제
+	@RequestMapping(value="/editor/plandelete", method=RequestMethod.POST)
+	@ResponseBody
+	public Response<Object> plandelete(HttpServletRequest request, HttpServletResponse response)
+	{
+		Response<Object> ajaxResponse = new Response<Object>();
+		
+		int planId = HttpUtil.get(request, "planId", 0);
+		
+		if(planId > 0)
+		{
+			Editor editor = editorService.editorSelect(planId);
+			
+			if(editor != null)
+			{
+				try
+				{
+					System.out.println("ㅎㅎ");
+					System.out.println(planId);
+					System.out.println("ㅎㅎ");
+					if(editorService.editorDelete(planId) > 0)
+					{
+						ajaxResponse.setResponse(0, "success");
+					}
+					else
+					{
+						ajaxResponse.setResponse(500, "server error1");
+					}
+				}
+				catch(Exception e)
+				{
+					logger.error("[HiBoardController]delete Exception", e);
+					ajaxResponse.setResponse(500, "server error2");
+				}
+			}
+			else
+			{
+				ajaxResponse.setResponse(404, "not found");
+			}
+		}
+		else
+		{
+			ajaxResponse.setResponse(400, "bad request");
+		}
+		
+		return ajaxResponse;
+	}
 }

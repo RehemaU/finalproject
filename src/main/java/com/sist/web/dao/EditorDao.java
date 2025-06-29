@@ -14,4 +14,8 @@ public interface EditorDao {
 	public List<Editor> editorList(Editor editor);
 	//게시글상세조회
 	public Editor editorSelect(int planId);
+	//게시글수정
+	public int editorUpdate(Editor editor);
+	//게시글삭제
+	public int editorDelete(int planId);
 }
