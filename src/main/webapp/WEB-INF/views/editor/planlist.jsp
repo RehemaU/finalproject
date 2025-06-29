@@ -8,19 +8,81 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>게시글 미리보기</title>
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
     rel="stylesheet"/>
-</head>
-<body class="bg-light">
-  <div class="container py-5">
+    <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
+<style>
+/* 플로팅 “후기 작성” 버튼 */
+#floatingWriteBtn{
+  position: fixed;          /* 스크롤해도 고정 */
+  bottom: 24px;
+  left: 24px;
+
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+
+  background: #000;
+  color: #fff;
+
+  font-size: 24px;
+  border: none;
+  cursor: pointer;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  transition: transform .2s, box-shadow .2s;
+  z-index: 999;             /* 다른 요소 위로 */
+}
+
+#floatingWriteBtn:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .35);
+}
+
+#floatingWriteBtn:active{
+  transform: scale(.92);
+}
+</style>
+
+<style>
+/* Bootstrap .btn-link 기본값을 덮어씀 */
+.card-title.btn-link{
+  text-decoration: none !important;  /* 밑줄 제거 */
+  font-weight: 600 !important;       /* 굵기 유지 */
+  color: inherit;                    /* 링크색 대신 기본 글자색 */
+  font-size: 1.3rem !important;      /* ← 글씨 크기 키우기 */
+}
+  }
+</style>
+
+<%@ include file="/WEB-INF/views/include/head.jsp" %>   <%-- 공통 head --%>
+
+</head>
+
+<body class="bg-light">
+<%@ include file="/WEB-INF/views/include/navigation.jsp" %> <%-- 공통 Header/Nav --%>
+  <div class="container py-5">
+  
+<!-- ✨ 떠다니는 “후기 작성” 버튼 -->
+<button id="floatingWriteBtn"
+        onclick="location.href='/editor/planeditor'"
+        aria-label="후기 작성">
+  <i class="fas fa-pen" style="font-size:18px;"></i> <!-- ← fa-sm 으로 조금 작게 -->
+</button>
+
+<div class="text-end mb-4">        <%-- ① 오른쪽 정렬 래퍼 --%>
     <!-- 검색 & 정렬 폼 -->
     <form id="searchSortForm"
           method="get"
           action="${pageContext.request.contextPath}/editor/planlist"
-          class="row g-2 mb-4">
+          class="d-inline-flex align-items-start gap-2">
+          
       <!-- 현재 페이지 번호 유지용 히든 필드 -->
       <input type="hidden" name="curPage" value="${curPage}" />
 
@@ -75,10 +137,10 @@
 
       <!-- 검색 버튼 -->
       <div class="col-auto">
-        <button type="submit" class="btn btn-primary btn-sm">검색</button>
+        <button type="submit" class="btn btn-dark btn-sm">검색</button>
       </div>
     </form>
-
+</div>
     <!-- 전체 글 개수 -->
     <div class="mb-3">
       <strong>전체 게시글 개수:</strong> ${totalCount}
@@ -96,6 +158,10 @@
                   <form action="${pageContext.request.contextPath}/editor/planview"
                         method="get">
                     <input type="hidden" name="planId" value="${post.planId}" />
+                    <input type="hidden" name="curPage" value="${post.curPage}" />
+                    <input type="hidden" name="listType" value="${post.listType}" />
+                    <input type="hidden" name="searchType" value="${post.searchType}" />
+                    <input type="hidden" name="searchValue" value="${post.searchValue}" />
                     <!-- curPage, listType, searchType, searchValue 유지하려면 여기도 히든 추가 가능 -->
                     <button type="submit"
                             class="card-title btn btn-link p-0"
@@ -131,7 +197,7 @@
     </div>
 
   </div>
-
+  
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
