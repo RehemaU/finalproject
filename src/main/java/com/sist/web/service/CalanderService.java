@@ -39,5 +39,8 @@ public class CalanderService {
     public void deleteListById(String listId) {
         calanderDao.deleteCalanderListById(listId);
     }
+    public List<CalanderList> getListsByUser(String userId){
+        return calanderDao.getCalanderListsByUser(userId);
+    }
 }
 
