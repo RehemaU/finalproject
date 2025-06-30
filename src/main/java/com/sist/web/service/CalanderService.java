@@ -29,5 +29,15 @@ public class CalanderService {
     public List<Calander> getCalanders(String listId) {
         return calanderDao.getCalanderWithUnifiedSpotName(listId);
     }
+    public CalanderList getListById(String listId) {
+        return calanderDao.selectListById(listId);
+    }
+
+    public void deleteDetailsByListId(String listId) {
+        calanderDao.deleteCalandersByListId(listId);
+    }
+    public void deleteListById(String listId) {
+        calanderDao.deleteCalanderListById(listId);
+    }
 }
 
