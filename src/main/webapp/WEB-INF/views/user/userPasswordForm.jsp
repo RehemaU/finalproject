@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<%@ include file="/WEB-INF/views/include/head3.jsp" %>
+<%@ include file="/WEB-INF/views/include/userHead.jsp" %>
   <title>비밀번호 변경</title>
   <style>
     body {

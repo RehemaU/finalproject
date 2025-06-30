@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<%@ include file="/WEB-INF/views/include/head3.jsp" %>
+<%@ include file="/WEB-INF/views/include/userHead.jsp" %>
   <title>회원가입</title>
   <style>
     .signup-container {
@@ -251,7 +251,6 @@
   		var form = $("#userRegForm")[0];
 		var formData = new FormData(form);		//자바스크립트에서 폼 데이터를 다루는 객체
   		
-		alert(formData);
 		
   		$.ajax({
   	        type:"POST",
