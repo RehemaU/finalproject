@@ -123,7 +123,7 @@ public class EditorController
 	    
 	    editor.setPlanTitle(planTitle);
 	    editor.setPlanContent(planContent);
-	    editor.setTCalanderListId("5a4a9643-4160-4323-8ac7-2500360a4b86");
+	    editor.setTCalanderListId("CL001");
 
 	    logger.info("제목: " + planTitle);
 	    logger.info("내용: " + planContent);
@@ -351,9 +351,6 @@ public class EditorController
 			{
 				try
 				{
-					System.out.println("ㅎㅎ");
-					System.out.println(planId);
-					System.out.println("ㅎㅎ");
 					if(editorService.editorDelete(planId) > 0)
 					{
 						ajaxResponse.setResponse(0, "success");

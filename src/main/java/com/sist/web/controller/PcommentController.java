@@ -75,18 +75,39 @@ public class PcommentController {
 		return ajaxResponse;
 	}
 	
-	//게시글 리스트
-	@RequestMapping(value="/editor/commentList")
-	public String commentList(ModelMap model, HttpServletRequest request, HttpServletResponse response)
+	//댓글 삭제
+	@RequestMapping(value="/editor/commentDelete", method=RequestMethod.POST)
+	@ResponseBody
+	public Response<Object> commentDelete(HttpServletRequest request, HttpServletResponse response)
 	{
+		Response<Object> ajaxResponse = new Response<Object>();
 		
-		int planId = HttpUtil.get(request, "planId", 0);
-
-		List<Pcomment> list = null;
-		Pcomment search = new Pcomment();
+		int commentId = HttpUtil.get(request, "commentId", 0);
 		
-		list = pcommentService.pcommentList(planId);
-
-		return "/editor/planview";
+		if(commentId > 0)
+		{
+			try
+			{
+				if(pcommentService.pcommentDelete(commentId) > 0)
+				{
+					ajaxResponse.setResponse(0, "success");
+				}
+				else
+				{
+					ajaxResponse.setResponse(500, "server error1");
+				}
+			}
+			catch(Exception e)
+			{
+				logger.error("[HiBoardController]delete Exception", e);
+				ajaxResponse.setResponse(500, "server error2");
+			}
+		}
+		else
+		{
+			ajaxResponse.setResponse(400, "bad request");
+		}
+		
+		return ajaxResponse;
 	}
 }

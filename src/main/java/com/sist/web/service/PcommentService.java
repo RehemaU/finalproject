@@ -54,4 +54,23 @@ public class PcommentService {
 		
 		return list;
 	}
+	
+	//댓글삭제
+	public int pcommentDelete(int commentId)
+	{
+		int count = 0;
+		
+		try
+		{
+			count = pcommentDao.pcommentDelete(commentId);
+		}
+		catch(Exception e)
+		{
+			logger.error("[PcommentService] pcommentDelete : ", e);
+		}
+		
+		return count;
+	}
+	
+
 }
