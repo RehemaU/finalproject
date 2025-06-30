@@ -9,9 +9,4 @@ public interface CalanderDao {
     void insertCalanderList(CalanderList list);
     void insertCalander(Calander detail);
     List<Calander> getCalanderWithUnifiedSpotName(String listId);  // 정확한 시그니처
-    
-    CalanderList selectListById(String listId);
-    void deleteCalandersByListId(String listId);
-    void deleteCalanderListById(String listId);  // 일정 리스트 자체 삭제용
-
 }

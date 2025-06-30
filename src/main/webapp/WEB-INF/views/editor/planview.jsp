@@ -162,25 +162,77 @@ document.getElementById('deleteBtn').addEventListener('click', async () => {
 		
 <br />
 		
-		<!-- ★↓↓↓ (추가) 댓글 목록 루프 --------------------------------------- -->
-		<c:forEach var="c" items="${list}">
-		  <div class="border rounded p-3 mb-2">
-		    <p class="mb-1 mb-2">${c.planCommentContent}</p>
-		    <small class="text-muted">
-		      작성자: ${c.userId}
-		      |
-		      날짜:
-		      ${c.planCommentDate}
-		    </small>
-		  </div>
-		</c:forEach>
-		
-		<!-- ★↓↓↓ (추가) 댓글이 없을 때 --------------------------------------- -->
-		<c:if test="${empty list}">
-		  <div class="text-muted">등록된 댓글이 없습니다.</div>
-		</c:if>
-		<!-- ★↑↑↑ (추가 끝) --------------------------------------------------- -->
-		
+<!-- ★↓↓↓ 댓글 목록 루프 --------------------------------------- -->
+<c:forEach var="c" items="${list}">
+  <div class="border rounded p-3 mb-2">
+    <!-- 한 줄 세로 정렬: 내용(왼쪽) · 버튼(오른쪽) -->
+    <div class="d-flex justify-content-between align-items-start">
+      <!-- 댓글 본문 -->
+      <p class="mb-1 flex-grow-1 me-3" id="comment-${c.commentId}" }>${c.planCommentContent}</p>
+
+      <!-- 수정‧삭제 버튼 -->
+      <div class="btn-group btn-group-sm" role="group">
+
+        <!-- 삭제 -->
+        <button type="button"
+                class="btn btn-outline-dark"
+                data-id="${c.commentId}"
+                onclick="deleteComment(this.dataset.id)">
+          삭제
+        </button>
+      </div>
+    </div>
+
+    <!-- 메타 정보 -->
+    <small class="text-muted">
+      작성자: ${c.userId} | 날짜: ${c.planCommentDate}
+    </small>
+  </div>
+</c:forEach>
+
+<script>
+  function deleteComment(id) {
+
+    // ☑️ 한번 더 확인
+    if (!confirm('정말 삭제할까요?')) return;
+
+    /* ※ 컨트롤러가 GET이면 method:'GET' + 쿼리스트링으로.
+       지금은 POST 예시 ─ 컨트롤러 @PostMapping("/editor/commentDelete") 라고 가정 */
+    fetch('/editor/commentDelete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'commentId=' + encodeURIComponent(id)
+    })
+    .then(r => r.json())
+    .then(res => {
+      // ⬇️ code(=0) 기준으로 메시지 분기
+      if (res.code === 0) {
+        alert("삭제되었습니다.");
+      } else {
+        alert("삭제되지 않았습니다.");
+      }
+      // 무조건 새로고침
+      location.reload();
+    })
+    .catch(() => {
+      alert('서버 오류가 발생했습니다.');
+      location.reload();
+    });
+  }
+</script>
+
+<form id="delForm" method="post" action="/editor/commentDelete">
+  <input type="hidden" name="commentId">
+  <!-- (Spring Security) -->
+  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
+</form>
+
+<!-- ★↓↓↓ 댓글이 없을 때 --------------------------------------- -->
+<c:if test="${empty list}">
+  <div class="text-muted">등록된 댓글이 없습니다.</div>
+</c:if>
+<!-- ★↑↑↑ 끝 ---------------------------------------------------- -->
+<br /><br />
 		<!-- ★추가: 댓글 등록 AJAX -->
 <script>
 /* 댓글 작성 AJAX */
