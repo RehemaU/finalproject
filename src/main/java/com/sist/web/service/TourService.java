@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sist.web.dao.SigunguDao;
 import com.sist.web.dao.TourDao;
+import com.sist.web.model.Accommodation;
 import com.sist.web.model.Sigungu;
 import com.sist.web.model.Tour;
 
@@ -40,8 +41,8 @@ public class TourService {
         List<Sigungu> sigunguList = sigunguDao.getAllSigungu();
 
         boolean startSync = false;
-        String startRegionId = "2";
-        String startSigunguId = "8";
+        String startRegionId = "3";
+        String startSigunguId = "3";
 
         for (Sigungu sigungu : sigunguList) {
             String regionId = sigungu.getRegionId();
@@ -108,5 +109,10 @@ public class TourService {
     public List<Tour> getAllTours() {
         return tourDao.getAllTours();
     }
-    
+
+    // 기능구현, 조건 별 리스트
+    public List<Tour> findBySigunguList(List<Sigungu> sigunguList) {
+        return tourDao.searchBySigungu(sigunguList);
+    }
+
 }
