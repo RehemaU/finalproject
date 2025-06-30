@@ -86,8 +86,8 @@ function addCondition() {
     const sigunguId = region2.value; // 선택된 sigunguId
 
     // 선택 안 했을 경우 방지
-    if (!regionId || !sigunguId) {
-      alert("시·도와 시·군·구를 모두 선택해주세요.");
+    if (!regionId && !sigunguId) {
+      alert("시·도 혹은 시·군·구를 모두 선택해주세요.");
       return;
     }
 
@@ -100,7 +100,7 @@ function addCondition() {
     console.log("선택된 시·군·구 이름:", sigunguName);  // sigunguName 출력
 
     // 시·도 또는 시·군·구 이름이 비어 있을 경우 경고
-    if (!regionName || !sigunguName) {
+    if (!regionName && !sigunguName) {
         console.warn("조건이 비어있습니다. regionName:", regionName, "sigunguName:", sigunguName);
         alert("올바른 조건을 선택해주세요.");
         return;

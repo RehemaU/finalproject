@@ -61,14 +61,20 @@
 		WHERE ACCOMM_ID = #{accomId};
 	</select>
 	
-	<!-- 시군구코드 (추가하면서) 가져오기 -->
 	<select id="searchBySigungu" resultMap="accomResultMap" parameterType="java.util.List">
 	  SELECT * FROM T_ACCOMM
 	  <where>
-    <if test="list != null and !list.isEmpty()">
-      <foreach collection="list" item="sigungu" open="(" separator="OR" close=")">
-        (SIGUNGU_CODE = #{sigungu.sigunguId} AND REGION_ID = #{sigungu.regionId})
-      </foreach>
+	    <if test="list != null and !list.isEmpty()">
+	      <foreach collection="list" item="sigungu" separator="OR" open="(" close=")">
+	        <choose>
+	          <when test="sigungu.sigunguId == null or sigungu.sigunguId == ''">
+	            REGION_ID = #{sigungu.regionId}
+	          </when>
+	          <otherwise>
+	            (REGION_ID = #{sigungu.regionId} AND SIGUNGU_CODE = #{sigungu.sigunguId})
+	          </otherwise>
+	        </choose>
+	      </foreach>
 	    </if>
 	  </where>
 	</select>
