@@ -19,6 +19,7 @@ public class Editor implements Serializable {
     private String listType;
     private String searchType;
     private String searchValue;
+    private String curPage;
     
 	private long startRow;			//시작페이지 rownum
 	private long endRow;			//끝페이지 rownum
@@ -38,10 +39,12 @@ public class Editor implements Serializable {
 	    listType = "";
 	    searchType = "";
 	    searchValue = "";
+	    curPage = "";
 	    
 	    startRow = 0;
 	    endRow = 0;
 	}
+
 
 	//getter-setter
 	public String getPlanId() {
@@ -138,6 +141,14 @@ public class Editor implements Serializable {
 	
 	public void setSearchValue(String searchValue) {
 		this.searchValue = searchValue;
+	}
+	
+	public String getCurPage() {
+		return curPage;
+	}
+	
+	public void setCurPage(String curPage) {
+		this.curPage = curPage;
 	}
 	
 	public long getStartRow() {
