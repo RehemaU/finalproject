@@ -10,4 +10,5 @@ public interface AccommodationDao {
     List<Accommodation> getAllAccommodations();  // 예시용
     void updateAccommodationDescription(Accommodation accomm);
     List<Accommodation> searchBySigungu(List<Sigungu> list);
+    Accommodation selectAccommodation(String accommId);
 }
