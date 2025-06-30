@@ -72,5 +72,21 @@ public class PcommentService {
 		return count;
 	}
 	
+	//댓글수조회
+	public int pcommentCount(int planId)
+	{
+		int count = 0;
+		
+		try
+		{
+			count = pcommentDao.pcommentCount(planId);
+		}
+		catch(Exception e)
+		{
+			logger.error("[PcommentService] pcommentCount : ", e);
+		}
+		
+		return count;
+	}
 
 }

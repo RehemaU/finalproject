@@ -179,6 +179,7 @@
                       | 날짜: ${post.planRegdate}
                       | 추천: ${post.planRecommend}
                       | 조회: ${post.planCount}
+                      | 댓글수: ${post.comCount}
                     </small>
                   </p>
                 </div>
