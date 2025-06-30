@@ -16,4 +16,6 @@ public interface PcommentDao {
 	public int pcommentUpdate(Pcomment pcomment);
 	//댓글선택
 	public Pcomment pcommentSelect(int commentId);
+	//댓글수조회
+	public int pcommentCount(int planId);
 }

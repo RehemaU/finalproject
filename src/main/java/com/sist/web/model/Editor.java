@@ -24,6 +24,8 @@ public class Editor implements Serializable {
 	private long startRow;			//시작페이지 rownum
 	private long endRow;			//끝페이지 rownum
 	
+	private int comCount;
+	
 	public Editor()
 	{
 	    planId = "";
@@ -43,7 +45,11 @@ public class Editor implements Serializable {
 	    
 	    startRow = 0;
 	    endRow = 0;
+	    
+	    comCount = 0;
 	}
+
+
 
 
 	//getter-setter
@@ -165,6 +171,14 @@ public class Editor implements Serializable {
 	
 	public void setEndRow(long endRow) {
 		this.endRow = endRow;
+	}
+	
+	public int getComCount() {
+		return comCount;
+	}
+	
+	public void setComCount(int comCount) {
+		this.comCount = comCount;
 	}
 	
 }

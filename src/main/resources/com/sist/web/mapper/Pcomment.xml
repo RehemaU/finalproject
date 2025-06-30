@@ -79,4 +79,13 @@
 		        comment_id = #{commentId}
 	  </update>
 	  
+	  <!-- 댓글 갯수 -->
+	  <select id="pcommentCount" parameterType="int" resultType="int">
+		  SELECT COUNT(*) AS CNT
+			FROM
+			    T_PLAN_COMMENT
+			WHERE
+			PLAN_ID = #{value}
+	  </select>
+	  
 </mapper>
