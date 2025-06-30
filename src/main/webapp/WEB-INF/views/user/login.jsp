@@ -6,7 +6,7 @@
 <!DOCTYPE html>
 <html>
 <head>
- <%@ include file="/WEB-INF/views/include/head.jsp" %>
+ <%@ include file="/WEB-INF/views/include/head3.jsp" %>
   <title>로그인</title>
   <style>
     body {
