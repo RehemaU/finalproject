@@ -150,5 +150,11 @@
 			       PLAN_CONTENT = #{planContent}
 			 WHERE PLAN_ID = #{planId}
 		</update>
+		
+		<!-- 게시물 삭제 -->
+		<delete id="editorDelete" parameterType="int">
+		DELETE T_PLAN
+		WHERE PLAN_ID = #{value}
+		</delete>
 	  
 </mapper>

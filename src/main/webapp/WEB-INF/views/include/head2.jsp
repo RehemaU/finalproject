@@ -1,20 +1,16 @@
-<!-- head.jsp : 공통 <head> -->
-<%@ page contentType="text/html;charset=UTF-8" %>
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MYTRIP – Walkthrough · Explore · Stay · Plan · Share</title>
 
-  <!-- Pretendard + Montserrat -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet" />
-<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-	
+<!-- 공통 head 요소만 유지 -->
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MYTRIP – Walkthrough · Explore · Stay · Plan · Share</title>
+
+<!-- Pretendard + Montserrat -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+
   <style>
     /* ---------- 공통 변수 & 리셋 ---------- */
     :root{
