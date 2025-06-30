@@ -15,7 +15,6 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
 <title><%=listName%> · 일정 상세 입력</title>
 
 <!-- 글꼴 -->
@@ -200,14 +199,58 @@ button.filter-btn{
   <div id="map"></div>
 </div>
 
+<!-- ───────── JS : 시·군·구 드롭다운 ───────── -->
+<script>
+  const sigunguData = [];
+  <c:forEach var="s" items="${sigunguList}">
+    sigunguData.push({
+      regionId   : "${fn:trim(s.regionId)}",
+      sigunguId  : "${fn:trim(s.sigunguId)}",
+      sigunguName: "${fn:escapeXml(s.sigunguName)}"
+    });
+  </c:forEach>
+
+  function updateSigunguOptions(){
+    const rId=document.getElementById('region1').value;
+    const region2=document.getElementById('region2');
+    region2.innerHTML='<option value="">시·군·구 선택</option>';
+    sigunguData.filter(s=>s.regionId===rId)
+               .forEach(s=>{
+                 const opt=document.createElement('option');
+                 opt.value=s.sigunguId; opt.textContent=s.sigunguName;
+                 region2.appendChild(opt);
+               });
+  }
+</script>
+
 <script>
 document.addEventListener('DOMContentLoaded',function(){
   var currentDayNo=1,currentType='accom',currentPage=1,itemsPerPage=6,
       map,accomList=[],tourList=[];
   var contextPath = '<c:out value="${pageContext.request.contextPath}"/>';
   
-  var getCode=function(obj){
-    return String(obj.sigunguCode||obj.sigunguId||obj.sigungu_id||'').trim();
+  // ★★★ 수정된 getCode 함수 ★★★
+  var getCode = function(obj) {
+    console.log('=== getCode 함수 호출 ===');
+    console.log('입력 객체:', obj);
+    
+    var result = '';
+    
+    // 관광지(Tour)의 경우
+    if (obj.tourId !== undefined) {
+      result = String(obj.sigunguId || '').trim();
+      console.log('관광지 sigunguId:', result);
+    }
+    // 숙소(Accommodation)의 경우
+    else if (obj.accomId !== undefined) {
+      // 여러 가능한 필드명 시도
+      result = String(obj.sigunguCode || obj.sigunguId || obj.sigungu_id || '').trim();
+      console.log('숙소 sigungu 코드:', result);
+      console.log('사용된 필드: sigunguCode =', obj.sigunguCode, ', sigunguId =', obj.sigunguId);
+    }
+    
+    console.log('getCode 결과:', result);
+    return result;
   };
 
   /* Day / Cat 탭 */
@@ -240,16 +283,25 @@ document.addEventListener('DOMContentLoaded',function(){
   /* 데이터 fetch */
   Promise.all([
     fetch(contextPath + '/accommodation/listAll').then(function(r){return r.json();}),
-    fetch(contextPath + '/admin/listAll').then(function(r){return r.json();})
+    fetch(contextPath + '/listAll').then(function(r){return r.json();})
   ]).then(function(results){
     var a = results[0];
     var t = results[1];
+    
+    console.log('=== 원본 데이터 확인 ===');
+    console.log('숙소 데이터 샘플:', a.slice(0, 2));
+    console.log('관광지 데이터 샘플:', t.slice(0, 2));
+    
     accomList=a.map(function(o){
       return Object.assign({}, o, {accomLat:+o.accomLat,accomLon:+o.accomLon});
     });
     tourList=t.map(function(o){
       return Object.assign({}, o, {tourLat:+o.tourLat,tourLon:+o.tourLon});
     });
+    
+    console.log('가공된 숙소 데이터 샘플:', accomList.slice(0, 2));
+    console.log('가공된 관광지 데이터 샘플:', tourList.slice(0, 2));
+    
     renderPage();
   }).catch(console.error);
 
@@ -316,11 +368,15 @@ document.addEventListener('DOMContentLoaded',function(){
     }
   });
 
-  /* 목록 렌더 */
+  /* ★★★ 수정된 renderPage 함수 ★★★ */
   function renderPage(){
     var kw=document.getElementById('searchInput').value.trim();
     var rid=document.getElementById('region1').value.trim();
     var sid=document.getElementById('region2').value.trim();
+
+    console.log('=== renderPage 호출 ===');
+    console.log('현재 탭:', currentType);
+    console.log('필터 조건 - 시도:', rid, '시군구:', sid, '키워드:', kw);
 
     var data=currentType==='accom'?accomList:tourList;
     var nameK=currentType==='accom'?'accomName':'tourName';
@@ -328,10 +384,59 @@ document.addEventListener('DOMContentLoaded',function(){
     var lonK =currentType==='accom'?'accomLon' :'tourLon';
     var idK  =currentType==='accom'?'accomId'  :'tourId';
 
+    console.log('전체 데이터 개수:', data.length);
+
     var filtered=data;
-    if(rid) filtered=filtered.filter(function(x){return String(x.regionId).trim()===rid;});
-    if(sid) filtered=filtered.filter(function(x){return getCode(x)===sid;});
-    if(kw)  filtered=filtered.filter(function(x){return x[nameK] && x[nameK].includes(kw);});
+    
+    // 시도 필터링
+    if(rid) {
+      console.log('시도 필터링 시작...');
+      filtered=filtered.filter(function(x){
+        var dataRegionId = String(x.regionId || '').trim();
+        var match = dataRegionId === rid;
+        if (!match) {
+          console.log('시도 불일치 - 데이터 regionId:', dataRegionId, '조건:', rid, '데이터:', x);
+        }
+        return match;
+      });
+      console.log('시도 필터링 후 개수:', filtered.length);
+    }
+    
+    // ★★★ 시군구 필터링 강화 ★★★
+    if(sid) {
+      console.log('시군구 필터링 시작...');
+      console.log('시군구 조건:', sid);
+      
+      filtered=filtered.filter(function(x){
+        var code = getCode(x);
+        var match = code === sid;
+        
+        if (!match) {
+          console.log('❌ 시군구 불일치:');
+          console.log('  - 데이터:', x);
+          console.log('  - 추출된 코드:', code);
+          console.log('  - 필터 조건:', sid);
+          console.log('  - 타입 비교:', typeof code, 'vs', typeof sid);
+        } else {
+          console.log('✅ 시군구 일치:', x[nameK], '코드:', code);
+        }
+        
+        return match;
+      });
+      console.log('시군구 필터링 후 개수:', filtered.length);
+    }
+    
+    // 키워드 필터링
+    if(kw) {
+      console.log('키워드 필터링 시작...');
+      filtered=filtered.filter(function(x){
+        var match = x[nameK] && x[nameK].includes(kw);
+        return match;
+      });
+      console.log('키워드 필터링 후 개수:', filtered.length);
+    }
+
+    console.log('최종 필터링 결과:', filtered.length);
 
     var start=(currentPage-1)*itemsPerPage;
     var pageData=filtered.slice(start,start+itemsPerPage);
@@ -503,31 +608,9 @@ document.addEventListener('DOMContentLoaded',function(){
     return true;
   };
 });
-
-/* 시·군·구 드롭다운 업데이트 함수 */
-function updateSigunguOptions() {
-  var regionId = document.getElementById('region1').value;
-  var sigunguSelect = document.getElementById('region2');
-  
-  sigunguSelect.innerHTML = '<option value="">시·군·구 선택</option>';
-  
-  if (!regionId) return;
-  
-  // 시·군·구 목록을 서버에서 가져오기
-  fetch('<c:out value="${pageContext.request.contextPath}"/>/admin/sigungu/' + regionId)
-    .then(function(response) { return response.json(); })
-    .then(function(data) {
-      data.forEach(function(sigungu) {
-        var option = document.createElement('option');
-        option.value = sigungu.sigunguId || sigungu.sigunguCode;
-        option.textContent = sigungu.sigunguName;
-        sigunguSelect.appendChild(option);
-      });
-    })
-    .catch(function(error) {
-      console.error('시·군·구 목록 로드 실패:', error);
-    });
-}
 </script>
+
 </body>
 </html>
+
+

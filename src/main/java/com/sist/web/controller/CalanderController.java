@@ -300,5 +300,14 @@ public class CalanderController {
 
         return "redirect:/schedule/addList";
     }
-
+    @GetMapping("/schedule/myList")
+    public String myList(ModelMap model, HttpSession session){
+        String userId = (String)session.getAttribute("userId");
+        if(userId == null){          // 로그인 안됐을 때 처리
+            return "redirect:/member/login";
+        }
+        List<CalanderList> lists = calanderService.getListsByUser(userId);
+        model.addAttribute("lists", lists);
+        return "/schedule/calList";   // ↓ JSP 파일명
+    }
 }
