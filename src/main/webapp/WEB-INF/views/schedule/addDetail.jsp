@@ -1,177 +1,305 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="java.util.List" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@page import="java.util.List"%>
 <%
-    List<String> selectedDates = (List<String>) session.getAttribute("selectedDates");
-    String listName            = (String) session.getAttribute("listName");
-    String calanderListId      = (String) session.getAttribute("calanderListId");
-    if (selectedDates == null) {
-        out.println("<script>alert('잘못된 접근입니다.');location.href='"
-                    + request.getContextPath() + "/schedule/addList';</script>");
-        return;
-    }
+  List<String> selectedDates = (List<String>)session.getAttribute("selectedDates");
+  String listName       = (String)session.getAttribute("listName");
+  String calanderListId = (String)session.getAttribute("calanderListId");
+  if(selectedDates==null){
+      out.println("<script>alert('잘못된 접근입니다.');location.href='"
+                  +request.getContextPath()+"/schedule/addList';</script>");
+      return;
+  }
 %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title><%= listName %> · 일정 상세 입력</title>
+<title><%=listName%> · 일정 상세 입력</title>
+
+<!-- 글꼴 -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+
+<!-- Kakao Map -->
 <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=e91447aad4b4b7e4b923ab8dd1acde77&libraries=clusterer"></script>
+
 <style>
-  body{font-family:'Noto Sans KR',sans-serif;margin:32px;}
-  h2{font-size:26px;margin-bottom:20px;}
-  .day-tabs{display:flex;gap:8px;margin-bottom:14px;}
-  .day-tab{padding:6px 12px;border-radius:8px;background:#eee;cursor:pointer;}
-  .day-tab.active{background:#000;color:#fff;}
-  .layout{display:flex;gap:20px;}
-  #map{flex:1 1 55%;height:560px;border:1px solid #ccc;border-radius:10px;}
-  .right{flex:1 1 40%;display:flex;flex-direction:column;gap:14px;}
-  .cat-tabs{display:flex;gap:6px;}
-  .cat-tab{flex:1;padding:6px 0;border:1px solid #666;border-radius:8px;cursor:pointer;text-align:center;}
-  .cat-tab.active{background:#666;color:#fff;}
-  #listBox{border:1px solid #ddd;border-radius:10px;padding:10px;min-height:220px;overflow-y:auto;}
-  #selectedBox{border:1px solid #ddd;border-radius:10px;padding:10px;min-height:220px;overflow-y:auto;margin-top:6px;}
-  .spot-btn{display:block;width:100%;text-align:left;padding:6px 8px;margin-bottom:4px;border:1px solid #999;border-radius:6px;background:#fafafa;cursor:pointer;}
-  .entry{background:#f7f7f7;border-radius:8px;padding:8px;margin-bottom:6px;font-size:14px;}
-  .entry input[type=datetime-local]{margin:2px 0;}
+:root{
+  --bd:#e4e4e4; --bg:#fdfdfd; --subbg:#fafafa;
+  --pill:#f1f1f1; --txt:#111; --radius:14px
+}
+
+/* ───── 공통 기본 ───── */
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Pretendard','Inter',sans-serif;background:var(--bg);color:var(--txt)}
+h2{font-size:28px;font-weight:700;padding:32px 48px 4px;white-space:nowrap}
+
+/* ───── 3단 레이아웃 ───── */
+.page-wrap{display:flex;height:calc(100vh - 96px)}
+.sidebar, .plan-panel{
+  width:360px;min-width:360px;background:var(--subbg);
+  border-right:1px solid var(--bd);padding:26px 24px;overflow-y:auto
+}
+.plan-panel{background:#fff}          /* 선택 일정 패널은 흰 배경 */
+#map{flex:1 1 0%}
+
+/* ───── 네비게이션 내부 ───── */
+.day-tabs,.cat-tabs{display:flex;gap:12px;margin-bottom:22px}
+.day-tab,.cat-tab{
+  flex:1;padding:10px 0;border-radius:var(--radius);background:var(--pill);
+  text-align:center;font-weight:600;cursor:pointer;user-select:none
+}
+.day-tab.active,.cat-tab.active{background:#000;color:#fff}
+
+select,input[type=text]{
+  width:100%;padding:11px 14px;margin-bottom:14px;font-size:14px;
+  border:1px solid var(--bd);border-radius:var(--radius);background:#fff
+}
+button.filter-btn{
+  width:100%;padding:11px 0;margin-bottom:14px;border:none;
+  border-radius:var(--radius);background:#000;color:#fff;font-weight:600;cursor:pointer
+}
+
+#listBox{
+  max-height:360px;overflow-y:auto;display:flex;flex-direction:column;gap:12px
+}
+.spot-btn{
+  all:unset;display:flex;align-items:center;gap:14px;
+  padding:14px 16px;border:1px solid var(--bd);border-radius:var(--radius);
+  background:#fff;cursor:pointer;transition:.25s
+}
+.spot-btn:hover{box-shadow:0 4px 12px rgba(0,0,0,.08);transform:translateY(-2px)}
+
+#pagination{
+  display:flex;justify-content:center;gap:8px;margin-top:6px;flex-wrap:wrap
+}
+#pagination button{
+  all:unset;min-width:34px;padding:6px 0;border:1px solid var(--bd);
+  border-radius:10px;font-size:13px;text-align:center;cursor:pointer
+}
+#pagination button.active,#pagination button:hover{background:#000;color:#fff;border-color:#000}
+
+/* ───── 선택 일정 패널 ───── */
+.plan-panel h3{font-size:18px;font-weight:700;margin-bottom:16px}
+#selectedBox{
+  max-height:calc(100vh - 270px);   /* 패널 내부 높이에 맞춰 자동 스크롤 */
+  overflow-y:auto;display:flex;flex-direction:column;gap:10px;
+  border:1px solid var(--bd);border-radius:var(--radius);
+  padding:12px;background:var(--subbg)
+}
+.entry{
+  border:1px solid var(--bd);border-radius:12px;padding:12px 14px;background:#fff
+}
+.entry strong{display:block;margin-bottom:6px;font-weight:600}
+.entry input[type=datetime-local]{
+  width:100%;padding:8px;border:1px solid var(--bd);border-radius:8px;
+  font-size:13px;margin-top:4px
+}
+#scheduleForm{display:flex;flex-direction:column;gap:14px}
+#scheduleForm button[type=submit]{
+  all:unset;width:100%;padding:14px 0;border-radius:var(--radius);
+  background:#000;color:#fff;font-weight:600;text-align:center;cursor:pointer
+}
+#scheduleForm button[type=submit]:hover{background:#222}
+
+/* ───── 모바일 ───── */
+@media(max-width:900px){
+  .page-wrap{flex-direction:column}
+  .sidebar,.plan-panel{width:100%;min-width:0;border-right:0;border-bottom:1px solid var(--bd)}
+  #map{height:58vh}
+}
 </style>
 </head>
+
 <body>
-<h2>🗓 <%= listName %> 일정 추가</h2>
+<h2><c:out value="${listName}"/></h2>
 
-<!-- Day 탭 -->
-<div class="day-tabs">
-  <c:forEach var="d" items="${selectedDates}" varStatus="s">
-    <div class="day-tab ${s.index==0? 'active':''}" data-day="${s.index+1}">
-      Day&nbsp;${s.index+1}<br><small>${d}</small>
+<div class="page-wrap">
+
+  <!-- ───── SIDE BAR : 장소 검색 / 선택 ───── -->
+  <aside class="sidebar" id="leftSidebar">
+    <div class="day-tabs">
+      <c:forEach items="${selectedDates}" varStatus="s">
+        <div class="day-tab ${s.index==0?'active':''}" data-day="${s.index+1}">Day ${s.index+1}</div>
+      </c:forEach>
     </div>
-  </c:forEach>
-</div>
 
-<div class="layout">
-  <div id="map"></div>
-
-  <div class="right">
     <div class="cat-tabs">
-      <div class="cat-tab active" data-type="accom">🏨 숙소</div>
-      <div class="cat-tab"        data-type="tour">🏛 관광지</div>
+      <div class="cat-tab active" data-type="accom">숙소</div>
+      <div class="cat-tab"        data-type="tour">관광지</div>
     </div>
+
+    <select id="region1" onchange="updateSigunguOptions()">
+      <option value="">시·도 선택</option>
+      <c:forEach var="r" items="${regionList}">
+        <option value="${r.regionId}">${r.regionName}</option>
+      </c:forEach>
+    </select>
+
+    <select id="region2">
+      <option value="">시·군·구 선택</option>
+    </select>
+
+    <input type="text" id="searchInput" placeholder="검색어를 입력하세요">
+    <button class="filter-btn" id="applyFilterBtn">조회</button>
 
     <div id="listBox"></div>
+    <div id="pagination"></div>
+  </aside>
 
-    <!-- form 내부에 선택 일정 -->
+  <!-- ───── PLAN PANEL : 선택 일정 카드 & 저장 ───── -->
+  <aside class="plan-panel">
+    <h3>선택 일정</h3>
+
     <form id="scheduleForm" action="${pageContext.request.contextPath}/schedule/saveDetail" method="post">
-      <input type="hidden" name="calanderListId" value="<%= calanderListId %>">
+      <input type="hidden" name="calanderListId" value="<%=calanderListId%>">
 
-      <h4 style="margin:0;">✍️ 선택 일정</h4>
       <div id="selectedBox"></div>
 
-      <button type="submit" style="margin-top:18px;">💾 저장하기</button>
+      <button type="submit">일정 저장하기</button>
     </form>
-  </div>
+  </aside>
+
+  <!-- ───── 지도 ───── -->
+  <div id="map"></div>
 </div>
 
+<!-- ───────── JS : 시·군·구 드롭다운 ───────── -->
 <script>
-let currentDayNo = 1, map, accomList = [], tourList = [];
+  const sigunguData = [];
+  <c:forEach var="s" items="${sigunguList}">
+    sigunguData.push({
+      regionId   : "${fn:trim(s.regionId)}",
+      sigunguId  : "${fn:trim(s.sigunguId)}",
+      sigunguName: "${fn:escapeXml(s.sigunguName)}"
+    });
+  </c:forEach>
 
-/* Day 탭 */
-document.querySelectorAll('.day-tab').forEach(t => {
-  t.onclick = e => {
-    document.querySelectorAll('.day-tab').forEach(x => x.classList.remove('active'));
-    e.currentTarget.classList.add('active');
-    currentDayNo = +e.currentTarget.dataset.day;
-  };
-});
+  function updateSigunguOptions(){
+    const rId=document.getElementById('region1').value;
+    const region2=document.getElementById('region2');
+    region2.innerHTML='<option value="">시·군·구 선택</option>';
+    sigunguData.filter(s=>s.regionId===rId)
+               .forEach(s=>{
+                 const opt=document.createElement('option');
+                 opt.value=s.sigunguId; opt.textContent=s.sigunguName;
+                 region2.appendChild(opt);
+               });
+  }
+</script>
 
-/* 지도 */
-kakao.maps.load(() => {
-  map = new kakao.maps.Map(document.getElementById('map'),
-        {center: new kakao.maps.LatLng(37.5665,126.9780), level: 6});
-});
+<!-- ───────── JS : 기존 로직 그대로 ───────── -->
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  let currentDayNo=1,currentType='accom',currentPage=1,itemsPerPage=6,
+      map,accomList=[],tourList=[];
+  const getCode=obj=>String(obj.sigunguCode??obj.sigunguId??obj.sigungu_id??'').trim();
 
-/* 데이터 fetch */
-Promise.allSettled([
-  fetch('${pageContext.request.contextPath}/accomm/accommodation/listAll').then(r => r.json()),
-  fetch('${pageContext.request.contextPath}/admin/listAll').then(r => r.json())
-]).then(([a, t]) => {
-  if (a.status === 'fulfilled') { accomList = a.value; renderList('accom'); }
-  if (t.status === 'fulfilled') { tourList  = t.value; }
-});
-
-/* 카테고리 탭 */
-document.querySelectorAll('.cat-tab').forEach(t => {
-  t.onclick = e => {
-    document.querySelectorAll('.cat-tab').forEach(x => x.classList.remove('active'));
-    e.currentTarget.classList.add('active');
-    renderList(e.currentTarget.dataset.type);
-  };
-});
-
-/* 목록 렌더링 */
-function renderList(type) {
-  const box = document.getElementById('listBox'); box.innerHTML = '';
-  const data = (type === 'accom') ? accomList : tourList;
-  data.forEach(loc => {
-    const id   = (type === 'accom') ? loc.accomId   : loc.tourId;
-    const name = (type === 'accom') ? loc.accomName : loc.tourName;
-    const lat  = parseFloat((type === 'accom') ? loc.accomLat : loc.tourLat);
-    const lon  = parseFloat((type === 'accom') ? loc.accomLon : loc.tourLon);
-    if (isNaN(lat) || isNaN(lon)) return;
-
-    const btn = document.createElement('button');
-    btn.type = 'button'; btn.className = 'spot-btn'; btn.textContent = name;
-    btn.onclick = () => addSpot({id, name, lat, lon});
-    box.appendChild(btn);
+  /* Day / Cat 탭 */
+  document.querySelectorAll('.day-tab').forEach(t=>t.onclick=e=>{
+    document.querySelectorAll('.day-tab').forEach(x=>x.classList.remove('active'));
+    e.currentTarget.classList.add('active'); currentDayNo=+e.currentTarget.dataset.day;
   });
-}
+  document.querySelectorAll('.cat-tab').forEach(t=>t.onclick=e=>{
+    document.querySelectorAll('.cat-tab').forEach(x=>x.classList.remove('active'));
+    e.currentTarget.classList.add('active'); currentType=e.currentTarget.dataset.type;
+    currentPage=1; renderPage();
+  });
 
-/* 장소 선택 */
-function addSpot(loc) {
-  const pos = new kakao.maps.LatLng(loc.lat, loc.lon);
-  map.setCenter(pos);
-  new kakao.maps.Marker({map, position: pos, title: loc.name});
+  /* Kakao map */
+  kakao.maps.load(()=>{
+    map=new kakao.maps.Map(document.getElementById('map'),{
+      center:new kakao.maps.LatLng(37.5665,126.9780),level:6
+    });
+  });
 
-  const card = document.createElement('div'); card.className = 'entry';
+  /* 데이터 fetch */
+  Promise.all([
+    fetch('${pageContext.request.contextPath}/accommodation/listAll').then(r=>r.json()),
+    fetch('${pageContext.request.contextPath}/admin/listAll').then(r=>r.json())
+  ]).then(([a,t])=>{
+    accomList=a.map(o=>({...o,accomLat:+o.accomLat,accomLon:+o.accomLon}));
+    tourList =t.map(o=>({...o,tourLat:+o.tourLat ,tourLon :+o.tourLon }));
+    renderPage();
+  }).catch(console.error);
 
-  const hiddenDay  = document.createElement('input');
-  hiddenDay.type  = 'hidden'; hiddenDay.name  = 'dayNos';   hiddenDay.value  = currentDayNo;
+  /* 필터 */
+  document.getElementById('applyFilterBtn').onclick=()=>{currentPage=1;renderPage();}
+  document.getElementById('searchInput').addEventListener('keydown',e=>{
+    if(e.key==='Enter'){e.preventDefault();document.getElementById('applyFilterBtn').click();}
+  });
 
-  const hiddenSpot = document.createElement('input');
-  hiddenSpot.type = 'hidden'; hiddenSpot.name = 'spotIds';  hiddenSpot.value = loc.id;
+  /* 목록 렌더 */
+  function renderPage(){
+    const kw=document.getElementById('searchInput').value.trim();
+    const rid=document.getElementById('region1').value.trim();
+    const sid=document.getElementById('region2').value.trim();
 
-  const label = document.createElement('strong');
-  label.textContent = `[Day ${currentDayNo}] ${loc.name}`;
+    const data=currentType==='accom'?accomList:tourList;
+    const nameK=currentType==='accom'?'accomName':'tourName';
+    const latK =currentType==='accom'?'accomLat' :'tourLat';
+    const lonK =currentType==='accom'?'accomLon' :'tourLon';
+    const idK  =currentType==='accom'?'accomId'  :'tourId';
 
-  const st = document.createElement('input');
-  st.type = 'datetime-local'; st.required = true; st.className = 'st';
+    let filtered=data;
+    if(rid) filtered=filtered.filter(x=>String(x.regionId).trim()===rid);
+    if(sid) filtered=filtered.filter(x=>getCode(x)===sid);
+    if(kw)  filtered=filtered.filter(x=>x[nameK]?.includes(kw));
 
-  const et = document.createElement('input');
-  et.type = 'datetime-local'; et.required = true; et.className = 'et';
+    const start=(currentPage-1)*itemsPerPage;
+    const pageData=filtered.slice(start,start+itemsPerPage);
 
-  const hSt = document.createElement('input');
-  hSt.type = 'hidden'; hSt.name = 'startTimes';
+    const listBox=document.getElementById('listBox'); listBox.innerHTML='';
+    pageData.forEach(loc=>{
+      const lat=loc[latK],lon=loc[lonK];
+      if(isNaN(lat)||isNaN(lon)) return;
+      const btn=document.createElement('button');
+      btn.className='spot-btn'; btn.textContent=loc[nameK];
+      btn.onclick=()=>addSpot({id:loc[idK],name:loc[nameK],lat,lon});
+      listBox.appendChild(btn);
+    });
 
-  const hEt = document.createElement('input');
-  hEt.type = 'hidden'; hEt.name = 'endTimes';
+    /* 페이지네이션 */
+    const pag=document.getElementById('pagination'); pag.innerHTML='';
+    const pageCnt=Math.ceil(filtered.length/itemsPerPage);
+    if(pageCnt>1){
+      if(currentPage>1){
+        const prev=document.createElement('button');
+        prev.textContent='< 이전'; prev.onclick=()=>{currentPage--;renderPage();};
+        pag.appendChild(prev);
+      }
+      const win=5,s=Math.max(1,currentPage-Math.floor(win/2)),
+            e=Math.min(pageCnt,s+win-1);
+      for(let i=s;i<=e;i++){
+        const b=document.createElement('button'); b.textContent=i;
+        if(i===currentPage) b.classList.add('active');
+        b.onclick=()=>{currentPage=i;renderPage();}; pag.appendChild(b);
+      }
+      if(currentPage<pageCnt){
+        const next=document.createElement('button');
+        next.textContent='다음 >'; next.onclick=()=>{currentPage++;renderPage();};
+        pag.appendChild(next);
+      }
+    }
+  }
 
-  card.append(hiddenDay, hiddenSpot, label, document.createElement('br'),
-              document.createTextNode('시작 '), st, document.createElement('br'),
-              document.createTextNode('종료 '), et, hSt, hEt);
+  /* Spot 추가 */
+  function addSpot(loc){
+    const pos=new kakao.maps.LatLng(loc.lat,loc.lon);
+    map.setCenter(pos);
+    new kakao.maps.Marker({map,position:pos,title:loc.name});
 
-  document.getElementById('selectedBox').appendChild(card);
-}
-
-/* submit 검증 & hidden 값 세팅 */
-document.getElementById('scheduleForm').addEventListener('submit', e => {
-  const cards = [...document.querySelectorAll('#selectedBox .entry')];
-  if (cards.length === 0) { alert('⛔ 장소를 선택하세요!'); e.preventDefault(); return; }
-
-  for (const c of cards) {
-    const st = c.querySelector('.st').value;
-    const et = c.querySelector('.et').value;
-    if (!st || !et || st >= et) { alert('⛔ 시작/종료 시간을 확인!'); e.preventDefault(); return; }
-    c.querySelector('input[name="startTimes"]').value = st;
-    c.querySelector('input[name="endTimes"]').value   = et;
+    const card=document.createElement('div');
+    card.className='entry';
+    card.innerHTML=`
+      <input type="hidden" name="dayNos"  value="${currentDayNo}">
+      <input type="hidden" name="spotIds" value="${loc.id}">
+      <strong>[Day ${currentDayNo}] ${loc.name}</strong>
+      시작 <input required type="datetime-local" class="st" name="startTimes">
+      종료 <input required type="datetime-local" class="et" name="endTimes">`;
+    document.getElementById('selectedBox').appendChild(card);
   }
 });
 </script>

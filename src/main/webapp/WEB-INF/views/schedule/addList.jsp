@@ -1,210 +1,164 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%
-    /* ⚠️ 로직은 건드리지 않습니다 — 로그인 없이 테스트용 userId */
-    session.setAttribute("userId","test");
-%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core"        %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"   %>
+
 <!DOCTYPE html>
+<%@ include file="/WEB-INF/views/include/head2.jsp" %>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>나의 일정 만들기 · MYTRIP</title>
-
-  <!-- Kakao Maps (후속 단계에서 쓸 수 있어 유지) -->
-  <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=e91447aad4b4b7e4b923ab8dd1acde77"></script>
+  <title>일정 만들기 · MYTRIP</title>
 
   <!-- Pretendard + Montserrat -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
 
+  <!-- Tailwind / Swiper / Litepicker -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.dark.css">
+  <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/bundle.js"></script>
+
   <style>
-    :root{
-      --border:#000;      /* 제목 밑줄 */
-      --gray:#666;
-      --max:1440px;
-      --gutter:48px;
-    }
-
-    /* 공통 reset */
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{
-      font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
-      color:#000;font-size:16px;line-height:1.45;
-    }
-    a{text-decoration:none;color:inherit;}
-
-    /******** HEADER (네비게이션) ********/
-    header{
-      position:sticky;          /* 스크롤해도 고정 */
-      top:0;
-      z-index:1000;             /* ★ 메인보다 확실히 높게 */
-      background:#fff;
-      border-bottom:1px solid #ebebeb;
-    }
-    .wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gutter);}
-    .flex{display:flex;align-items:center;justify-content:space-between;}
-
-    .logo{
-      font-family:'Montserrat',sans-serif;font-size:32px;
-      font-weight:700;letter-spacing:.5px;
-    }
-    .util{gap:26px;font-size:13px;text-transform:uppercase;}
-    .util a{opacity:.82;transition:.2s;}
-    .util a:hover{opacity:1;}
-
-    /* 1차 카테고리 (큰 단어) */
-    .tagline{padding:38px 0 22px;display:flex;gap:32px;flex-wrap:wrap;}
-    .tag-item{
-      position:relative;font-size:42px;font-weight:700;white-space:nowrap;cursor:pointer;
-    }
-    .tag-item::after{
-      content:'';position:absolute;left:0;bottom:-6px;width:100%;height:3px;
-      background:#000;transform:scaleX(0);transform-origin:left;transition:.25s;
-    }
-    .tag-item:hover::after{transform:scaleX(1);}
-
-    /* 2차 gnb */
-    .gnb{
-      padding:14px 0 18px;gap:36px;
-      font-size:15px;font-weight:500;white-space:nowrap;overflow-x:auto;
-      border-bottom:1px solid #ebebeb;
-    }
-    .gnb a{flex-shrink:0;opacity:.75;} .gnb a:hover{opacity:1;}
-
-    /******** TITLE BAR ********/
-    .title-wrap{margin:48px 0 36px;}
-    .title-wrap h1{font-size:34px;font-weight:700;}
-    .title-wrap hr{margin-top:8px;border:0;border-top:4px solid var(--border);}
-
-    /******** MAIN LAYOUT (두 컬럼) ********/
-    .container{
-      display:flex;gap:32px;
-      max-width:var(--max);margin:0 auto;padding:0 var(--gutter);
-      position:relative;       /* header 보다 아래, z-index 없음 */
-    }
-    .left{flex:0 0 500px;max-width:500px;}
-    .right{flex:1 1 0%;display:flex;align-items:center;justify-content:center;}
-
-    /* 일정 정보 폼 카드 */
-    form{
-      background:#fff;border:1px solid #ddd;border-radius:12px;
-      padding:40px 48px;box-shadow:0 12px 24px rgba(0,0,0,.05);
-    }
-    form h2{font-size:24px;margin-bottom:22px;}
-    label{display:block;margin:22px 0 8px;font-weight:600;font-size:15px;}
-    input,select,button{
-      width:100%;padding:14px;font-size:15px;border:1px solid #ccc;border-radius:6px;
-    }
-    button{
-      margin-top:32px;background:#000;color:#fff;font-weight:600;cursor:pointer;
-      transition:.2s;
-    }
-    button:hover{background:#111;}
-
-    /* 오른쪽 이미지 */
-    .hero-img{
-      width:100%;max-width:650px;aspect-ratio:16/9;border-radius:12px;
-      background:url('https://images.unsplash.com/photo-1511609524571-444c2ef1c965?auto=format&fit=crop&w=1280&q=80') center/cover no-repeat;
-      box-shadow:0 14px 28px rgba(0,0,0,.12);
-    }
-
-    /******** Responsive ********/
-    @media(max-width:1050px){
-      .tag-item{font-size:34px}.gnb{gap:28px}
-    }
-    @media(max-width:880px){
-      .container{flex-direction:column;gap:48px;}
-      .left{max-width:none}
-      .hero-img{max-width:none}
-    }
-    @media(max-width:640px){
-      .wrap{padding:0 24px}
-      .tag-item{font-size:26px}
-      .util{gap:18px}
-      .gnb{gap:20px;font-size:14px}
-    }
+    body{font-family:'Pretendard',sans-serif;color:#111}
+    h2{font-family:'Montserrat',sans-serif;font-size:34px;font-weight:800;margin-bottom:32px}
+    .form-box{max-width:680px;width:92%;background:#fff;border:1px solid #dcdcdc;border-radius:18px;padding:56px 64px;box-shadow:0 20px 48px rgba(0,0,0,.06)}
+    .form-box label{font-size:17px;font-weight:600;margin-top:24px}
+    .form-box input,.form-box select{width:100%;padding:18px;font-size:17px;border:1px solid #bbb;border-radius:10px;margin-top:8px}
+    .form-box button{padding:18px;background:#000;color:#fff;font-size:17px;font-weight:700;border-radius:10px;margin-top:36px;transition:.25s}
+    .form-box button:hover{background:#222}
+    #calendarArea .container__main{font-size:16px}
+    .swiper-slide{display:flex;align-items:center;justify-content:center;min-height:100vh}
   </style>
 </head>
-<body>
+<body class="bg-[#f5f5f5]">
+  <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
 
-<!-- ===== HEADER ===== -->
-<header>
-  <div class="wrap flex">
-    <a href="/" class="logo">logo</a>
-    <nav class="util flex">
-      <a href="/mypage">MY PAGE</a><a href="/likes">MY LIKE</a>
-      <a href="/bag">BAG</a><a href="/login">LOGIN</a>
-    </nav>
+  <!-- Swiper -->
+  <div class="swiper mySwiper">
+    <div class="swiper-wrapper">
+<!-- STEP 0 : 일정 시작 선택 -->
+<section class="swiper-slide bg-white">
+  <div class="form-box text-center">
+<h1 style="font-size: 40px;">To do your Trip Plan !</h1>
+    <p class="text-gray-500 mt-2 mb-8">당신의 여행을 더욱 즐겁게</p>
+
+    <div class="flex flex-col gap-4">
+      <!-- 내 일정 보기 -->
+      <a href="${pageContext.request.contextPath}/schedule/list" 
+         class="block py-4 px-6 bg-[#eee] text-[#111] font-semibold rounded-lg hover:bg-[#ddd] transition">
+        내가 만든 일정 목록
+      </a>
+
+      <!-- 새 일정 만들기 -->
+      <button onclick="swiper.slideNext()" 
+              class="py-4 px-6 bg-[#000] text-white font-semibold rounded-lg hover:bg-[#222] transition">
+        새 일정 생성
+      </button>
+    </div>
   </div>
-
-  <div class="tagline wrap">
-    <a class="tag-item" href="/walkthrough">Walkthrough</a>
-    <a class="tag-item" href="/tour">Explore</a>
-    <a class="tag-item" href="/stay">Stay</a>
-    <a class="tag-item" href="/schedule">Plan</a>
-    <a class="tag-item" href="/review">Share</a>
-  </div>
-
-  <nav class="gnb wrap flex">
-    <a href="/tour">TOUR</a><a href="/stay">STAY</a><a href="/schedule">SCHEDULE</a>
-    <a href="/review">REVIEW</a><a href="/coupon">COUPON</a><a href="/event">EVENT</a><a href="/qna">Q&A</a>
-  </nav>
-</header>
-
-<!-- ===== TITLE BAR ===== -->
-<section class="wrap title-wrap">
-  <h1>나의 일정 만들기</h1><hr>
 </section>
+      <!-- STEP 1 : 날짜 -->
+      <section class="swiper-slide bg-[#fafafa]">
+        <div class="form-box text-center">
+          <h2>STEP&nbsp;1 · 날짜 선택</h2>
+          <input type="text" id="dateInput" style="display:none">
+          <div id="calendarArea"></div>
+        </div>
+      </section>
 
-<!-- ===== MAIN ===== -->
-<div class="container">
+      <!-- STEP 2 : 기본 정보 -->
+      <section class="swiper-slide bg-white">
+        <form class="form-box" method="post" action="${pageContext.request.contextPath}/schedule/saveList">
+          <h2>STEP&nbsp;2 · 기본 정보</h2>
 
-  <!-- 왼쪽 : 지역 + 날짜 선택 폼 -->
-  <div class="left">
-    <form id="dateForm" method="post" action="${pageContext.request.contextPath}/schedule/saveList">
-      <h2>여행 기본 정보</h2>
+          <!-- 시·도 -->
+          <label>시·도 선택
+            <select id="region1" name="regionId" required>
+              <option value="">-- 시·도 선택 --</option>
+              <c:forEach var="r" items="${regionList}">
+                <option value="${r.regionId}">${r.regionName}</option>
+              </c:forEach>
+            </select>
+          </label>
 
-      <label for="region">지역 선택</label>
-      <select id="region" name="region" required>
-        <option value="">-- 지역을 선택하세요 --</option>
-        <option>서울</option><option>부산</option><option>제주</option><option>강원</option>
-      </select>
+          <!-- 시·군·구 -->
+          <label>시·군·구 선택
+            <select id="region2" name="sigunguId" required>
+              <option value="">-- 시·군·구 선택 --</option>
+            </select>
+          </label>
 
-      <label for="listName">일정 제목</label>
-      <input type="text" id="listName" name="listName" required>
+          <!-- 제목 -->
+          <label>일정 제목
+            <input id="listName" name="listName" placeholder="예: 여름 제주 여행" required>
+          </label>
 
-      <label for="startDate">시작일</label>
-      <input type="date" id="startDate" required>
+          <!-- 히든 -->
+          <input type="hidden" id="startDate"     name="startDate">
+          <input type="hidden" id="endDate"       name="endDate">
+          <input type="hidden" id="selectedDates" name="selectedDates">
 
-      <label for="endDate">종료일</label>
-      <input type="date" id="endDate" required>
-
-      <input type="hidden" name="selectedDates" id="selectedDates">
-      <button type="submit">다음 →</button>
-    </form>
+          <div class="flex justify-between gap-4 mt-10">
+            <button type="button" onclick="swiper.slidePrev()" class="w-1/2 bg-[#eee] text-[#333] font-semibold py-4 rounded-lg hover:bg-[#ddd]">← 날짜 선택</button>
+            <button type="submit" class="w-1/2 bg-[#000] text-white font-bold py-4 rounded-lg hover:bg-[#222]">다음 단계 →</button>
+          </div>
+        </form>
+      </section>
+    </div>
   </div>
 
-  <!-- 오른쪽 : 홍보 이미지 플레이스홀더 -->
-  <div class="right">
-    <div class="hero-img" aria-hidden="true"></div>
-  </div>
-</div>
+  <!-- JS ---------------------------------------------------->
+  <script>
+    /* ───── Swiper & Litepicker ───── */
+    const swiper = new Swiper('.mySwiper',{allowTouchMove:false,speed:300});
+    const picker = new Litepicker({
+      element: document.getElementById('dateInput'),
+      inlineMode:true, container:document.getElementById('calendarArea'),
+      singleMode:false, lang:'ko', numberOfMonths:2, numberOfColumns:2, theme:'dark',
+      setup:p=>{
+        p.on('selected',(s,e)=>{
+          if(!s||!e) return;
+          const fmt=d=>d.format('YYYY-MM-DD');
+          startDate.value = fmt(s); endDate.value = fmt(e);
+          const arr=[],cur=s.clone();
+          while(cur.isSameOrBefore(e,'day')){arr.push(fmt(cur));cur.add(1,'day');}
+          selectedDates.value = JSON.stringify(arr);
+          swiper.slideNext();
+        });
+      }
+    });
 
-<!-- ===== JS : 날짜 배열 직렬화 ===== -->
-<script>
-  const form = document.getElementById('dateForm');
-  form.addEventListener('submit', () => {
-    const s = document.getElementById('startDate').value;
-    const e = document.getElementById('endDate').value;
-    if (!s || !e) return;                // simple validation
+    /* ───── sigungu 데이터 ───── */
+    const sigunguData=[];
+    <c:forEach var="s" items="${sigunguList}">
+      sigunguData.push({
+        regionId   : "${fn:trim(s.regionId)}",
+        sigunguId  : "${fn:trim(s.sigunguId)}",
+        sigunguName: "${fn:escapeXml(s.sigunguName)}"
+      });
+    </c:forEach>
 
-    const start = new Date(s), end = new Date(e), arr = [];
-    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      arr.push(d.toISOString().split('T')[0]);
-    }
-    document.getElementById('selectedDates').value = JSON.stringify(arr);
-  });
-</script>
+    /* ───── 시·군·구 드롭다운 ───── */
+    document.addEventListener("DOMContentLoaded",()=>{
+      const region1=document.getElementById("region1");
+      const region2=document.getElementById("region2");
+
+      const updateSigunguOptions=()=>{
+        const regionId=region1.value.trim();
+        region2.innerHTML='<option value="">-- 시·군·구 선택 --</option>';
+        sigunguData
+          .filter(s=>s.regionId===regionId)
+          .forEach(s=>{
+            const opt=document.createElement("option");
+            opt.value=s.sigunguId; opt.textContent=s.sigunguName;
+            region2.appendChild(opt);
+          });
+      };
+
+      region1.addEventListener("change",updateSigunguOptions);
+    });
+  </script>
 </body>
 </html>

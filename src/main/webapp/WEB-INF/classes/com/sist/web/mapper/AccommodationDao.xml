@@ -61,24 +61,16 @@
 		WHERE ACCOMM_ID = #{accomId};
 	</select>
 	
-	<!-- 광역시/도 코드, 시군구코드 (추가하면서) 가져오기 -->
-	<select id="searchByConditions" resultMap="accomResultMap" parameterType="map">
+	<!-- 시군구코드 (추가하면서) 가져오기 -->
+	<select id="searchBySigungu" resultMap="accomResultMap" parameterType="java.util.List">
 	  SELECT * FROM T_ACCOMM
 	  <where>
-	  	<if test="regionIds!= null and regionIds.size() > 0">
-	      AND SIGUNGU_CODE IN
-	      <foreach collection="sigunguCodes" item="code" open="(" separator="," close=")">
-	        #{sigunguCode}
-	      </foreach>
-	    </if>
-	    <if test="sigunguCodes != null and sigunguCodes.size() > 0">
-	      AND SIGUNGU_CODE IN
-	      <foreach collection="sigunguCodes" item="code" open="(" separator="," close=")">
-	        #{sigunguCode}
-	      </foreach>
+    <if test="list != null and !list.isEmpty()">
+      <foreach collection="list" item="sigungu" open="(" separator="OR" close=")">
+        (SIGUNGU_CODE = #{sigungu.sigunguId} AND REGION_ID = #{sigungu.regionId})
+      </foreach>
 	    </if>
 	  </where>
 	</select>
-	
-	
+
 </mapper>

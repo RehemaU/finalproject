@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sist.web.dao.UserCouponDao">
+
+    <!-- ResultMap 정의 -->
+    <resultMap id="userCouponResultMap" type="com.sist.web.model.UserCoupon">
+        <id     column="USER_COUPON_ID"      property="userCouponId" />
+        <result column="USER_ID"             property="userId" />
+        <result column="COUPON_ID"           property="couponId" />
+        <result column="USER_COUPON_NAME"    property="userCouponName" />
+        <result column="USER_COUPON_ISSUEDAY" property="userCouponIssueday" />
+        <result column="USER_COUPON_USE"     property="userCouponUse" />
+        <result column="USER_COUPON_USEDAY"  property="userCouponUseday" />
+        <result column="USER_COUPON_EXPIREDATE" property="userCouponExpiredate" />
+    </resultMap>
+
+    <!-- 유저가 특정 쿠폰을 발급받았는지 확인 -->
+    <select id="hasCoupon" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM T_USER_COUPON
+        WHERE USER_ID = #{userId}
+          AND COUPON_ID = #{couponId}
+    </select>
+
+    <!-- existsUserCoupon: 위와 동일, 이름만 다르게 -->
+    <select id="existsUserCoupon" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM T_USER_COUPON
+        WHERE USER_ID = #{userId}
+          AND COUPON_ID = #{couponId}
+    </select>
+
+    <!-- 쿠폰 발급 -->
+    <insert id="insertUserCoupon" parameterType="com.sist.web.model.UserCoupon">
+    INSERT INTO T_USER_COUPON (
+        USER_COUPON_ID,
+        USER_ID,
+        COUPON_ID,
+        USER_COUPON_NAME,
+        USER_COUPON_ISSUEDAY,
+        USER_COUPON_USE,
+        USER_COUPON_USEDAY,
+        USER_COUPON_EXPIREDATE
+    ) VALUES (
+        SEQ_USER_COUPON_ID.NEXTVAL,  <!-- 시퀀스 -->
+        #{userId},
+        #{couponId},
+        #{userCouponName},
+        #{userCouponIssueday},
+        #{userCouponUse},
+        #{userCouponUseday},
+        #{userCouponExpiredate}
+    )
+</insert>
+
+    <!-- 내가 발급받은 쿠폰 목록 -->
+    <select id="selectUserCouponList" resultMap="userCouponResultMap" parameterType="string">
+        SELECT *
+        FROM T_USER_COUPON
+        WHERE USER_ID = #{userId}
+        ORDER BY USER_COUPON_ISSUEDAY DESC
+    </select>
+	
+    <!-- 쿠폰 상세 조회 -->
+    <select id="selectUserCouponById" resultMap="userCouponResultMap" parameterType="string">
+        SELECT *
+        FROM T_USER_COUPON
+        WHERE USER_COUPON_ID = #{userCouponId}
+    </select>
+
+    <!-- 쿠폰 사용 처리 -->
+    <update id="updateUserCouponUse" parameterType="string">
+        UPDATE T_USER_COUPON
+        SET USER_COUPON_USE = 'Y',
+            USER_COUPON_USEDAY = SYSDATE
+        WHERE USER_COUPON_ID = #{userCouponId}
+    </update>
+
+</mapper>
