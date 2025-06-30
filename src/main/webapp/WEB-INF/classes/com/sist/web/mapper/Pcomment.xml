@@ -49,9 +49,34 @@
 	  </select>
 	  
 	  <!-- 댓글 삭제 -->
-	  <delete id="">
-	  DELETE FROM T_PLAN_COMMENT
+	  <delete id="pcommentDelete" parameterType="int">
+	  DELETE T_PLAN_COMMENT
 	  WHERE COMMENT_ID = #{value}
 	  </delete>
+	  
+	  <!-- 댓글 선택 -->
+	  <select id="pcommentSelect" parameterType="int" resultMap="pcommentResultMap">
+		  SELECT
+			    comment_id,
+			    plan_id,
+			    user_id,
+			    plan_comment_content,
+			    plan_comment_parent,
+			    plan_comment_date,
+			    plan_comment_report
+			FROM
+			    t_plan_comment
+			WHERE
+			    comment_id = ${value}
+	  </select>
+	  
+	  <!-- 댓글 수정 -->
+	  <update id="pcommentUpdate" parameterType="com.sist.web.model.Pcomment">
+	  UPDATE t_plan_comment
+		SET
+		    plan_comment_content = #{planCommentContent}
+		WHERE
+		        comment_id = #{commentId}
+	  </update>
 	  
 </mapper>

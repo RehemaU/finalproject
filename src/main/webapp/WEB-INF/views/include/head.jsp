@@ -1,7 +1,4 @@
 <!-- head.jsp : 공통 <head> -->
-<%@ page contentType="text/html;charset=UTF-8" %>
-<!DOCTYPE html>
-<html lang="ko">
 <head>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
@@ -13,8 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet" />
-<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-	
+
   <style>
     /* ---------- 공통 변수 & 리셋 ---------- */
     :root{
@@ -101,75 +97,5 @@
       .section-title{font-size:24px;margin:60px 0 20px;}
       .mix-grid{grid-auto-rows:200px;}
     }
-    /* 리스트 - 카드 관련 */
-   /* 카드 리스트 영역 */
-.card-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
-  justify-content: center;
-  padding: 0 16px;
-}
-
-/* 카드 */
-.card {
-  width: 280px;
-  height: 300px;
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  transition: box-shadow 0.2s ease;
-}
-.card:hover {
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-/* 이미지 영역 */
-.card-image {
-  height: 180px;
-  background: #f3f3f3;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  border-bottom: 1px solid #e0e0e0;
-}
-.card-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/* 이미지 없음 처리 */
-.no-image {
-  color: #aaa;
-  font-size: 14px;
-}
-
-/* 제목 영역 */
-.card-title {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 12px;
-  text-align: center;
-}
-.card-title h3 {
-  font-size: 16px;
-  font-weight: bold;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  width: 100%;
-}
-
-    
-    
   </style>
 </head>
