@@ -14,7 +14,7 @@
         </c:choose>
       </div>
       <div class="card-title">
-        <h3>${item.accomName}</h3>
+        <a href="/accomm/accommDetail?accommId=${item.accomId}">${item.accomName}</a>
       </div>
     </div>
   </c:forEach>

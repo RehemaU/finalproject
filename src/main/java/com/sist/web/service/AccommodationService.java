@@ -202,4 +202,8 @@ public class AccommodationService {
     public List<Accommodation> findBySigunguList(List<Sigungu> sigunguList) {
         return accommodationDao.searchBySigungu(sigunguList);
     }
+    
+    public Accommodation selectAccommodation(String accommId) {
+    	return accommodationDao.selectAccommodation(accommId);
+    }
    }

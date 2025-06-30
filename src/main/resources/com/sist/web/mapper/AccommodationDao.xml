@@ -56,9 +56,9 @@
 	<!-- 여기부터 기능구현(이전까진 API관련) -->
 	
 	<!-- 상세정보띄울떄 객체 가져오는용도(/list/view와 같음) -->
-	<select id = "selectAccommodation" parameterType = "String" resultType = "com.sist.web.model.Accommodation">
+	<select id = "selectAccommodation" parameterType = "String" resultMap="accomResultMap">
 		SELECT * FROM T_ACCOMM
-		WHERE ACCOMM_ID = #{accomId};
+		WHERE ACCOMM_ID = #{accomId}
 	</select>
 	
 	<select id="searchBySigungu" resultMap="accomResultMap" parameterType="java.util.List">
@@ -78,5 +78,6 @@
 	    </if>
 	  </where>
 	</select>
+	
 
 </mapper>

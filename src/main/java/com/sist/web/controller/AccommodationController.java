@@ -7,8 +7,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import com.sist.web.model.Accommodation;
+import com.sist.web.model.AccommodationRoom;
 import com.sist.web.model.Region;
 import com.sist.web.model.Sigungu;
+import com.sist.web.service.AccommodationRoomService;
 import com.sist.web.service.AccommodationService;
 import com.sist.web.service.RegionService;
 import com.sist.web.service.SigunguService;
@@ -21,6 +23,9 @@ public class AccommodationController {
 	// 커밋용 추가
     @Autowired
     private AccommodationService accommodationService;
+    
+    @Autowired
+    private AccommodationRoomService accommodationRoomService;
     
     @Autowired
     private SigunguService sigunguService;
@@ -50,6 +55,19 @@ public class AccommodationController {
 
     	    return "/accomm/cardList";
     }
+    
+    @GetMapping("/accomm/accommDetail")
+    public String accommDetail(@RequestParam("accommId") String accommId, Model model) {
+    	List<AccommodationRoom> roomList = accommodationRoomService.searchByAccommid(accommId);
+    	Accommodation accommodation = accommodationService.selectAccommodation(accommId);
+    	model.addAttribute("roomList", roomList);
+    	model.addAttribute("accommodation", accommodation);
+    	System.out.println("accommId = " + accommId);
+    	System.out.println("숙소 = " + accommodation.getAccomName());
+    	System.out.println("객실 수 = " + roomList.size());
+    	return "/accomm/accommDetail";
+    }
+ 
     
     
     
