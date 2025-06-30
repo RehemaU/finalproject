@@ -32,7 +32,7 @@ public class Tour {
     @JsonProperty("sigungucode")
     private String sigunguId;
     
-    @JsonProperty("firstImage")
+    @JsonProperty("firstimage")
     private String tourImage;
     
     public String getTourImage() {
