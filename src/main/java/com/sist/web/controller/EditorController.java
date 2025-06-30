@@ -163,7 +163,7 @@ public class EditorController
 		// 현재 페이지
 		long curPage = HttpUtil.get(request, "curPage", (long)1);
 		
-		//게시물 리스트
+		// 게시물 리스트
 		List<Editor> list = null;
 		// 조회 객체
 		Editor search = new Editor();
@@ -171,6 +171,8 @@ public class EditorController
 		long totalCount = 0;
 		// 페이징 객체
 		Paging paging = null;
+		// 댓글 수
+		int comCount = 0;
 		
 		if(!StringUtil.isEmpty(searchType) && !StringUtil.isEmpty(searchValue))
 		{
@@ -196,12 +198,15 @@ public class EditorController
 		{	
 			paging = new Paging("/editor/planlist", totalCount, LIST_COUNT, PAGE_COUNT, curPage, "curPage");
 			
-			
 			search.setStartRow(paging.getStartRow());
 			search.setEndRow(paging.getEndRow());
-			
-			
+						
 			list = editorService.editorList(search);
+			
+	        for(Editor e : list) {
+	            comCount = pcommentService.pcommentCount(Integer.parseInt(e.getPlanId()));
+	            e.setComCount(comCount);
+	        }
 		}
 		
 		// return 값으로 전달
@@ -212,6 +217,7 @@ public class EditorController
 		model.addAttribute("searchValue", searchValue);
 		model.addAttribute("curPage", curPage);
 		model.addAttribute("paging", paging);
+		model.addAttribute("comCount", comCount);
 		
 		return "/editor/planlist";
 	}
@@ -235,12 +241,15 @@ public class EditorController
 		
 		List<Pcomment> list = null;
 		
+		int comCount = 0;
+		
 		if(planId > 0)
 		{
 			editor = editorService.editorSelect(planId);
 			list = pcommentService.pcommentList(planId);
+			comCount = pcommentService.pcommentCount(planId);
+			editor.setComCount(comCount);
 		}
-		
 		model.addAttribute("planId", planId);
 		model.addAttribute("listType", listType);
 		model.addAttribute("searchType", searchType);
@@ -248,6 +257,7 @@ public class EditorController
 		model.addAttribute("curPage", curPage);
 		model.addAttribute("editor", editor);
 		model.addAttribute("list", list);
+		//model.addAttribute("comCount", comCount);
 		
 		return "/editor/planview";
 	}

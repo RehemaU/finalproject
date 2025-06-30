@@ -137,6 +137,8 @@ document.getElementById('deleteBtn').addEventListener('click', async () => {
           ${editor.planContent}
         </div>
         
+        댓글수: ${editor.comCount}
+        
         <hr class="my-4"/>
 
 		<!-- 댓글 입력 폼 (textarea 옆에 버튼) -->
@@ -161,14 +163,16 @@ document.getElementById('deleteBtn').addEventListener('click', async () => {
 		</form>
 		
 <br />
-		
 <!-- ★↓↓↓ 댓글 목록 루프 --------------------------------------- -->
 <c:forEach var="c" items="${list}">
   <div class="border rounded p-3 mb-2">
     <!-- 한 줄 세로 정렬: 내용(왼쪽) · 버튼(오른쪽) -->
     <div class="d-flex justify-content-between align-items-start">
       <!-- 댓글 본문 -->
-      <p class="mb-1 flex-grow-1 me-3" id="comment-${c.commentId}" }>${c.planCommentContent}</p>
+      <p class="mb-1 flex-grow-1 me-3"
+      id="comment-${c.commentId}">
+      ${c.planCommentContent}
+      </p>
 
       <!-- 수정‧삭제 버튼 -->
       <div class="btn-group btn-group-sm" role="group">
@@ -180,6 +184,7 @@ document.getElementById('deleteBtn').addEventListener('click', async () => {
                 onclick="deleteComment(this.dataset.id)">
           삭제
         </button>
+        
       </div>
     </div>
 
@@ -187,9 +192,11 @@ document.getElementById('deleteBtn').addEventListener('click', async () => {
     <small class="text-muted">
       작성자: ${c.userId} | 날짜: ${c.planCommentDate}
     </small>
+    
   </div>
 </c:forEach>
 
+<!-- 댓글 삭제 -->
 <script>
   function deleteComment(id) {
 
@@ -232,8 +239,10 @@ document.getElementById('deleteBtn').addEventListener('click', async () => {
   <div class="text-muted">등록된 댓글이 없습니다.</div>
 </c:if>
 <!-- ★↑↑↑ 끝 ---------------------------------------------------- -->
+
 <br /><br />
-		<!-- ★추가: 댓글 등록 AJAX -->
+
+<!-- ★추가: 댓글 등록 AJAX -->
 <script>
 /* 댓글 작성 AJAX */
 document.getElementById('commentBtn').addEventListener('click', async () => {
