@@ -21,6 +21,21 @@
   .fab-circle:hover{transform:translateY(-4px); box-shadow:0 6px 16px rgba(0,0,0,.35);}
   .fab-circle:active{transform:scale(.92);}
 </style>
+
+<!-- 로그인 체크 후 되돌아가기 -->
+<%
+    String userId = (String) request.getSession().getAttribute("userId");
+    if (userId == null || userId.isEmpty()) {
+%>
+    <script>
+      alert("로그인이 필요합니다.");
+      history.back();
+    </script>
+<%
+      return;  // 이후 JSP 렌더링 중단
+    }
+%>
+
 </head>
 <body>
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %> <%-- 공통 Header/Nav --%>

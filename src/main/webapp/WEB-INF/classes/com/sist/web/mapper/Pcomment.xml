@@ -24,7 +24,7 @@
 			    PLAN_COMMENT_REPORT
 			) VALUES ( PLAN_COMMENT_SEQ.NEXTVAL,
 			           #{planId},
-			           'user1',
+			           #{userId},
 			           #{planCommentContent},
 			           0,
 			           SYSDATE,
@@ -57,26 +57,26 @@
 	  <!-- 댓글 선택 -->
 	  <select id="pcommentSelect" parameterType="int" resultMap="pcommentResultMap">
 		  SELECT
-			    comment_id,
-			    plan_id,
-			    user_id,
-			    plan_comment_content,
-			    plan_comment_parent,
-			    plan_comment_date,
-			    plan_comment_report
+			    COMMENT_ID,
+			    PLAN_ID,
+			    USER_ID,
+			    PLAN_COMMENT_CONTENT,
+			    PLAN_COMMENT_PARENT,
+			    PLAN_COMMENT_DATE,
+			    PLAN_COMMENT_REPORT
 			FROM
-			    t_plan_comment
+			    T_PLAN_COMMENT
 			WHERE
-			    comment_id = ${value}
+			    COMMENT_ID = #{value}
 	  </select>
 	  
 	  <!-- 댓글 수정 -->
 	  <update id="pcommentUpdate" parameterType="com.sist.web.model.Pcomment">
-	  UPDATE t_plan_comment
+	  UPDATE T_PLAN_COMMENT
 		SET
-		    plan_comment_content = #{planCommentContent}
+		    PLAN_COMMENT_CONTENT = #{planCommentContent}
 		WHERE
-		        comment_id = #{commentId}
+		        COMMENT_ID = #{commentId}
 	  </update>
 	  
 	  <!-- 댓글 갯수 -->

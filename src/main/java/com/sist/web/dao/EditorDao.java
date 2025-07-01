@@ -18,4 +18,12 @@ public interface EditorDao {
 	public int editorUpdate(Editor editor);
 	//게시글삭제
 	public int editorDelete(int planId);
+	//썸네일
+	public String editorThumbnail(int planId);
+	//조회수증가
+	public int editorCountUpdate(int planId);
+	//좋아요증가
+	public int editorLikeIncre(int planId);
+	//좋아요감소
+	public int editorLikeDecre(int planId);
 }
