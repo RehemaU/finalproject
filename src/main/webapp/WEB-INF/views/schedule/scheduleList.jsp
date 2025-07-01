@@ -111,6 +111,7 @@
         <div id="map"></div>
       </div>
 <div class="btn-group">
+  <a href="/schedule/myList" class="action-btn">일정 목록</a>
   <a href="/schedule/editForm?listId=${sessionScope.calanderListId}" class="action-btn">일정 수정</a>
   <form action="${pageContext.request.contextPath}/schedule/deleteList" method="post" onsubmit="return confirm('정말 삭제하시겠습니까?');">
     <input type="hidden" name="listId" value="${sessionScope.calanderListId}" />

@@ -318,7 +318,92 @@ document.addEventListener('DOMContentLoaded',function(){
     }
   });
 
-  /* 수동 주소 추가 */
+  /* HTML 이스케이프 함수 */
+  function escapeHtml(text) {
+    var map = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+  }
+
+  /* 일정 삭제 함수 */
+  window.removeSpot = function(button) {
+    if (confirm('이 일정을 삭제하시겠습니까?')) {
+      var entry = button.closest('.entry');
+      entry.remove();
+    }
+  };
+
+  /* ★★★ 수정된 addSpot 함수 ★★★ */
+  function addSpot(loc){
+    console.log('=== addSpot 함수 호출 ===');
+    console.log('loc 객체:', loc);
+    console.log('currentDayNo:', currentDayNo);
+
+    if (!loc || !loc.name) {
+      console.error('loc 또는 loc.name이 없습니다:', loc);
+      return;
+    }
+    
+    if (!currentDayNo) {
+      console.error('currentDayNo가 없습니다:', currentDayNo);
+      return;
+    }
+    
+    var pos = new kakao.maps.LatLng(loc.lat, loc.lon);
+    map.setCenter(pos);
+    new kakao.maps.Marker({map: map, position: pos, title: loc.name});
+
+    var card = document.createElement('div');
+    card.className = 'entry';
+    
+    var dayNoValue = currentDayNo;
+    var spotIdValue = loc.id;
+    var displayText = '[Day ' + dayNoValue + '] ' + loc.name;
+    
+    var html = '';
+    html += '<input type="hidden" name="dayNos" value="' + dayNoValue + '">';
+    html += '<input type="hidden" name="spotIds" value="' + spotIdValue + '">';
+    
+    // ✅ 수동 추가 여부를 명확히 구분
+    if (loc.isManual) {
+      html += '<input type="hidden" name="isManual" value="true">';
+      html += '<input type="hidden" name="manualNames" value="' + escapeHtml(loc.name) + '">';
+      html += '<input type="hidden" name="manualAddresses" value="' + escapeHtml(loc.address) + '">';
+      html += '<input type="hidden" name="manualLats" value="' + loc.lat + '">';
+      html += '<input type="hidden" name="manualLons" value="' + loc.lon + '">';
+      displayText += ' (직접 입력: ' + loc.address + ')';
+    } else {
+      html += '<input type="hidden" name="isManual" value="false">';
+      // 일반 장소의 경우 빈 값으로 자리만 채움
+      html += '<input type="hidden" name="manualNames" value="">';
+      html += '<input type="hidden" name="manualAddresses" value="">';
+      html += '<input type="hidden" name="manualLats" value="">';
+      html += '<input type="hidden" name="manualLons" value="">';
+    }
+    
+    html += '<strong>' + escapeHtml(displayText) + '</strong>';
+    html += '<br>시작 <input type="datetime-local" name="startTimes" required>';
+    html += '<br>종료 <input type="datetime-local" name="endTimes" required>';
+    html += '<br><button type="button" class="remove-btn" onclick="removeSpot(this)">삭제</button>';
+    
+    card.innerHTML = html;
+    
+    var selectedBox = document.getElementById('selectedBox');
+    if (!selectedBox) {
+      console.error('selectedBox 요소를 찾을 수 없습니다');
+      return;
+    }
+    
+    selectedBox.appendChild(card);
+    console.log('카드가 selectedBox에 추가되었습니다');
+  }
+
+  /* ★★★ 수정된 수동 주소 추가 버튼 이벤트 ★★★ */
   document.getElementById('addByAddressBtn').onclick = function() {
     var addr = document.getElementById('manualAddress').value.trim();
     var placeName = document.getElementById('manualPlaceName').value.trim();
@@ -326,7 +411,6 @@ document.addEventListener('DOMContentLoaded',function(){
     if (!addr) return alert('주소를 입력해주세요.');
     if (!placeName) return alert('장소명을 입력해주세요.');
 
-    // Geocoder 사용 가능 여부 체크
     if (!kakao || !kakao.maps || !kakao.maps.services || !kakao.maps.services.Geocoder) {
       alert('지도 서비스를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
       return;
@@ -337,12 +421,15 @@ document.addEventListener('DOMContentLoaded',function(){
       if (status === kakao.maps.services.Status.OK) {
         var loc = {
           name: placeName,
-          id: 'MANUAL_ADDRESS',  // 서버에서 인식할 수 있는 고정값
+          id: 'MANUAL_' + Date.now(), // ✅ 고유한 ID 생성
           lat: parseFloat(result[0].y),
           lon: parseFloat(result[0].x),
           address: addr,
-          isManual: true
+          isManual: true // ✅ 수동 추가 플래그
         };
+        
+        console.log('수동 장소 생성:', loc); // 디버깅용
+        
         addSpot(loc);
         document.getElementById('manualAddress').value = '';
         document.getElementById('manualPlaceName').value = '';
@@ -488,108 +575,48 @@ document.addEventListener('DOMContentLoaded',function(){
     }
   }
 
-  /* Spot 추가 */
-  function addSpot(loc){
-    console.log('=== addSpot 함수 호출 ===');
-    console.log('loc 객체:', loc);
-    console.log('currentDayNo:', currentDayNo);
-
-    if (!loc || !loc.name) {
-      console.error('loc 또는 loc.name이 없습니다:', loc);
-      return;
-    }
-    
-    if (!currentDayNo) {
-      console.error('currentDayNo가 없습니다:', currentDayNo);
-      return;
-    }
-    
-    var pos = new kakao.maps.LatLng(loc.lat, loc.lon);
-    map.setCenter(pos);
-    new kakao.maps.Marker({map: map, position: pos, title: loc.name});
-
-    var card = document.createElement('div');
-    card.className = 'entry';
-    
-    var dayNoValue = currentDayNo;
-    var spotIdValue = loc.id;
-    var displayText = '[Day ' + dayNoValue + '] ' + loc.name;
-    
-    var html = '';
-    html += '<input type="hidden" name="dayNos" value="' + dayNoValue + '">';
-    html += '<input type="hidden" name="spotIds" value="' + spotIdValue + '">';
-    
-    // 수동 추가된 주소인 경우 추가 정보 포함
-    if (loc.isManual) {
-      html += '<input type="hidden" name="manualNames" value="' + escapeHtml(loc.name) + '">';
-      html += '<input type="hidden" name="manualAddresses" value="' + escapeHtml(loc.address) + '">';
-      html += '<input type="hidden" name="manualLats" value="' + loc.lat + '">';
-      html += '<input type="hidden" name="manualLons" value="' + loc.lon + '">';
-      displayText += ' (직접 입력)';
-    }
-    
-    html += '<strong>' + escapeHtml(displayText) + '</strong>';
-    html += '<br>시작 <input type="datetime-local" name="startTimes" required>';
-    html += '<br>종료 <input type="datetime-local" name="endTimes" required>';
-    html += '<br><button type="button" class="remove-btn" onclick="removeSpot(this)">삭제</button>';
-    
-    card.innerHTML = html;
-    
-    var selectedBox = document.getElementById('selectedBox');
-    if (!selectedBox) {
-      console.error('selectedBox 요소를 찾을 수 없습니다');
-      return;
-    }
-    
-    selectedBox.appendChild(card);
-    console.log('카드가 selectedBox에 추가되었습니다');
-  }
-
-  /* HTML 이스케이프 함수 */
-  function escapeHtml(text) {
-    var map = {
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#039;'
-    };
-    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
-  }
-
-  /* 일정 삭제 함수 */
-  window.removeSpot = function(button) {
-    if (confirm('이 일정을 삭제하시겠습니까?')) {
-      var entry = button.closest('.entry');
-      entry.remove();
-    }
-  };
-
-  /* 폼 제출 전 검증 */
+  /* ★★★ 폼 제출 전 디버깅 강화 ★★★ */
   document.getElementById('scheduleForm').onsubmit = function(e) {
     console.log('=== 폼 제출 데이터 확인 ===');
     var formData = new FormData(this);
     
+    // 모든 필드 확인
     var spotIds = formData.getAll('spotIds');
+    var isManualArray = formData.getAll('isManual');
     var manualNames = formData.getAll('manualNames');
     var manualAddresses = formData.getAll('manualAddresses');
+    var manualLats = formData.getAll('manualLats');
+    var manualLons = formData.getAll('manualLons');
     var startTimes = formData.getAll('startTimes');
     var endTimes = formData.getAll('endTimes');
+    var dayNos = formData.getAll('dayNos');
     
+    console.log('📋 전체 폼 데이터:');
     console.log('spotIds:', spotIds);
+    console.log('isManual:', isManualArray);
     console.log('manualNames:', manualNames);
     console.log('manualAddresses:', manualAddresses);
+    console.log('manualLats:', manualLats);
+    console.log('manualLons:', manualLons);
     console.log('startTimes:', startTimes);
     console.log('endTimes:', endTimes);
+    console.log('dayNos:', dayNos);
     
-    // 최소 하나의 일정이 있는지 확인
+    // 수동 추가된 장소들만 별도 확인
+    console.log('🏷️ 수동 추가 장소들:');
+    for (var i = 0; i < isManualArray.length; i++) {
+      if (isManualArray[i] === 'true') {
+        console.log(`Index ${i}: ${manualNames[i]} at ${manualAddresses[i]} (${manualLats[i]}, ${manualLons[i]})`);
+      }
+    }
+    
+    // 기본 검증
     if (spotIds.length === 0) {
       alert('최소 하나의 일정을 추가해주세요.');
       e.preventDefault();
       return false;
     }
 
-    // 시작/종료 시간이 모두 입력되었는지 확인
     for (var i = 0; i < startTimes.length; i++) {
       if (!startTimes[i] || !endTimes[i]) {
         alert('모든 일정의 시작 시간과 종료 시간을 입력해주세요.');
