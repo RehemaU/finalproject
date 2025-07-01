@@ -6,7 +6,7 @@
 <!-- 조건 선택 영역 -->
 <div class="filter-container p-4 bg-white shadow rounded mb-6">
   <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-    <!-- 시/도 필터 -->
+    <!-- 시/도 필터 -->	
     <div>
       <label for="region1" class="block font-medium">시·도 선택</label>
       <select id="region1" class="w-full border rounded px-2 py-1" onchange="updateSigunguOptions()">
@@ -185,7 +185,7 @@ function addCondition() {
     const resultContainer = document.getElementById('results');
     resultContainer.innerHTML = '로딩 중...';
 
-    fetch('/accomm/filterList', {
+    fetch('/tour/filterList', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(conditions)

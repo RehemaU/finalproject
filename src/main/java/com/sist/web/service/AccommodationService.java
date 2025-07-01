@@ -196,7 +196,23 @@ public class AccommodationService {
     public void updateAccommodationDescription(Accommodation accomm) {
         accommodationDao.updateAccommodationDescription(accomm);
     }
+
+    
+    // 기능구현을 위해
+    
+    public List<Accommodation> findBySigunguList(List<Sigungu> sigunguList) {
+        return accommodationDao.searchBySigungu(sigunguList);
+    }
+    
+
     public List<Accommodation> getAllAccommodations() {
         return accommodationDao.getAllAccommodations(); // DAO에서 전체 조회
+
     }
+    
+
+    public Accommodation selectAccommodation(String accommId) {
+    	return accommodationDao.selectAccommodation(accommId);
+    }
+
    }

@@ -61,8 +61,28 @@
 </select>
 
 
+<select id="selectListById" resultMap="calanderListResultMap">
+    SELECT * FROM T_CALANDER_LIST WHERE T_CALANDER_LIST_ID = #{listId}
+</select>
 
+<delete id="deleteCalandersByListId">
+    DELETE FROM T_CALANDER WHERE T_CALANDER_LIST_ID = #{listId}
+</delete>
+<delete id="deleteCalanderListById" parameterType="String">
+    DELETE FROM T_CALANDER_LIST WHERE T_CALANDER_LIST_ID = #{listId}
+</delete>
 
-
+<select id="getCalanderListsByUser"
+        resultMap="calanderListResultMap"
+        parameterType="string">
+  SELECT T_CALANDER_LIST_ID,
+         USER_ID,
+         CALANDER_LIST_NAME,
+         T_CALANDER_LIST_STARTDATE,
+         T_CALANDER_LIST_ENDDATE
+  FROM   T_CALANDER_LIST
+  WHERE  USER_ID = #{userId}
+  ORDER  BY T_CALANDER_LIST_STARTDATE DESC
+</select>
 </mapper>
 

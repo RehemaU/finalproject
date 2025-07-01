@@ -3,6 +3,7 @@ package com.sist.web.service;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,9 +145,28 @@ public class EventService {
             return false;
         }
 
-      
+        
+        
         
         return true;
+    }
+    
+    public List<Event> getActiveEvents() {
+        return eventDao.selectActiveEvents();
+    }
+
+    // 종료된 이벤트 조회
+    public List<Event> getEndedEvents() {
+        return eventDao.selectEndedEvents();
+    }
+    
+    
+    public Event getEventById(String eventId) {
+        return eventDao.selectEventById(eventId);
+    }
+
+    public void increaseEventCount(String eventId) {
+        eventDao.increaseEventCount(eventId);
     }
     
     

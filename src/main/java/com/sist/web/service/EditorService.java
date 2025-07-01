@@ -88,7 +88,37 @@ public class EditorService {
 		return editor;
 	}
 	
+	//게시물 수정
+	public int editorUpdate(Editor editor)
+	{
+		int count = 0;
+		
+		try
+		{
+			count = editorDao.editorUpdate(editor);
+		}
+		catch(Exception e)
+		{
+			logger.error("[EditorService]editorUpdate Exception", e);
+		}
+		
+		return count;
+	}
 	
-	
+	public int editorDelete(int planId)
+	{
+		int count = 0;
+		
+		try
+		{
+			count = editorDao.editorDelete(planId);
+		}
+		catch(Exception e)
+		{
+			logger.error("[EditorService]editorDelete Exception", e);
+		}
+		
+		return count;
+	}
 	
 }

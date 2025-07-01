@@ -56,29 +56,28 @@
 	<!-- 여기부터 기능구현(이전까진 API관련) -->
 	
 	<!-- 상세정보띄울떄 객체 가져오는용도(/list/view와 같음) -->
-	<select id = "selectAccommodation" parameterType = "String" resultType = "com.sist.web.model.Accommodation">
+	<select id = "selectAccommodation" parameterType = "String" resultMap="accomResultMap">
 		SELECT * FROM T_ACCOMM
-		WHERE ACCOMM_ID = #{accomId};
+		WHERE ACCOMM_ID = #{accomId}
 	</select>
 	
-	<!-- 광역시/도 코드, 시군구코드 (추가하면서) 가져오기 -->
-	<select id="searchByConditions" resultMap="accomResultMap" parameterType="map">
+	<select id="searchBySigungu" resultMap="accomResultMap" parameterType="java.util.List">
 	  SELECT * FROM T_ACCOMM
 	  <where>
-	  	<if test="regionIds!= null and regionIds.size() > 0">
-	      AND SIGUNGU_CODE IN
-	      <foreach collection="sigunguCodes" item="code" open="(" separator="," close=")">
-	        #{sigunguCode}
-	      </foreach>
-	    </if>
-	    <if test="sigunguCodes != null and sigunguCodes.size() > 0">
-	      AND SIGUNGU_CODE IN
-	      <foreach collection="sigunguCodes" item="code" open="(" separator="," close=")">
-	        #{sigunguCode}
+	    <if test="list != null and !list.isEmpty()">
+	      <foreach collection="list" item="sigungu" separator="OR" open="(" close=")">
+	        <choose>
+	          <when test="sigungu.sigunguId == null or sigungu.sigunguId == ''">
+	            REGION_ID = #{sigungu.regionId}
+	          </when>
+	          <otherwise>
+	            (REGION_ID = #{sigungu.regionId} AND SIGUNGU_CODE = #{sigungu.sigunguId})
+	          </otherwise>
+	        </choose>
 	      </foreach>
 	    </if>
 	  </where>
 	</select>
 	
-	
+
 </mapper>
