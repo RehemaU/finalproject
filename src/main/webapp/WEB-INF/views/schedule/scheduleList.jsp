@@ -74,8 +74,16 @@
 <body>
   <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
   <br>
-<h2 style="margin-left: 280px;"><%= listName %></h2>
+<h2 style="margin-left: 280px;">
   <c:choose>
+    <c:when test="${empty list.calanderListName}">
+      <%= session.getAttribute("listName") != null ? session.getAttribute("listName") : "" %>
+    </c:when>
+    <c:otherwise>
+      ${list.calanderListName}
+    </c:otherwise>
+  </c:choose>
+</h2>  <c:choose>
     <c:when test="${empty calList}">
       <p>저장된 일정이 없습니다.</p>
     </c:when>

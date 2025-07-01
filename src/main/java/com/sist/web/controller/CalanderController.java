@@ -35,7 +35,13 @@ public class CalanderController {
 
     /* ① 지역 및 시군구 목록 주입 (addList.jsp 진입 시) */
     @GetMapping("/schedule/addList")
-    public String addListForm(ModelMap model) {
+    public String addListForm(ModelMap model, HttpSession session) {
+        String userId = (String) session.getAttribute("userId");
+
+        if (userId == null) {
+            return "redirect:/user/login"; // 로그인 안됐으면 로그인 페이지로
+        }
+
         List<Region> regionList = regionService.getAllRegions();
         List<Sigungu> sigunguList = sigunguService.getAllSigungus();
         model.addAttribute("regionList", regionList);
@@ -46,17 +52,16 @@ public class CalanderController {
     /* ② 사용자가 일정 이름, 날짜, 지역 선택 후 저장 */
     @PostMapping("/schedule/saveList")
     public String saveList(HttpServletRequest request, HttpSession session) {
+        String userId = (String) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/user/login";
+        }
+    	
         String listName = request.getParameter("listName");
         String selectedDatesJson = request.getParameter("selectedDates");
 
         String regionId = request.getParameter("regionId");
         String sigunguId = request.getParameter("sigunguId");
-
-        String userId = (String) session.getAttribute("userId");
-        if (userId == null) {
-            userId = "test";
-            session.setAttribute("userId", userId);
-        }
 
         try {
             List<String> selectedDates = new Gson()
@@ -258,7 +263,20 @@ public class CalanderController {
         model.addAttribute("calList", calList);
         return "/schedule/scheduleList";
     }
+    @GetMapping("/schedule/view")
+    public String viewSchedule(@RequestParam("listId") String listId,
+                               ModelMap model,
+                               HttpSession session) {
 
+        CalanderList list   = calanderService.getListById(listId);
+        List<Calander> cals = calanderService.getCalanders(listId);
+
+        session.setAttribute("currentListId", listId);  // 이후에도 재활용
+        model.addAttribute("list", list);
+        model.addAttribute("calList", cals);
+
+        return "/schedule/scheduleList";                // 동일 뷰 재사용
+    }
     /* ⑥ (옵션) 메뉴 전용 진입 */
     @GetMapping("/schedule/menu")
     public String scheduleMenu() {
@@ -304,7 +322,7 @@ public class CalanderController {
     public String myList(ModelMap model, HttpSession session){
         String userId = (String)session.getAttribute("userId");
         if(userId == null){          // 로그인 안됐을 때 처리
-            return "redirect:/member/login";
+            return "redirect:/user/login";
         }
         List<CalanderList> lists = calanderService.getListsByUser(userId);
         model.addAttribute("lists", lists);

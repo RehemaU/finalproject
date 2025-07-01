@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   // 데이터 fetch
   Promise.all([
     fetch('${pageContext.request.contextPath}/accommodation/listAll').then(r=>r.json()),
-    fetch('${pageContext.request.contextPath}/admin/listAll').then(r=>r.json())
+    fetch('${pageContext.request.contextPath}/listAll').then(r=>r.json())
   ]).then(([a,t])=>{
     accomList=a.map(o=>({...o,accomLat:+o.accomLat,accomLon:+o.accomLon}));
     tourList =t.map(o=>({...o,tourLat:+o.tourLat ,tourLon :+o.tourLon }));
