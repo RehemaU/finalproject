@@ -169,5 +169,34 @@ public class EventService {
         eventDao.increaseEventCount(eventId);
     }
     
+ // 공지 이벤트 조회
+    public Event getNoticeEvent() {
+        return eventDao.selectNoticeEvent(); // 공지 1건 (예: EVENT_ID='NOTICE' 또는 IS_NOTICE='Y')
+    }
+
+    // 페이징된 이벤트 목록 조회
+    public List<Event> getPagedEvents(int offset, int limit) {
+        return eventDao.selectEventListPaging(offset, limit); // LIMIT/OFFSET 기반
+    }
+
+    // 전체 이벤트 수
+    public int getTotalEventCount() {
+        return eventDao.countAllEvents(); // SELECT COUNT(*) FROM T_EVENT
+    }
+    
+    public List<Event> selectEventListPaging(int startRow, int pageSize)
+    {
+    	return eventDao.selectEventListPaging(startRow, pageSize);
+    }
+    
+    // 이벤트 제목으로 검색한 총 개수
+    public int getSearchEventCount(String keyword) {
+        return eventDao.getSearchEventCount(keyword);
+    }
+
+    // 검색된 이벤트 목록 (페이징)
+    public List<Event> searchEventList(String keyword, int startRow, int pageSize) {
+        return eventDao.searchEventList(keyword, startRow, pageSize);
+    }
     
 }
