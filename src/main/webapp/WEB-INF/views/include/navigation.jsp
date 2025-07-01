@@ -7,7 +7,7 @@
       <a class="icon" href="/mypage">MY PAGE</a>
       <a class="icon" href="/likes">MY LIKE</a>
       <a class="icon" href="/bag">BAG</a>
-      <a class="icon" href="/login">LOGIN</a>
+      <a class="icon" href="/user/login">LOGIN</a>
       <span class="search" aria-label="Search"></span>
     </div>
   </div>
@@ -15,15 +15,15 @@
   <!-- 메인 태그라인 -->
   <div class="tagline wrap">
     <a class="tag-item" href="/walkthrough">Walkthrough</a>
-    <a class="tag-item" href="/tour">Explore</a>
-    <a class="tag-item" href="/stay">Stay</a>
-    <a class="tag-item" href="/schedule">Plan</a>
-    <a class="tag-item" href="/review">Share</a>
+    <a class="tag-item" href="/tour/list">Explore</a>
+    <a class="tag-item" href="/accomm/list">Stay</a>
+    <a class="tag-item" href="/schedule/addList"">Plan</a>
+    <a class="tag-item" href="/editor/planmenu">Share</a>
   </div>
 
   <!-- GNB -->
   <nav class="gnb wrap flex center">
-    <a href="/tour">TOUR</a><a href="/stay">STAY</a><a href="/schedule">SCHEDULE</a>
+    <a href="/tour/list">TOUR</a><a href="/accomm/list">STAY</a><a href="/schedule/addList">SCHEDULE</a>
 
     <a href="/editor/planmenu">REVIEW</a><a href="/coupon">COUPON</a><a href="/event/eventList">EVENT</a><a href="/qna">Q&A</a>
 
