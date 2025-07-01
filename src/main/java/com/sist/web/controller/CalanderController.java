@@ -17,6 +17,7 @@ import com.sist.web.model.Calander;
 import com.sist.web.model.CalanderList;
 import com.sist.web.model.Region;
 import com.sist.web.model.Sigungu;
+import com.sist.web.model.UserPlace;
 import com.sist.web.service.CalanderService;
 import com.sist.web.service.RegionService;
 import com.sist.web.service.SigunguService;
@@ -98,21 +99,33 @@ public class CalanderController {
         return "/schedule/addDetail";
     }
 
-    /* ④ 상세 일정 저장 (장소, 시간, Day 정보 포함) */
     @PostMapping("/schedule/saveDetail")
     public String saveDetail(HttpServletRequest request, HttpSession session) {
         String[] spotIds = request.getParameterValues("spotIds");
         String[] startTimes = request.getParameterValues("startTimes");
         String[] endTimes = request.getParameterValues("endTimes");
         String[] dayNos = request.getParameterValues("dayNos");
-        
-        // 수동 추가된 주소 정보들
+        String[] isManualArray = request.getParameterValues("isManual");
+
+        // 수동 장소 관련 파라미터
         String[] manualNames = request.getParameterValues("manualNames");
         String[] manualAddresses = request.getParameterValues("manualAddresses");
         String[] manualLats = request.getParameterValues("manualLats");
         String[] manualLons = request.getParameterValues("manualLons");
 
         String listId = (String) session.getAttribute("currentListId");
+        String userId = (String) session.getAttribute("userId");
+
+        System.out.println("=== saveDetail 호출됨 ===");
+        System.out.println("listId: " + listId);
+        System.out.println("userId: " + userId);
+        System.out.println("spotIds: " + Arrays.toString(spotIds));
+        System.out.println("dayNos: " + Arrays.toString(dayNos));
+        System.out.println("isManualArray: " + Arrays.toString(isManualArray));
+        System.out.println("manualNames: " + Arrays.toString(manualNames));
+        System.out.println("manualAddresses: " + Arrays.toString(manualAddresses));
+        System.out.println("manualLats: " + Arrays.toString(manualLats));
+        System.out.println("manualLons: " + Arrays.toString(manualLons));
 
         if (spotIds == null || startTimes == null || endTimes == null || dayNos == null) {
             System.out.println("🚨 필수 파라미터 누락");
@@ -120,44 +133,73 @@ public class CalanderController {
         }
 
         try {
-            int manualIndex = 0; // 수동 추가 데이터의 인덱스
-            
             for (int i = 0; i < spotIds.length; i++) {
                 String spotId = spotIds[i];
                 Date st = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(startTimes[i]);
                 Date et = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(endTimes[i]);
                 int dayNo = Integer.parseInt(dayNos[i]);
 
-                // 수동 추가된 주소인지 확인
-                if ("MANUAL_ADDRESS".equals(spotId)) {
-                    if (manualNames != null && manualIndex < manualNames.length) {
-                        // 수동 추가된 주소의 경우 별도 처리
-                        String manualName = manualNames[manualIndex];
-                        String manualAddress = manualAddresses[manualIndex];
-                        String manualLat = manualLats[manualIndex];
-                        String manualLon = manualLons[manualIndex];
+                // ✅ isManual 체크 로직 개선
+                boolean isManual = false;
+                if (isManualArray != null && i < isManualArray.length) {
+                    isManual = "true".equals(isManualArray[i]);
+                }
+
+                System.out.println("📍 Processing index " + i + ": spotId=" + spotId + ", isManual=" + isManual);
+
+                if (isManual) {
+                    // 수동 장소 처리
+                    if (manualNames != null && i < manualNames.length && 
+                        manualNames[i] != null && !manualNames[i].trim().isEmpty()) {
                         
-                        // 수동 주소는 특별한 spotId 생성 (이름과 좌표 조합)
-                        String uniqueSpotId = "MANUAL_" + manualName.replaceAll("\\s+", "_") + 
-                                             "_" + manualLat + "_" + manualLon;
+                        String manualName = manualNames[i];
+                        String manualAddress = (manualAddresses != null && i < manualAddresses.length) ? 
+                                             manualAddresses[i] : "";
+                        String manualLat = (manualLats != null && i < manualLats.length) ? 
+                                         manualLats[i] : "0";
+                        String manualLon = (manualLons != null && i < manualLons.length) ? 
+                                         manualLons[i] : "0";
+
+                        // 고유 ID 생성 (시간 기반)
+                        String placeId = "MANUAL_" + System.currentTimeMillis() + "_" + i;
                         
-                        System.out.println("📍 수동 추가 주소 저장: " + manualName + " at " + manualAddress);
+                        System.out.println("🏷️ 수동 장소 저장:");
+                        System.out.println("   이름: " + manualName);
+                        System.out.println("   주소: " + manualAddress);
+                        System.out.println("   좌표: (" + manualLat + ", " + manualLon + ")");
+                        System.out.println("   placeId: " + placeId);
+
+                        // 1. 수동 장소(UserPlace) 먼저 저장
+                        UserPlace place = new UserPlace();
+                        place.setPlaceId(placeId);
+                        place.setPlaceName(manualName);
+                        place.setLat(manualLat);
+                        place.setLon(manualLon);
+                        place.setUserId(userId);
                         
+                        calanderService.saveManualPlace(place);
+                        System.out.println("✅ UserPlace 저장 완료: " + placeId);
+
+                        // 2. 일정(Calander) 저장 - spotId를 생성된 placeId로 설정
                         Calander cal = new Calander(
                             UUID.randomUUID().toString(),
                             listId,
-                            uniqueSpotId, // 고유한 수동 주소 ID 사용
+                            placeId, // ✅ 여기가 중요! 생성된 placeId 사용
                             st,
                             et,
                             dayNo
                         );
                         calanderService.saveDetail(cal);
-                        manualIndex++;
+                        System.out.println("✅ Calander 저장 완료: " + placeId);
+                        
                     } else {
-                        System.out.println("🚨 수동 주소 데이터 부족: manualIndex=" + manualIndex);
+                        System.out.println("🚨 Index " + i + ": 수동 장소 정보 부족");
+                        System.out.println("   manualNames[" + i + "]: " + 
+                            (manualNames != null && i < manualNames.length ? manualNames[i] : "null"));
                     }
                 } else {
-                    // 기존 숙소/관광지 저장 로직
+                    // 기존 장소 저장 (관광지/숙소)
+                    System.out.println("🏨 일반 장소 저장: spotId=" + spotId + ", dayNo=" + dayNo);
                     Calander cal = new Calander(
                         UUID.randomUUID().toString(),
                         listId,
@@ -167,19 +209,20 @@ public class CalanderController {
                         dayNo
                     );
                     calanderService.saveDetail(cal);
+                    System.out.println("✅ 일반 장소 저장 완료: " + spotId);
                 }
             }
-            
-            System.out.println("✅ 총 " + spotIds.length + "개 일정 저장 완료 (수동 주소 " + manualIndex + "개 포함)");
-            
+
+            System.out.println("🎉 전체 일정 저장 완료! 총 " + spotIds.length + "개 항목");
+
         } catch (Exception e) {
             System.out.println("🚨 일정 저장 중 오류 발생: " + e.getMessage());
             e.printStackTrace();
+            return "redirect:/schedule/addDetail?error=save";
         }
 
         return "redirect:/schedule/list";
     }
-
     /* ⑤ 일정 수정 저장 컨트롤러도 동일하게 수정 */
     @PostMapping("/schedule/updateDetail")
     public String updateDetail(HttpServletRequest request, HttpSession session) {
@@ -188,14 +231,27 @@ public class CalanderController {
         String[] startTimes = request.getParameterValues("startTimes");
         String[] endTimes = request.getParameterValues("endTimes");
         String[] dayNos = request.getParameterValues("dayNos");
+        String[] isManualArray = request.getParameterValues("isManual");
         
-        // 수동 추가된 주소 정보들
+        // 수동 장소 관련 파라미터
         String[] manualNames = request.getParameterValues("manualNames");
         String[] manualAddresses = request.getParameterValues("manualAddresses");
         String[] manualLats = request.getParameterValues("manualLats");
         String[] manualLons = request.getParameterValues("manualLons");
 
         String listId = (String) session.getAttribute("calanderListId");
+        String userId = (String) session.getAttribute("userId");
+
+        System.out.println("=== updateDetail 호출됨 ===");
+        System.out.println("listId: " + listId);
+        System.out.println("userId: " + userId);
+        System.out.println("spotIds: " + Arrays.toString(spotIds));
+        System.out.println("dayNos: " + Arrays.toString(dayNos));
+        System.out.println("isManualArray: " + Arrays.toString(isManualArray));
+        System.out.println("manualNames: " + Arrays.toString(manualNames));
+        System.out.println("manualAddresses: " + Arrays.toString(manualAddresses));
+        System.out.println("manualLats: " + Arrays.toString(manualLats));
+        System.out.println("manualLons: " + Arrays.toString(manualLons));
 
         if (spotIds == null || startTimes == null || endTimes == null || dayNos == null) {
             System.out.println("🚨 수정 저장 시 필수 파라미터 누락");
@@ -203,9 +259,8 @@ public class CalanderController {
         }
 
         try {
-            calanderService.deleteDetailsByListId(listId); // 기존 일정 삭제 후
-            
-            int manualIndex = 0; // 수동 추가 데이터의 인덱스
+            // 기존 일정 삭제
+            calanderService.deleteDetailsByListId(listId);
 
             for (int i = 0; i < spotIds.length; i++) {
                 String spotId = spotIds[i];
@@ -213,30 +268,67 @@ public class CalanderController {
                 Date et = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm").parse(endTimes[i]);
                 int dayNo = Integer.parseInt(dayNos[i]);
 
-                // 수동 추가된 주소인지 확인
-                if ("MANUAL_ADDRESS".equals(spotId)) {
-                    if (manualNames != null && manualIndex < manualNames.length) {
-                        String manualName = manualNames[manualIndex];
-                        String manualAddress = manualAddresses[manualIndex];
-                        String manualLat = manualLats[manualIndex];
-                        String manualLon = manualLons[manualIndex];
+                // ✅ isManual 체크 로직 개선 (saveDetail과 동일)
+                boolean isManual = false;
+                if (isManualArray != null && i < isManualArray.length) {
+                    isManual = "true".equals(isManualArray[i]);
+                }
+
+                System.out.println("📍 Processing index " + i + ": spotId=" + spotId + ", isManual=" + isManual);
+
+                if (isManual) {
+                    // 수동 장소 처리 (saveDetail과 동일한 로직)
+                    if (manualNames != null && i < manualNames.length && 
+                        manualNames[i] != null && !manualNames[i].trim().isEmpty()) {
                         
-                        String uniqueSpotId = "MANUAL_" + manualName.replaceAll("\\s+", "_") + 
-                                             "_" + manualLat + "_" + manualLon;
+                        String manualName = manualNames[i];
+                        String manualAddress = (manualAddresses != null && i < manualAddresses.length) ? 
+                                             manualAddresses[i] : "";
+                        String manualLat = (manualLats != null && i < manualLats.length) ? 
+                                         manualLats[i] : "0";
+                        String manualLon = (manualLons != null && i < manualLons.length) ? 
+                                         manualLons[i] : "0";
+
+                        // 고유 ID 생성 (시간 기반)
+                        String placeId = "MANUAL_" + System.currentTimeMillis() + "_" + i;
                         
+                        System.out.println("🏷️ 수동 장소 저장:");
+                        System.out.println("   이름: " + manualName);
+                        System.out.println("   주소: " + manualAddress);
+                        System.out.println("   좌표: (" + manualLat + ", " + manualLon + ")");
+                        System.out.println("   placeId: " + placeId);
+
+                        // 1. 수동 장소(UserPlace) 먼저 저장
+                        UserPlace place = new UserPlace();
+                        place.setPlaceId(placeId);
+                        place.setPlaceName(manualName);
+                        place.setLat(manualLat);
+                        place.setLon(manualLon);
+                        place.setUserId(userId);
+                        
+                        calanderService.saveManualPlace(place);
+                        System.out.println("✅ UserPlace 저장 완료: " + placeId);
+
+                        // 2. 일정(Calander) 저장 - spotId를 생성된 placeId로 설정
                         Calander cal = new Calander(
                             UUID.randomUUID().toString(),
                             listId,
-                            uniqueSpotId,
+                            placeId, // ✅ 여기가 중요! 생성된 placeId 사용
                             st,
                             et,
                             dayNo
                         );
                         calanderService.saveDetail(cal);
-                        manualIndex++;
+                        System.out.println("✅ Calander 저장 완료: " + placeId);
+                        
+                    } else {
+                        System.out.println("🚨 Index " + i + ": 수동 장소 정보 부족");
+                        System.out.println("   manualNames[" + i + "]: " + 
+                            (manualNames != null && i < manualNames.length ? manualNames[i] : "null"));
                     }
                 } else {
-                    // 기존 숙소/관광지 저장 로직
+                    // 기존 장소 저장 (관광지/숙소)
+                    System.out.println("🏨 일반 장소 저장: spotId=" + spotId + ", dayNo=" + dayNo);
                     Calander cal = new Calander(
                         UUID.randomUUID().toString(),
                         listId,
@@ -246,10 +338,16 @@ public class CalanderController {
                         dayNo
                     );
                     calanderService.saveDetail(cal);
+                    System.out.println("✅ 일반 장소 저장 완료: " + spotId);
                 }
             }
+
+            System.out.println("🎉 전체 일정 수정 저장 완료! 총 " + spotIds.length + "개 항목");
+            
         } catch (Exception e) {
+            System.out.println("🚨 일정 수정 저장 중 오류: " + e.getMessage());
             e.printStackTrace();
+            return "redirect:/schedule/editForm?listId=" + listId + "&error=update";
         }
 
         return "redirect:/schedule/list";

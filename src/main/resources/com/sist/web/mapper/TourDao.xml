@@ -14,7 +14,7 @@
         <result column="TOUR_LON" property="tourLon"/>
         <result column="TOUR_ADD" property="tourAdd"/>
         <result column="TOUR_DES" property="tourDes"/>
-        <result column="SIGUNGU_ID" property="sigunguId"/>
+        <result column="SIGUNGU_CODE" property="sigunguId"/>
         <result column="TOUR_IMAGE" property="tourImage"/>
     </resultMap>
 
