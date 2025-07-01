@@ -15,7 +15,6 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
 <title><%=listName%> · 일정 상세 입력</title>
 
 <!-- 글꼴 -->
@@ -200,14 +199,58 @@ button.filter-btn{
   <div id="map"></div>
 </div>
 
+<!-- ───────── JS : 시·군·구 드롭다운 ───────── -->
+<script>
+  const sigunguData = [];
+  <c:forEach var="s" items="${sigunguList}">
+    sigunguData.push({
+      regionId   : "${fn:trim(s.regionId)}",
+      sigunguId  : "${fn:trim(s.sigunguId)}",
+      sigunguName: "${fn:escapeXml(s.sigunguName)}"
+    });
+  </c:forEach>
+
+  function updateSigunguOptions(){
+    const rId=document.getElementById('region1').value;
+    const region2=document.getElementById('region2');
+    region2.innerHTML='<option value="">시·군·구 선택</option>';
+    sigunguData.filter(s=>s.regionId===rId)
+               .forEach(s=>{
+                 const opt=document.createElement('option');
+                 opt.value=s.sigunguId; opt.textContent=s.sigunguName;
+                 region2.appendChild(opt);
+               });
+  }
+</script>
+
 <script>
 document.addEventListener('DOMContentLoaded',function(){
   var currentDayNo=1,currentType='accom',currentPage=1,itemsPerPage=6,
       map,accomList=[],tourList=[];
   var contextPath = '<c:out value="${pageContext.request.contextPath}"/>';
   
-  var getCode=function(obj){
-    return String(obj.sigunguCode||obj.sigunguId||obj.sigungu_id||'').trim();
+  // ★★★ 수정된 getCode 함수 ★★★
+  var getCode = function(obj) {
+    console.log('=== getCode 함수 호출 ===');
+    console.log('입력 객체:', obj);
+    
+    var result = '';
+    
+    // 관광지(Tour)의 경우
+    if (obj.tourId !== undefined) {
+      result = String(obj.sigunguId || '').trim();
+      console.log('관광지 sigunguId:', result);
+    }
+    // 숙소(Accommodation)의 경우
+    else if (obj.accomId !== undefined) {
+      // 여러 가능한 필드명 시도
+      result = String(obj.sigunguCode || obj.sigunguId || obj.sigungu_id || '').trim();
+      console.log('숙소 sigungu 코드:', result);
+      console.log('사용된 필드: sigunguCode =', obj.sigunguCode, ', sigunguId =', obj.sigunguId);
+    }
+    
+    console.log('getCode 결과:', result);
+    return result;
   };
 
   /* Day / Cat 탭 */
@@ -240,16 +283,25 @@ document.addEventListener('DOMContentLoaded',function(){
   /* 데이터 fetch */
   Promise.all([
     fetch(contextPath + '/accommodation/listAll').then(function(r){return r.json();}),
-    fetch(contextPath + '/admin/listAll').then(function(r){return r.json();})
+    fetch(contextPath + '/listAll').then(function(r){return r.json();})
   ]).then(function(results){
     var a = results[0];
     var t = results[1];
+    
+    console.log('=== 원본 데이터 확인 ===');
+    console.log('숙소 데이터 샘플:', a.slice(0, 2));
+    console.log('관광지 데이터 샘플:', t.slice(0, 2));
+    
     accomList=a.map(function(o){
       return Object.assign({}, o, {accomLat:+o.accomLat,accomLon:+o.accomLon});
     });
     tourList=t.map(function(o){
       return Object.assign({}, o, {tourLat:+o.tourLat,tourLon:+o.tourLon});
     });
+    
+    console.log('가공된 숙소 데이터 샘플:', accomList.slice(0, 2));
+    console.log('가공된 관광지 데이터 샘플:', tourList.slice(0, 2));
+    
     renderPage();
   }).catch(console.error);
 
@@ -266,7 +318,92 @@ document.addEventListener('DOMContentLoaded',function(){
     }
   });
 
-  /* 수동 주소 추가 */
+  /* HTML 이스케이프 함수 */
+  function escapeHtml(text) {
+    var map = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+  }
+
+  /* 일정 삭제 함수 */
+  window.removeSpot = function(button) {
+    if (confirm('이 일정을 삭제하시겠습니까?')) {
+      var entry = button.closest('.entry');
+      entry.remove();
+    }
+  };
+
+  /* ★★★ 수정된 addSpot 함수 ★★★ */
+  function addSpot(loc){
+    console.log('=== addSpot 함수 호출 ===');
+    console.log('loc 객체:', loc);
+    console.log('currentDayNo:', currentDayNo);
+
+    if (!loc || !loc.name) {
+      console.error('loc 또는 loc.name이 없습니다:', loc);
+      return;
+    }
+    
+    if (!currentDayNo) {
+      console.error('currentDayNo가 없습니다:', currentDayNo);
+      return;
+    }
+    
+    var pos = new kakao.maps.LatLng(loc.lat, loc.lon);
+    map.setCenter(pos);
+    new kakao.maps.Marker({map: map, position: pos, title: loc.name});
+
+    var card = document.createElement('div');
+    card.className = 'entry';
+    
+    var dayNoValue = currentDayNo;
+    var spotIdValue = loc.id;
+    var displayText = '[Day ' + dayNoValue + '] ' + loc.name;
+    
+    var html = '';
+    html += '<input type="hidden" name="dayNos" value="' + dayNoValue + '">';
+    html += '<input type="hidden" name="spotIds" value="' + spotIdValue + '">';
+    
+    // ✅ 수동 추가 여부를 명확히 구분
+    if (loc.isManual) {
+      html += '<input type="hidden" name="isManual" value="true">';
+      html += '<input type="hidden" name="manualNames" value="' + escapeHtml(loc.name) + '">';
+      html += '<input type="hidden" name="manualAddresses" value="' + escapeHtml(loc.address) + '">';
+      html += '<input type="hidden" name="manualLats" value="' + loc.lat + '">';
+      html += '<input type="hidden" name="manualLons" value="' + loc.lon + '">';
+      displayText += ' (직접 입력: ' + loc.address + ')';
+    } else {
+      html += '<input type="hidden" name="isManual" value="false">';
+      // 일반 장소의 경우 빈 값으로 자리만 채움
+      html += '<input type="hidden" name="manualNames" value="">';
+      html += '<input type="hidden" name="manualAddresses" value="">';
+      html += '<input type="hidden" name="manualLats" value="">';
+      html += '<input type="hidden" name="manualLons" value="">';
+    }
+    
+    html += '<strong>' + escapeHtml(displayText) + '</strong>';
+    html += '<br>시작 <input type="datetime-local" name="startTimes" required>';
+    html += '<br>종료 <input type="datetime-local" name="endTimes" required>';
+    html += '<br><button type="button" class="remove-btn" onclick="removeSpot(this)">삭제</button>';
+    
+    card.innerHTML = html;
+    
+    var selectedBox = document.getElementById('selectedBox');
+    if (!selectedBox) {
+      console.error('selectedBox 요소를 찾을 수 없습니다');
+      return;
+    }
+    
+    selectedBox.appendChild(card);
+    console.log('카드가 selectedBox에 추가되었습니다');
+  }
+
+  /* ★★★ 수정된 수동 주소 추가 버튼 이벤트 ★★★ */
   document.getElementById('addByAddressBtn').onclick = function() {
     var addr = document.getElementById('manualAddress').value.trim();
     var placeName = document.getElementById('manualPlaceName').value.trim();
@@ -274,7 +411,6 @@ document.addEventListener('DOMContentLoaded',function(){
     if (!addr) return alert('주소를 입력해주세요.');
     if (!placeName) return alert('장소명을 입력해주세요.');
 
-    // Geocoder 사용 가능 여부 체크
     if (!kakao || !kakao.maps || !kakao.maps.services || !kakao.maps.services.Geocoder) {
       alert('지도 서비스를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
       return;
@@ -285,12 +421,15 @@ document.addEventListener('DOMContentLoaded',function(){
       if (status === kakao.maps.services.Status.OK) {
         var loc = {
           name: placeName,
-          id: 'MANUAL_ADDRESS',  // 서버에서 인식할 수 있는 고정값
+          id: 'MANUAL_' + Date.now(), // ✅ 고유한 ID 생성
           lat: parseFloat(result[0].y),
           lon: parseFloat(result[0].x),
           address: addr,
-          isManual: true
+          isManual: true // ✅ 수동 추가 플래그
         };
+        
+        console.log('수동 장소 생성:', loc); // 디버깅용
+        
         addSpot(loc);
         document.getElementById('manualAddress').value = '';
         document.getElementById('manualPlaceName').value = '';
@@ -316,11 +455,15 @@ document.addEventListener('DOMContentLoaded',function(){
     }
   });
 
-  /* 목록 렌더 */
+  /* ★★★ 수정된 renderPage 함수 ★★★ */
   function renderPage(){
     var kw=document.getElementById('searchInput').value.trim();
     var rid=document.getElementById('region1').value.trim();
     var sid=document.getElementById('region2').value.trim();
+
+    console.log('=== renderPage 호출 ===');
+    console.log('현재 탭:', currentType);
+    console.log('필터 조건 - 시도:', rid, '시군구:', sid, '키워드:', kw);
 
     var data=currentType==='accom'?accomList:tourList;
     var nameK=currentType==='accom'?'accomName':'tourName';
@@ -328,10 +471,59 @@ document.addEventListener('DOMContentLoaded',function(){
     var lonK =currentType==='accom'?'accomLon' :'tourLon';
     var idK  =currentType==='accom'?'accomId'  :'tourId';
 
+    console.log('전체 데이터 개수:', data.length);
+
     var filtered=data;
-    if(rid) filtered=filtered.filter(function(x){return String(x.regionId).trim()===rid;});
-    if(sid) filtered=filtered.filter(function(x){return getCode(x)===sid;});
-    if(kw)  filtered=filtered.filter(function(x){return x[nameK] && x[nameK].includes(kw);});
+    
+    // 시도 필터링
+    if(rid) {
+      console.log('시도 필터링 시작...');
+      filtered=filtered.filter(function(x){
+        var dataRegionId = String(x.regionId || '').trim();
+        var match = dataRegionId === rid;
+        if (!match) {
+          console.log('시도 불일치 - 데이터 regionId:', dataRegionId, '조건:', rid, '데이터:', x);
+        }
+        return match;
+      });
+      console.log('시도 필터링 후 개수:', filtered.length);
+    }
+    
+    // ★★★ 시군구 필터링 강화 ★★★
+    if(sid) {
+      console.log('시군구 필터링 시작...');
+      console.log('시군구 조건:', sid);
+      
+      filtered=filtered.filter(function(x){
+        var code = getCode(x);
+        var match = code === sid;
+        
+        if (!match) {
+          console.log('❌ 시군구 불일치:');
+          console.log('  - 데이터:', x);
+          console.log('  - 추출된 코드:', code);
+          console.log('  - 필터 조건:', sid);
+          console.log('  - 타입 비교:', typeof code, 'vs', typeof sid);
+        } else {
+          console.log('✅ 시군구 일치:', x[nameK], '코드:', code);
+        }
+        
+        return match;
+      });
+      console.log('시군구 필터링 후 개수:', filtered.length);
+    }
+    
+    // 키워드 필터링
+    if(kw) {
+      console.log('키워드 필터링 시작...');
+      filtered=filtered.filter(function(x){
+        var match = x[nameK] && x[nameK].includes(kw);
+        return match;
+      });
+      console.log('키워드 필터링 후 개수:', filtered.length);
+    }
+
+    console.log('최종 필터링 결과:', filtered.length);
 
     var start=(currentPage-1)*itemsPerPage;
     var pageData=filtered.slice(start,start+itemsPerPage);
@@ -383,108 +575,48 @@ document.addEventListener('DOMContentLoaded',function(){
     }
   }
 
-  /* Spot 추가 */
-  function addSpot(loc){
-    console.log('=== addSpot 함수 호출 ===');
-    console.log('loc 객체:', loc);
-    console.log('currentDayNo:', currentDayNo);
-
-    if (!loc || !loc.name) {
-      console.error('loc 또는 loc.name이 없습니다:', loc);
-      return;
-    }
-    
-    if (!currentDayNo) {
-      console.error('currentDayNo가 없습니다:', currentDayNo);
-      return;
-    }
-    
-    var pos = new kakao.maps.LatLng(loc.lat, loc.lon);
-    map.setCenter(pos);
-    new kakao.maps.Marker({map: map, position: pos, title: loc.name});
-
-    var card = document.createElement('div');
-    card.className = 'entry';
-    
-    var dayNoValue = currentDayNo;
-    var spotIdValue = loc.id;
-    var displayText = '[Day ' + dayNoValue + '] ' + loc.name;
-    
-    var html = '';
-    html += '<input type="hidden" name="dayNos" value="' + dayNoValue + '">';
-    html += '<input type="hidden" name="spotIds" value="' + spotIdValue + '">';
-    
-    // 수동 추가된 주소인 경우 추가 정보 포함
-    if (loc.isManual) {
-      html += '<input type="hidden" name="manualNames" value="' + escapeHtml(loc.name) + '">';
-      html += '<input type="hidden" name="manualAddresses" value="' + escapeHtml(loc.address) + '">';
-      html += '<input type="hidden" name="manualLats" value="' + loc.lat + '">';
-      html += '<input type="hidden" name="manualLons" value="' + loc.lon + '">';
-      displayText += ' (직접 입력)';
-    }
-    
-    html += '<strong>' + escapeHtml(displayText) + '</strong>';
-    html += '<br>시작 <input type="datetime-local" name="startTimes" required>';
-    html += '<br>종료 <input type="datetime-local" name="endTimes" required>';
-    html += '<br><button type="button" class="remove-btn" onclick="removeSpot(this)">삭제</button>';
-    
-    card.innerHTML = html;
-    
-    var selectedBox = document.getElementById('selectedBox');
-    if (!selectedBox) {
-      console.error('selectedBox 요소를 찾을 수 없습니다');
-      return;
-    }
-    
-    selectedBox.appendChild(card);
-    console.log('카드가 selectedBox에 추가되었습니다');
-  }
-
-  /* HTML 이스케이프 함수 */
-  function escapeHtml(text) {
-    var map = {
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#039;'
-    };
-    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
-  }
-
-  /* 일정 삭제 함수 */
-  window.removeSpot = function(button) {
-    if (confirm('이 일정을 삭제하시겠습니까?')) {
-      var entry = button.closest('.entry');
-      entry.remove();
-    }
-  };
-
-  /* 폼 제출 전 검증 */
+  /* ★★★ 폼 제출 전 디버깅 강화 ★★★ */
   document.getElementById('scheduleForm').onsubmit = function(e) {
     console.log('=== 폼 제출 데이터 확인 ===');
     var formData = new FormData(this);
     
+    // 모든 필드 확인
     var spotIds = formData.getAll('spotIds');
+    var isManualArray = formData.getAll('isManual');
     var manualNames = formData.getAll('manualNames');
     var manualAddresses = formData.getAll('manualAddresses');
+    var manualLats = formData.getAll('manualLats');
+    var manualLons = formData.getAll('manualLons');
     var startTimes = formData.getAll('startTimes');
     var endTimes = formData.getAll('endTimes');
+    var dayNos = formData.getAll('dayNos');
     
+    console.log('📋 전체 폼 데이터:');
     console.log('spotIds:', spotIds);
+    console.log('isManual:', isManualArray);
     console.log('manualNames:', manualNames);
     console.log('manualAddresses:', manualAddresses);
+    console.log('manualLats:', manualLats);
+    console.log('manualLons:', manualLons);
     console.log('startTimes:', startTimes);
     console.log('endTimes:', endTimes);
+    console.log('dayNos:', dayNos);
     
-    // 최소 하나의 일정이 있는지 확인
+    // 수동 추가된 장소들만 별도 확인
+    console.log('🏷️ 수동 추가 장소들:');
+    for (var i = 0; i < isManualArray.length; i++) {
+      if (isManualArray[i] === 'true') {
+        console.log(`Index ${i}: ${manualNames[i]} at ${manualAddresses[i]} (${manualLats[i]}, ${manualLons[i]})`);
+      }
+    }
+    
+    // 기본 검증
     if (spotIds.length === 0) {
       alert('최소 하나의 일정을 추가해주세요.');
       e.preventDefault();
       return false;
     }
 
-    // 시작/종료 시간이 모두 입력되었는지 확인
     for (var i = 0; i < startTimes.length; i++) {
       if (!startTimes[i] || !endTimes[i]) {
         alert('모든 일정의 시작 시간과 종료 시간을 입력해주세요.');
@@ -503,31 +635,9 @@ document.addEventListener('DOMContentLoaded',function(){
     return true;
   };
 });
-
-/* 시·군·구 드롭다운 업데이트 함수 */
-function updateSigunguOptions() {
-  var regionId = document.getElementById('region1').value;
-  var sigunguSelect = document.getElementById('region2');
-  
-  sigunguSelect.innerHTML = '<option value="">시·군·구 선택</option>';
-  
-  if (!regionId) return;
-  
-  // 시·군·구 목록을 서버에서 가져오기
-  fetch('<c:out value="${pageContext.request.contextPath}"/>/admin/sigungu/' + regionId)
-    .then(function(response) { return response.json(); })
-    .then(function(data) {
-      data.forEach(function(sigungu) {
-        var option = document.createElement('option');
-        option.value = sigungu.sigunguId || sigungu.sigunguCode;
-        option.textContent = sigungu.sigunguName;
-        sigunguSelect.appendChild(option);
-      });
-    })
-    .catch(function(error) {
-      console.error('시·군·구 목록 로드 실패:', error);
-    });
-}
 </script>
+
 </body>
 </html>
+
+

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.sist.web.dao.CalanderDao;
 import com.sist.web.model.Calander;
 import com.sist.web.model.CalanderList;
+import com.sist.web.model.UserPlace;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +39,12 @@ public class CalanderService {
     }
     public void deleteListById(String listId) {
         calanderDao.deleteCalanderListById(listId);
+    }
+    public List<CalanderList> getListsByUser(String userId){
+        return calanderDao.getCalanderListsByUser(userId);
+    }
+    public void saveManualPlace(UserPlace place) {
+        calanderDao.insertManualPlace(place);
     }
 }
 

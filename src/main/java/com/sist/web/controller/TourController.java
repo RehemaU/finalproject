@@ -39,6 +39,7 @@ public class TourController {
     }
 
     @GetMapping("/listAll")
+    @ResponseBody
     public List<Tour> getAllTours() {
         return tourService.getAllTours();
     }

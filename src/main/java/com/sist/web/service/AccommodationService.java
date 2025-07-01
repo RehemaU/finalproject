@@ -204,9 +204,15 @@ public class AccommodationService {
         return accommodationDao.searchBySigungu(sigunguList);
     }
     
+
     public List<Accommodation> getAllAccommodations() {
         return accommodationDao.getAllAccommodations(); // DAO에서 전체 조회
 
     }
     
+
+    public Accommodation selectAccommodation(String accommId) {
+    	return accommodationDao.selectAccommodation(accommId);
+    }
+
    }

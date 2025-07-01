@@ -79,17 +79,7 @@
         SELECT COUNT(*) FROM T_EVENT WHERE EVENT_ID = #{eventId}
     </select>
 
-    <!-- 페이징된 이벤트 목록 -->
-    <select id="selectEventListPaging" parameterType="map" resultMap="eventResultMap">
-        SELECT * FROM (
-            SELECT A.*, ROWNUM RN FROM (
-                SELECT EVENT_ID, ADMIN_ID, EVENT_TITLE, EVENT_CONTENT, EVENT_REGDATE, EVENT_COUNT,
-                       COUPON_ID, EVENT_THUMBNAIL_URL, EVENT_IMAGE_URL, EVENT_ENDDATE
-                FROM T_EVENT
-                ORDER BY EVENT_REGDATE DESC
-            ) A WHERE ROWNUM &lt;= #{end}
-        ) WHERE RN &gt;= #{start}
-    </select>
+    
 
     <!-- 사용자 쿠폰 보유 여부 확인 -->
     <select id="existsUserCoupon" resultType="int">
@@ -116,4 +106,59 @@
         ORDER BY EVENT_REGDATE DESC
     </select>
 
+	<select id="selectNoticeEvent" resultMap="eventResultMap">
+    SELECT * FROM T_EVENT
+    WHERE EVENT_ID = 'NOTICE'  <!-- 또는 IS_NOTICE = 'Y' -->
+	</select>
+
+	<select id="selectEventListPaging" resultMap="eventResultMap">
+	  SELECT * 
+	  FROM (
+	      SELECT A.*, ROWNUM AS RN 
+	      FROM (
+	          SELECT * 
+	          FROM T_EVENT 
+	          ORDER BY EVENT_REGDATE DESC, EVENT_ID DESC
+	      ) A
+	      WHERE ROWNUM &lt;= #{startRow} + #{pageSize}
+	  ) 
+	  WHERE RN &gt; #{startRow}
+	</select>
+	
+	<select id="countAllEvents" resultType="int">
+    SELECT COUNT(*) FROM T_EVENT
+	</select>
+	
+	<!-- 검색어에 따른 이벤트 개수 -->
+    <select id="getSearchEventCount" resultType="int">
+        SELECT COUNT(*) 
+        FROM T_EVENT
+        <where>
+            <if test="keyword != null and keyword != ''">
+                EVENT_TITLE LIKE '%' || #{keyword} || '%'
+            </if>
+        </where>
+    </select>
+
+    <!-- 검색어에 따른 이벤트 목록 (페이징 포함) -->
+    <select id="searchEventList" resultMap="eventResultMap">
+        SELECT * 
+        FROM (
+            SELECT A.*, ROWNUM AS RN 
+            FROM (
+                SELECT * 
+                FROM T_EVENT
+                <where>
+                    <if test="keyword != null and keyword != ''">
+                        EVENT_TITLE LIKE '%' || #{keyword} || '%'
+                    </if>
+                </where>
+                ORDER BY EVENT_REGDATE DESC, EVENT_ID DESC
+            ) A
+            WHERE ROWNUM &lt;= #{startRow} + #{pageSize}
+        ) 
+        WHERE RN &gt; #{startRow}
+    </select>
+	
+	
 </mapper>

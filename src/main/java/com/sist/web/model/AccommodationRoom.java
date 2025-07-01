@@ -59,8 +59,18 @@ public class AccommodationRoom {
 
     @JsonProperty("roomoffseasonminfee1")
     private String standardPrice;      // 객실 기본 요금 (비수기 최소 요금)
+    
+    @JsonProperty("roomimg1")
+    private String roomImage;
+    public String getRoomImage() {
+		return roomImage;
+	}
 
-    // 기본 생성자
+	public void setRoomImage(String roomImage) {
+		this.roomImage = roomImage;
+	}
+
+	// 기본 생성자
     public AccommodationRoom() {}
 
     // getters and setters
