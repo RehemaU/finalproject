@@ -41,13 +41,14 @@ public class PcommentController {
 		
 		String planId = HttpUtil.get(request, "planId", "");
 		String planCommentContent = HttpUtil.get(request, "planCommentContent", "");
-		
+		String userId = (String) request.getSession().getAttribute("userId");
 		if(!StringUtil.isEmpty(planCommentContent))
 		{
 			Pcomment pcomment = new Pcomment();
 			
 			pcomment.setPlanCommentContent(planCommentContent);
 			pcomment.setPlanId(planId);
+			pcomment.setUserId(userId);
 			
 			try
 			{

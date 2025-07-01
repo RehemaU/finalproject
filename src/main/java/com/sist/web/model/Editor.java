@@ -26,6 +26,11 @@ public class Editor implements Serializable {
 	
 	private int comCount;
 	
+	private String userName;
+	private String userImgEx;
+	
+	private String thumbnail;
+	
 	public Editor()
 	{
 	    planId = "";
@@ -47,10 +52,12 @@ public class Editor implements Serializable {
 	    endRow = 0;
 	    
 	    comCount = 0;
+	    
+	    userName = "";
+	    userImgEx = "";
+	    
+	    thumbnail = "";
 	}
-
-
-
 
 	//getter-setter
 	public String getPlanId() {
@@ -179,6 +186,30 @@ public class Editor implements Serializable {
 	
 	public void setComCount(int comCount) {
 		this.comCount = comCount;
+	}
+	
+	public String getUserName() {
+		return userName;
+	}
+	
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+	
+	public String getUserImgEx() {
+		return userImgEx;
+	}
+	
+	public void setUserImgEx(String userImgEx) {
+		this.userImgEx = userImgEx;
+	}
+	
+	public String getThumbnail() {
+		return thumbnail;
+	}
+	
+	public void setThumbnail(String thumbnail) {
+		this.thumbnail = thumbnail;
 	}
 	
 }

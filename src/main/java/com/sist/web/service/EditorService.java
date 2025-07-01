@@ -105,6 +105,7 @@ public class EditorService {
 		return count;
 	}
 	
+	//게시글 삭제
 	public int editorDelete(int planId)
 	{
 		int count = 0;
@@ -121,4 +122,69 @@ public class EditorService {
 		return count;
 	}
 	
+	//게시물 썸네일
+	public String editorThumbnail(int planId)
+	{
+		String thumbnail = "";
+		
+		try
+		{
+			thumbnail = editorDao.editorThumbnail(planId);
+		}
+		catch(Exception e)
+		{
+			logger.error("[EditorService]editorThumbnail Exception", e);
+		}
+		
+		return thumbnail;
+	}
+	
+	//게시물 조회수증가
+	public int editorCountUpdate(int planId)
+	{
+		int count = 0;
+		
+		try
+		{
+			count = editorDao.editorCountUpdate(planId);
+		}
+		catch(Exception e)
+		{
+			logger.error("[EditorService]editorCountUpdate Exception", e);
+		}
+		
+		return count;
+	}
+	//좋아요증가
+	public int editorLikeIncre(int planId)
+	{
+		int count = 0;
+		
+		try
+		{
+			count = editorDao.editorLikeIncre(planId);
+		}
+		catch(Exception e)
+		{
+			logger.error("[EditorService]editorLikeIncre Exception", e);
+		}
+		
+		return count;
+	}
+	//좋아요감소
+	public int editorLikeDecre(int planId)
+	{
+		int count = 0;
+		
+		try
+		{
+			count = editorDao.editorLikeDecre(planId);
+		}
+		catch(Exception e)
+		{
+			logger.error("[EditorService]editorLikeDecre Exception", e);
+		}
+		
+		return count;
+	}
 }
