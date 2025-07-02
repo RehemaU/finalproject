@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sist.web.dao.LikeDao">
+<resultMap id="likeResultMap" type="com.sist.web.model.Like">
+        <id property="likeId" column="LIKE_ID"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="spotId" column="SPOT_ID"/>
+</resultMap>
+    
+
+ <insert id="insertLike">
+        INSERT INTO T_LIKE (LIKE_ID, USER_ID, SPOT_ID)
+        VALUES (SYS_GUID(), #{userId}, #{spotId})
+    </insert>
+
+    <!-- 좋아요 취소 -->
+    <delete id="deleteLike">
+        DELETE FROM T_LIKE
+        WHERE USER_ID = #{userId}
+          AND SPOT_ID = #{spotId}
+    </delete>
+
+    <!-- 중복 체크 -->
+    <select id="existsLike" resultType="int">
+        SELECT COUNT(*)
+        FROM   T_LIKE
+        WHERE  USER_ID = #{userId}
+          AND  SPOT_ID = #{spotId}
+    </select>
+    
+    
+    <!-- 좋아요 리스트 조회 -->
+  <select id="getLikedSpots" parameterType="string" resultType="map">
+SELECT * FROM (
+    -- 관광지
+    SELECT l.SPOT_ID,
+           t.TOUR_NAME      AS NAME,
+           t.TOUR_ADD       AS ADDRESS,
+           t.TOUR_IMAGE     AS IMAGE
+    FROM   T_LIKE l, T_TOUR t
+    WHERE  l.SPOT_ID = t.TOUR_ID
+      AND  l.USER_ID = #{userId}
+      AND  l.SPOT_ID LIKE 'TOUR_%'
+
+    UNION ALL
+
+    -- 숙소
+    SELECT l.SPOT_ID,
+           a.ACCOM_NAME     AS NAME,
+           a.ACCOM_ADD      AS ADDRESS,
+           a.ACCOM_IMAGE    AS IMAGE
+    FROM   T_LIKE l, T_ACCOMM a
+    WHERE  l.SPOT_ID = a.ACCOM_ID
+      AND  l.USER_ID = #{userId}
+      AND  l.SPOT_ID LIKE 'ACCOM_%'
+)
+ORDER BY NAME;
+  </select>
+    
+</mapper>
