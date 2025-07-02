@@ -48,7 +48,7 @@
   <i class="fa-solid fa-bars fa-lg"></i>
 </button>
 
-  <h1>일정 후기 작성</h1>
+  <h1>${param.tCalanderListId}</h1>
   <br /><br />
 
   <!-- ⭐️ 래퍼 시작 -->
@@ -101,7 +101,8 @@
     document.getElementById('submitBtn').addEventListener('click', async () => {
       const planTitle   = document.getElementById('titleInput').value.trim();
       const planContent = editor.getHTML();
-
+      const tCalanderListId = "${param.tCalanderListId}";
+      
       if (!planTitle)          { alert('제목을 입력하세요.'); return; }
       if (planContent === '<p><br></p>') { alert('본문을 입력하세요.'); return; }
 
@@ -110,7 +111,7 @@
     	    const res   = await fetch(`${BASE_API_URL}/editor/submit`,{
     	      method : 'POST',
     	      headers: {'Content-Type':'application/json'},
-    	      body   : JSON.stringify({planTitle,planContent})
+    	      body   : JSON.stringify({planTitle,planContent,tCalanderListId})
     	    });
 
     	    /* ① HTTP 상태 먼저 체크 (200~299) */

@@ -187,4 +187,38 @@ public class EditorService {
 		
 		return count;
 	}
+	
+	//일정에대한후기체크
+	public int editorScheduleChk(Editor editor)
+	{
+		int count = 0;
+		
+		try
+		{
+			count = editorDao.editorScheduleChk(editor);
+		}
+		catch(Exception e)
+		{
+			logger.error("[EditorService]editorScheduleChk Exception", e);
+		}
+		
+		return count;
+	}
+	
+	//캘린더아이디로플랜아이디조회
+	public int editorPlanId(Editor editor)
+	{
+		int count = 0;
+		
+		try
+		{
+			count = editorDao.editorPlanId(editor);
+		}
+		catch(Exception e)
+		{
+			logger.error("[EditorService]editorPlanId Exception", e);
+		}
+		
+		return count;
+	}
 }

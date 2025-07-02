@@ -14,6 +14,10 @@ public class CalanderList implements Serializable{
     private String calanderListName;
     private Date calanderListStartDate;
     private Date calanderListEndDate;
+    
+    private boolean isPlan;
+    private int planId;
+    
     // Getter, Setter, Constructor
     
     
@@ -24,6 +28,8 @@ public class CalanderList implements Serializable{
     	calanderListName = "";
     	calanderListStartDate = null;
     	calanderListEndDate = null;
+    	isPlan=false;
+    	planId=0;
     }
 
     public CalanderList(String calanderListId, String userId, String calanderListName,
@@ -35,6 +41,24 @@ public class CalanderList implements Serializable{
 		this.calanderListStartDate = calanderListStartDate;
 		this.calanderListEndDate = calanderListEndDate;
 	}
+
+	//--
+	public boolean getIsPlan() {
+		return isPlan;
+	}
+
+	public void setIsPlan(boolean isPlan) {
+		this.isPlan = isPlan;
+	}
+	
+	public int getPlanId() {
+		return planId;
+	}
+	
+	public void setPlanId(int planId) {
+		this.planId = planId;
+	}
+	//--
 	public String getCalanderListId() {
 		return calanderListId;
 	}

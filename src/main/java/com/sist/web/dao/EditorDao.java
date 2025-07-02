@@ -26,4 +26,8 @@ public interface EditorDao {
 	public int editorLikeIncre(int planId);
 	//좋아요감소
 	public int editorLikeDecre(int planId);
+	//일정에대한후기체크
+	public int editorScheduleChk(Editor editor);
+	//캘린더아이디로플랜아이디조회
+	public int editorPlanId(Editor editor);
 }

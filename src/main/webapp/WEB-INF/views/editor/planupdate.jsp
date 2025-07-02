@@ -33,7 +33,7 @@
   <i class="fa-solid fa-chevron-left fa-lg"></i>
 </button>
 
-  <h1>일정 후기 수정</h1>
+  <h1>${param.planId}</h1>
   <br /><br />
   <div class="review-container">
     <!-- planId, editor 객체는 컨트롤러에서 모델에 담아 전달 -->
@@ -60,7 +60,12 @@
     const planId        = '${planId}';
     const initialTitle  = `<c:out value='${editor.planTitle}'/>`;
     const initialContent= `<c:out value='${editor.planContent}' escapeXml='false'/>`;
-
+	
+	if(planId==""||planId==null)
+	{
+		planId = "${param.planId}";
+	}
+	
     document.getElementById('titleInput').value = initialTitle;
 
     /* Editor 초기화 */
@@ -85,6 +90,7 @@
     document.getElementById('submitBtn').addEventListener('click', async () =>{
       const planTitle   = document.getElementById('titleInput').value.trim();
       const planContent = editor.getHTML();
+  	
       if(!planTitle) return alert('제목을 입력하세요.');
       if(planContent === '<p><br></p>') return alert('본문을 입력하세요.');
 
