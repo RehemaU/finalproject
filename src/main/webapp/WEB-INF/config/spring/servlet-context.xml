@@ -58,12 +58,22 @@
             	<constructor-arg> <!-- 인증체크 제외 URL 설정 -->
             		<list>
             			<value>/index</value>
-            			<value>/first</value>
+            			<!--<value>/first</value>
             			<value>/user/login</value>
             			<value>/user/loginOut</value>
             			<value>/user/regForm</value>
             			<value>/user/regProc</value>
-            			<value>/user/idCheck</value>
+            			<value>/user/idCheck</value>//-->
+            			<value>/seller/login</value>
+            			<value>/seller/loginProc</value>
+            			<value>/seller/sellerRegForm</value>
+            			<value>/seller/idCheck</value>
+            			<value>/seller/sellerRegProc</value>
+            			<value>/seller/sellerUpdateForm</value>
+            			<value>/seller/sellerUpdateProc</value>
+            			<value>/seller/sellerPasswordForm</value>
+            			<value>/seller/sellerPasswordChange</value>
+            			<value>/seller/checkCurrentPassword</value>
             		</list>
             	</constructor-arg>
             </bean>

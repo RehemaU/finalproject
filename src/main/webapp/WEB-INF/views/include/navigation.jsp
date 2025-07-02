@@ -6,8 +6,8 @@
     <div class="util-icons flex center">
       <a class="icon" href="/mypage">MY PAGE</a>
       <a class="icon" href="/likes">MY LIKE</a>
-      <a class="icon" href="/bag">BAG</a>
-      <a class="icon" href="/login">LOGIN</a>
+      <a class="icon" href="/seller/sellerRegForm">PASSWORD</a>
+      <a class="icon" href="/seller/login">LOGIN</a>
       <span class="search" aria-label="Search"></span>
     </div>
   </div>
