@@ -74,8 +74,16 @@
 <body>
   <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
   <br>
-<h2 style="margin-left: 280px;"><%= listName %></h2>
+<h2 style="margin-left: 280px;">
   <c:choose>
+    <c:when test="${empty list.calanderListName}">
+      <%= session.getAttribute("listName") != null ? session.getAttribute("listName") : "" %>
+    </c:when>
+    <c:otherwise>
+      ${list.calanderListName}
+    </c:otherwise>
+  </c:choose>
+</h2>  <c:choose>
     <c:when test="${empty calList}">
       <p>저장된 일정이 없습니다.</p>
     </c:when>
@@ -103,6 +111,7 @@
         <div id="map"></div>
       </div>
 <div class="btn-group">
+  <a href="/schedule/myList" class="action-btn">일정 목록</a>
   <a href="/schedule/editForm?listId=${sessionScope.calanderListId}" class="action-btn">일정 수정</a>
   <form action="${pageContext.request.contextPath}/schedule/deleteList" method="post" onsubmit="return confirm('정말 삭제하시겠습니까?');">
     <input type="hidden" name="listId" value="${sessionScope.calanderListId}" />

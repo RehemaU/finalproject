@@ -14,6 +14,8 @@ public class Pcomment implements Serializable {
 	private String planCommentDate;
 	private int planCommentReport;
 	
+	private String userName;
+	
 	public Pcomment()
 	{
 		commentId = "";
@@ -23,6 +25,8 @@ public class Pcomment implements Serializable {
 		planCommentParent = 0;
 		planCommentDate = "";
 		planCommentReport = 0;
+		
+		userName = "";
 	}
 
 	//getter-setter
@@ -80,6 +84,14 @@ public class Pcomment implements Serializable {
 
 	public void setPlanCommentReport(int planCommentReport) {
 		this.planCommentReport = planCommentReport;
+	}
+	
+	public String getUserName() {
+		return userName;
+	}
+	
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 	
 }

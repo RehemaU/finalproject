@@ -27,7 +27,7 @@
 		PLAN_RECOMMEND,
 		T_CALANDER_LIST_ID)
 		VALUES (PLAN_SEQ.NEXTVAL,
-		'user1',
+		#{userId},
 		#{planTitle},
 		#{planContent},
 		SYSDATE,
@@ -143,7 +143,7 @@
 			A.PLAN_ID = #{value}
 	  </select>
 	  
-	  <!-- 게시물 수정 -->
+	    <!-- 게시물 수정 -->
 		<update id="editorUpdate" parameterType="com.sist.web.model.Editor">
 			UPDATE T_PLAN
 			   SET PLAN_TITLE = #{planTitle},
@@ -156,5 +156,33 @@
 		DELETE T_PLAN
 		WHERE PLAN_ID = #{value}
 		</delete>
+	  
+	  <!-- 게시물 썸네일 -->
+	  <select id="editorThumbnail" parameterType="int" resultType="String">
+	  SELECT REGEXP_SUBSTR(PLAN_CONTENT, <![CDATA['<img[^>]*>']]>, 1, 1) AS FIRST_IMG_TAG
+	    FROM T_PLAN
+	   WHERE PLAN_ID = #{value}
+	  </select>
+	  
+	  <!-- 조회수 증가 -->
+	  <update id="editorCountUpdate" parameterType="int">
+		UPDATE T_PLAN
+		SET PLAN_COUNT = PLAN_COUNT + 1
+		WHERE PLAN_ID = #{value}
+	  </update>
+	  
+	  <!-- 좋아요 증가 -->
+	  <update id="editorLikeIncre"  parameterType="int">
+		UPDATE T_PLAN
+		SET PLAN_RECOMMEND = PLAN_RECOMMEND + 1
+		WHERE PLAN_ID = #{value}
+	  </update>
+	  
+	  <!-- 좋아요 감소 -->
+	  <update id="editorLikeDecre"  parameterType="int">
+		UPDATE T_PLAN
+		SET PLAN_RECOMMEND = PLAN_RECOMMEND - 1
+		WHERE PLAN_ID = #{value}
+	  </update>
 	  
 </mapper>

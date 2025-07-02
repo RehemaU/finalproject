@@ -73,6 +73,14 @@ public class CalanderList implements Serializable{
 	public void setCalanderListStartDate(Date calanderListStartDate) {
 		this.calanderListStartDate = calanderListStartDate;
 	}
+
+	public Date getCalanderListEndDate() {
+		return calanderListEndDate;
+	}
+
+	public void setCalanderListEndDate(Date calanderListEndDate) {
+		this.calanderListEndDate = calanderListEndDate;
+	}
     
     
 }

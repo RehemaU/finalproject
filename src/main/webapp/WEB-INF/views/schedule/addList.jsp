@@ -41,12 +41,12 @@
 <!-- STEP 0 : 일정 시작 선택 -->
 <section class="swiper-slide bg-white">
   <div class="form-box text-center">
-<h1 style="font-size: 40px;">To do your Trip Plan !</h1>
+<h1 style="font-size: 40px;">Create your Travel Plan</h1>
     <p class="text-gray-500 mt-2 mb-8">당신의 여행을 더욱 즐겁게</p>
 
     <div class="flex flex-col gap-4">
       <!-- 내 일정 보기 -->
-      <a href="${pageContext.request.contextPath}/schedule/list" 
+      <a href="${pageContext.request.contextPath}/schedule/myList" 
          class="block py-4 px-6 bg-[#eee] text-[#111] font-semibold rounded-lg hover:bg-[#ddd] transition">
         내가 만든 일정 목록
       </a>

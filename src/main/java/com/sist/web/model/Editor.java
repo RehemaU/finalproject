@@ -24,6 +24,13 @@ public class Editor implements Serializable {
 	private long startRow;			//시작페이지 rownum
 	private long endRow;			//끝페이지 rownum
 	
+	private int comCount;
+	
+	private String userName;
+	private String userImgEx;
+	
+	private String thumbnail;
+	
 	public Editor()
 	{
 	    planId = "";
@@ -43,8 +50,14 @@ public class Editor implements Serializable {
 	    
 	    startRow = 0;
 	    endRow = 0;
+	    
+	    comCount = 0;
+	    
+	    userName = "";
+	    userImgEx = "";
+	    
+	    thumbnail = "";
 	}
-
 
 	//getter-setter
 	public String getPlanId() {
@@ -165,6 +178,38 @@ public class Editor implements Serializable {
 	
 	public void setEndRow(long endRow) {
 		this.endRow = endRow;
+	}
+	
+	public int getComCount() {
+		return comCount;
+	}
+	
+	public void setComCount(int comCount) {
+		this.comCount = comCount;
+	}
+	
+	public String getUserName() {
+		return userName;
+	}
+	
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+	
+	public String getUserImgEx() {
+		return userImgEx;
+	}
+	
+	public void setUserImgEx(String userImgEx) {
+		this.userImgEx = userImgEx;
+	}
+	
+	public String getThumbnail() {
+		return thumbnail;
+	}
+	
+	public void setThumbnail(String thumbnail) {
+		this.thumbnail = thumbnail;
 	}
 	
 }

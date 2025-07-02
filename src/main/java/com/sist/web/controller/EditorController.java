@@ -26,6 +26,8 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import com.google.gson.JsonObject;
 import com.sist.web.service.EditorService;
 import com.sist.web.service.PcommentService;
+import com.sist.web.service.RecommendService;
+import com.sist.web.service.UserService;
 import com.sist.web.util.HttpUtil;
 import com.sist.common.model.FileData;
 import com.sist.common.util.StringUtil;
@@ -42,6 +44,10 @@ public class EditorController
 	private EditorService editorService;
 	@Autowired
 	private PcommentService pcommentService;
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private RecommendService recommendService;
 	
 	private static final int LIST_COUNT = 10; 	// 한 페이지의 게시물 수
 	private static final int PAGE_COUNT = 2;	// 페이징 수
@@ -105,7 +111,7 @@ public class EditorController
 	//게시글 작성(part-2)
 	@RequestMapping(value = "/editor/submit", method = RequestMethod.POST)
 	@ResponseBody
-	public Response<JsonObject> readyAjax(@RequestBody Editor editor) {
+	public Response<JsonObject> readyAjax(@RequestBody Editor editor, HttpServletRequest request) {
 	    Response<JsonObject> res = new Response<>();
 
 	    if (editor == null) {
@@ -115,15 +121,16 @@ public class EditorController
 
 	    String planTitle = editor.getPlanTitle();
 	    String planContent = editor.getPlanContent();
-
+	    String userId = (String) request.getSession().getAttribute("userId");
 
 	    JsonObject data = new JsonObject();
 	    data.addProperty("title", planTitle);
 	    data.addProperty("content", planContent);
 	    
+	    editor.setUserId(userId);
 	    editor.setPlanTitle(planTitle);
 	    editor.setPlanContent(planContent);
-	    editor.setTCalanderListId("CL001");
+	    editor.setTCalanderListId("CL005");
 
 	    logger.info("제목: " + planTitle);
 	    logger.info("내용: " + planContent);
@@ -163,7 +170,8 @@ public class EditorController
 		// 현재 페이지
 		long curPage = HttpUtil.get(request, "curPage", (long)1);
 		
-		//게시물 리스트
+		
+		// 게시물 리스트
 		List<Editor> list = null;
 		// 조회 객체
 		Editor search = new Editor();
@@ -171,6 +179,16 @@ public class EditorController
 		long totalCount = 0;
 		// 페이징 객체
 		Paging paging = null;
+		// 댓글 수
+		int comCount = 0;
+		// 유저 이름
+		String userName = "";
+		// 유저 파일확장자
+		String userImgEx = "";
+		// 유저 객체
+		User user = new User();
+		// 썸네일
+		String thumbnail = "";
 		
 		if(!StringUtil.isEmpty(searchType) && !StringUtil.isEmpty(searchValue))
 		{
@@ -190,18 +208,28 @@ public class EditorController
 		
 		totalCount = editorService.editorListCount(search);
 		
-		logger.debug("&*& 현재 게시물 수 : " + totalCount + " &*&");
-		
 		if(totalCount > 0)
 		{	
 			paging = new Paging("/editor/planlist", totalCount, LIST_COUNT, PAGE_COUNT, curPage, "curPage");
 			
-			
 			search.setStartRow(paging.getStartRow());
 			search.setEndRow(paging.getEndRow());
 			
+			// --------------------------------------------
 			
 			list = editorService.editorList(search);
+			
+	        for(Editor e : list) {
+	            comCount = pcommentService.pcommentCount(Integer.parseInt(e.getPlanId()));
+	            e.setComCount(comCount);
+	            user = userService.userSelect(e.getUserId());
+	            userName = user.getUserName();
+	            userImgEx = user.getUserProfile();
+	            e.setUserName(userName);
+	            e.setUserImgEx(userImgEx);
+	            thumbnail = editorService.editorThumbnail(Integer.parseInt(e.getPlanId()));
+	            e.setThumbnail(thumbnail);
+	        }
 		}
 		
 		// return 값으로 전달
@@ -220,6 +248,9 @@ public class EditorController
 	@RequestMapping(value="/editor/planview")
 	public String planSelect(ModelMap model, HttpServletRequest request, HttpServletResponse response)
 	{
+		//로그인아이디체크
+		String loginId = (String) request.getSession().getAttribute("userId");
+		
 		// 게시물 번호
 		int planId = HttpUtil.get(request, "planId", 0);
 		// 정렬 방식
@@ -230,15 +261,63 @@ public class EditorController
 		String searchValue = HttpUtil.get(request, "searchValue", "");
 		// 현재 페이지
 		long curPage = HttpUtil.get(request, "curPage", (long)1);
-		
+		// 게시글 객체
 		Editor editor = null;
-		
+		// 댓글 리스트
 		List<Pcomment> list = null;
+		// 댓글 수
+		int comCount = 0;
+		// 유저 객체 (userName을 위해)
+		User user = null;
+		// 댓글 유저 객체 (userName을 위해)
+		User comuser = null;
+		// 게시글 유저네임
+		String userName = "";
+		// 댓글 유저네임
+		String comuserName = "";
+		// 좋아요 객체
+		Recommend recom = new Recommend();
+		// 좋아요 누른 여부
+		boolean liked = false;
 		
 		if(planId > 0)
 		{
 			editor = editorService.editorSelect(planId);
 			list = pcommentService.pcommentList(planId);
+			
+			for (Pcomment p : list)
+			{
+				comuser = userService.userSelect(p.getUserId());
+				comuserName = comuser.getUserName();
+				p.setUserName(comuserName);
+			}
+			
+			comCount = pcommentService.pcommentCount(planId);
+			editor.setComCount(comCount);
+			
+			user = userService.userSelect(editor.getUserId());
+            userName = user.getUserName();
+            editor.setUserName(userName);
+            
+            //조회수
+            if (planId > 0 && editor != null && loginId != null)
+            {
+                if (!loginId.equals(editor.getUserId())) {
+                    int updated = editorService.editorCountUpdate(planId);
+                    if (updated <= 0) {
+                        System.out.println("##조회수 처리 실패##");
+                    }
+                }
+            }
+            
+            recom.setPlanId(Integer.toString(planId));
+            recom.setUserId(loginId);
+            
+            if(recommendService.recommendInquiry(recom) > 0)
+            {
+            	liked = true;
+            }
+
 		}
 		
 		model.addAttribute("planId", planId);
@@ -248,6 +327,9 @@ public class EditorController
 		model.addAttribute("curPage", curPage);
 		model.addAttribute("editor", editor);
 		model.addAttribute("list", list);
+		
+		model.addAttribute("loginId", loginId);
+		model.addAttribute("liked", liked);
 		
 		return "/editor/planview";
 	}

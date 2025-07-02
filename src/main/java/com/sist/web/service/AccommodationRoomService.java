@@ -29,7 +29,7 @@ public class AccommodationRoomService {
 
     private static final String ROOM_BASE_URL = "http://apis.data.go.kr/B551011/KorService2/detailInfo2";
     private static final String SERVICE_KEY =
-        "FI/5+Yaw6f0s/3FPHecXtwv8WvGz4xVfTDwKdI9Poe+KV9qTGaG+wGoh2khuWd7w4mUKPGC1dIsyvNORXpkrrQ==";
+        "MHbE44hd7kHCOFVk5VucNc1XiPWTzxPAraI2RBlclEk8DFoZtBZWPX1gTMSVJ5j1U6ggq3bD6eViUAyxJfBpdQ==";
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -113,6 +113,10 @@ public class AccommodationRoomService {
                 saveAccommodationRoom(room);
             }
         }
+    }
+    
+    public List<AccommodationRoom> searchByAccommid(String accommId){
+    	return accommodationRoomDao.searchByAccommId(accommId);
     }
 
 }

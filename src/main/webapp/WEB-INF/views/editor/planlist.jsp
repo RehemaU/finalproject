@@ -7,12 +7,36 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
+	<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet"/>
+	<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Bootstrap CSS -->
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-    rel="stylesheet"/>
-    <link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    rel="stylesheet"
+  />
+
+  <!-- Font Awesome -->
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* 카드 본문 요약 텍스트 두 줄로 자르기 */
+    .card-text {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  </style>
 
 <style>
 /* 플로팅 “후기 작성” 버튼 */
@@ -58,6 +82,15 @@
   color: inherit;                    /* 링크색 대신 기본 글자색 */
   font-size: 1.3rem !important;      /* ← 글씨 크기 키우기 */
 }
+  }
+</style>
+
+<style>
+  /* 썸네일만 고정 높이로 통일 */
+  .card-img-container img {
+    width: 100%;
+    height: 200px;      /* ← 여기서 높이 조절 */
+    object-fit: cover;  /* 비율 유지하면서 잘라내기 */
   }
 </style>
 
@@ -147,54 +180,73 @@
     </div>
 
     <!-- 게시글 리스트 (카드 형태) -->
-    <div class="row">
-      <c:choose>
-        <c:when test="${not empty list}">
-          <c:forEach var="post" items="${list}">
-            <div class="col-12 mb-3">
-              <div class="card shadow-sm">
-                <div class="card-body">
-                  <!-- 제목 클릭 시 planId 전송하는 폼 -->
-                  <form action="${pageContext.request.contextPath}/editor/planview"
-                        method="get">
-                    <input type="hidden" name="planId" value="${post.planId}" />
-                    <input type="hidden" name="curPage" value="${post.curPage}" />
-                    <input type="hidden" name="listType" value="${post.listType}" />
-                    <input type="hidden" name="searchType" value="${post.searchType}" />
-                    <input type="hidden" name="searchValue" value="${post.searchValue}" />
-                    <!-- curPage, listType, searchType, searchValue 유지하려면 여기도 히든 추가 가능 -->
-                    <button type="submit"
-                            class="card-title btn btn-link p-0"
-                            style="font-size:1.25rem; font-weight:600;">
-                      ${post.planTitle}
-                    </button>
-                  </form>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-                  <p class="card-text">
-					${post.planContent}
-                  </p>
-                  <p class="card-text text-end">
-                    <small class="text-muted">
-                      작성자: ${post.userId}
-                      | 날짜: ${post.planRegdate}
-                      | 추천: ${post.planRecommend}
-                      | 조회: ${post.planCount}
-                    </small>
-                  </p>
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+  <c:choose>
+    <c:when test="${not empty list}">
+      <c:forEach var="post" items="${list}">
+        <div class="col">
+          <div class="card h-100 shadow-sm">
+
+            <!-- 썸네일 -->
+		    <a href="${pageContext.request.contextPath}/editor/planview?planId=${post.planId}"
+		       class="card-img-container d-block">
+		      <c:choose>
+		        <c:when test="${not empty post.thumbnail}">
+		          <c:out value="${post.thumbnail}" escapeXml="false"/>
+		        </c:when>
+		        <c:otherwise>
+		          <img src="${pageContext.request.contextPath}/resources/editorupload/noimg.gif"
+		               alt="이미지 없음"/>
+		        </c:otherwise>
+		      </c:choose>
+		    </a>
+
+            <div class="card-body d-flex flex-column">
+              <!-- 제목 -->
+              <h5 class="card-title mb-2">
+                <a href="${pageContext.request.contextPath}/editor/planview?planId=${post.planId}"
+                   class="text-dark text-decoration-none">
+                  ${post.planTitle}
+                </a>
+              </h5>
+
+              <!-- 메타 & 유저정보 컨테이너 -->
+              <div class="mt-auto">
+                <!-- 작성일자 · 댓글수 -->
+                <p class="card-text text-muted mb-1">
+                  <small>작성일: ${post.planRegdate} | 댓글: ${post.comCount}</small>
+                </p>
+                <!-- 유저 · 추천수 · 조회수 -->
+                <div class="d-flex align-items-center">
+                  <img src="${pageContext.request.contextPath}/resources/upload/${post.userId}.${post.userImgEx}"
+                       style="width:32px; height:32px; object-fit:cover; border-radius:50%; border:1px solid #ccc;"
+                       alt="작성자"/>
+                  <span class="ms-2">${post.userName}</span>
+                  <span class="ms-auto">
+                    <i class="far fa-heart"></i> ${post.planRecommend}
+                    <i class="fas fa-eye ms-3"></i> ${post.planCount}
+                  </span>
                 </div>
               </div>
             </div>
-          </c:forEach>
-        </c:when>
-        <c:otherwise>
-          <div class="col-12">
-            <div class="alert alert-secondary text-center mb-0">
-              등록된 게시글이 없습니다.
-            </div>
+
           </div>
-        </c:otherwise>
-      </c:choose>
-    </div>
+        </div>
+      </c:forEach>
+    </c:when>
+    <c:otherwise>
+      <div class="col-12">
+        <div class="alert alert-secondary text-center mb-0">
+          등록된 게시글이 없습니다.
+        </div>
+      </div>
+    </c:otherwise>
+  </c:choose>
+</div>
+
+
 
   </div>
   

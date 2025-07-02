@@ -1,9 +1,10 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ include file="/WEB-INF/views/include/head.jsp" %>
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
 
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
     <title>이벤트</title>
     <style>
@@ -13,12 +14,11 @@
             margin-bottom: 20px;
         }
         .event-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 가로로 3개 */
+            gap: 24px;
         }
         .event-box {
-            width: 300px;
             border: 1px solid #ddd;
             border-radius: 10px;
             overflow: hidden;
@@ -28,16 +28,16 @@
         }
         .event-box img {
             width: 100%;
-            height: 180px;
+            height: 220px; /* 기존보다 높게 */
             object-fit: cover;
         }
         .event-info {
-            padding: 10px;
+            padding: 12px;
         }
         .event-title {
             font-weight: bold;
-            font-size: 16px;
-            margin-bottom: 5px;
+            font-size: 18px;
+            margin-bottom: 6px;
         }
         .event-date {
             font-size: 14px;
@@ -48,24 +48,15 @@
 <body>
     <div class="wrap">
 
-        <h2 class="section-title">진행 중인 이벤트</h2>
-        <div class="event-list">
-            <c:forEach var="event" items="${activeEvents}">
-                <a href="/event/detail?eventId=${event.eventId}" class="event-box">
-                    <img src="${event.eventThumbnailUrl}" alt="이벤트 이미지">
-                    <div class="event-info">
-                        <div class="event-title">${event.eventTitle}</div>
-                        <div class="event-date">~ ${event.eventEnddate}</div>
-                    </div>
-                </a>
-            </c:forEach>
-        </div>
+        <h2 class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>진행 중인 이벤트</span>
+            <a href="${pageContext.request.contextPath}/event/eventBoardList" style="font-size: 14px; color: gray; text-decoration: underline;">더보기</a>
+        </h2>
 
-        <h2 class="section-title">종료된 이벤트</h2>
         <div class="event-list">
-            <c:forEach var="event" items="${endedEvents}">
-                <a href="/event/detail?eventId=${event.eventId}" class="event-box">
-                    <img src="${event.eventThumbnailUrl}" alt="이벤트 이미지">
+            <c:forEach var="event" items="${activeEvents}" begin="0" end="5">
+                <a href="/event/eventDetail?eventId=${event.eventId}" class="event-box">
+                    <img src="${pageContext.request.contextPath}${event.eventThumbnailUrl}" alt="이벤트 이미지">
                     <div class="event-info">
                         <div class="event-title">${event.eventTitle}</div>
                         <div class="event-date">~ ${event.eventEnddate}</div>

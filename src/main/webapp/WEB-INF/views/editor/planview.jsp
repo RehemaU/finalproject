@@ -26,6 +26,35 @@
   .fab-circle:active{transform:scale(.92);}
 </style>
 
+<!-- 좋아요버튼 -->
+<style>
+  .btn-like {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.25rem 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    background-color: #fff;
+    font-size: 1rem;
+    transition: background-color .2s, border-color .2s;
+  }
+  .btn-like:hover {
+    background-color: #f5f5f5;
+  }
+  .btn-like .fa-heart {
+    font-size: 1.2rem;
+  }
+  /* 눌린(좋아요) 상태 */
+  .btn-like.liked {
+    background-color: #ffe6e6;
+    border-color: #e57373;
+  }
+  .btn-like.liked .fa-heart {
+    color: #e57373;
+  }
+</style>
+
   <!-- Bootstrap & 공통 head -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <%@ include file="/WEB-INF/views/include/head.jsp" %>
@@ -46,6 +75,7 @@
 
     <div class="card shadow-sm">
       <div class="card-body">
+      
 
         <!-- ▣ 제목 + 수정·삭제 버튼 (우측 정렬) -->
         <div class="d-flex align-items-start">
@@ -53,43 +83,45 @@
             ${editor.planTitle}
           </h1>
 
-          <!-- 버튼 그룹 -->
-          <div class="btn-group">
+        <!-- 버튼 그룹 -->
+        <div class="btn-group">
+        
+<c:if test="${loginId eq editor.userId}">
 
-            <!-- 수정 버튼 -->
-            <form action="${pageContext.request.contextPath}/editor/planupdate"
-                  method="get" class="m-0">
-              <input type="hidden" name="planId"      value="${editor.planId}"/>
-              <input type="hidden" name="curPage"     value="${curPage}"/>
-              <input type="hidden" name="listType"    value="${listType}"/>
-              <input type="hidden" name="searchType"  value="${searchType}"/>
-              <input type="hidden" name="searchValue" value="${searchValue}"/>
+        <!-- 수정 버튼 -->
+        <form action="${pageContext.request.contextPath}/editor/planupdate"
+              method="get" class="m-0">
+          <input type="hidden" name="planId"      value="${editor.planId}"/>
+          <input type="hidden" name="curPage"     value="${curPage}"/>
+          <input type="hidden" name="listType"    value="${listType}"/>
+          <input type="hidden" name="searchType"  value="${searchType}"/>
+          <input type="hidden" name="searchValue" value="${searchValue}"/>
 
-              <button type="submit" class="btn btn-outline-dark btn-sm ms-2">
-                수정
-              </button>
-            </form>
+          <button type="submit" class="btn btn-outline-dark btn-sm ms-2">
+            수정
+          </button>
+        </form>
 
-<!-- 삭제 버튼 폼 (AJAX로 호출) -->
-<form id="deleteForm"
-      action="${pageContext.request.contextPath}/editor/plandelete"
-      method="post"
-      class="d-inline m-0"
-      onsubmit="return false;"><!-- 기본 submit 막기 -->
+		<!-- 삭제 버튼 폼 (AJAX로 호출) -->
+		<form id="deleteForm"
+		      action="${pageContext.request.contextPath}/editor/plandelete"
+		      method="post"
+		      class="d-inline m-0"
+		      onsubmit="return false;"><!-- 기본 submit 막기 -->
+		
+		<input type="hidden" name="planId"      value="${editor.planId}">
+		<input type="hidden" name="curPage"     value="${curPage}">
+		<input type="hidden" name="listType"    value="${listType}">
+		<input type="hidden" name="searchType"  value="${searchType}">
+		<input type="hidden" name="searchValue" value="${searchValue}">
+		
+		<button type="button" id="deleteBtn"
+		        class="btn btn-outline-dark btn-sm ms-2">
+		  삭제
+		</button>
+		</form>
 
-  <input type="hidden" name="planId"      value="${editor.planId}">
-  <input type="hidden" name="curPage"     value="${curPage}">
-  <input type="hidden" name="listType"    value="${listType}">
-  <input type="hidden" name="searchType"  value="${searchType}">
-  <input type="hidden" name="searchValue" value="${searchValue}">
-
-  <button type="button" id="deleteBtn"
-          class="btn btn-outline-dark btn-sm ms-2">
-    삭제
-  </button>
-</form>
-
-
+<!-- 게시판 삭제 ajax -->		
 <script>
 document.getElementById('deleteBtn').addEventListener('click', async () => {
   if (!confirm('정말 삭제하시겠습니까?')) return;
@@ -117,14 +149,15 @@ document.getElementById('deleteBtn').addEventListener('click', async () => {
   }
 });
 </script>
-            
 
-          </div><!-- /btn-group -->
+</c:if>
+
+        </div><!-- /btn-group -->
         </div><!-- /제목+버튼 -->
 
         <!-- 메타 정보 -->
         <p class="text-muted mb-4">
-          작성자: ${editor.userId}
+          작성자: ${editor.userName}
           | 날짜: ${editor.planRegdate}
           | 추천: ${editor.planRecommend}
           | 조회: ${editor.planCount}
@@ -136,9 +169,71 @@ document.getElementById('deleteBtn').addEventListener('click', async () => {
         <div class="card-text" style="white-space:pre-wrap;">
           ${editor.planContent}
         </div>
+
+<br/><br/>
+
+		<!-- 좋아요 버튼만 가운데 정렬 -->
+		<p class="text-center mb-4">
+		  <button type="button"
+		          id="likeBtn"
+		          class="btn-like ${liked ? 'liked' : ''}"
+		          data-like-plan-id="${editor.planId}"
+		          data-like-user-id="${loginId}"
+				  onclick="likeToggle(this.dataset.likePlanId, this.dataset.likeUserId)">
+		    <i id="likeIcon"
+		       class="${liked ? 'fas' : 'far'} fa-heart"></i>
+		    <span id="likeCount">${editor.planRecommend}</span>
+		  </button>
+		</p>
         
         <hr class="my-4"/>
+        
+        <p class="text-muted mb-4">
+        댓글수: ${editor.comCount}
+        </p>
 
+<!-- 좋아요 토글 -->
+<script>
+  function likeToggle(likePlanId, likeUserId) {
+
+    // 로그인체크
+    if (!likeUserId)
+    {
+    	alert("로그인이 필요합니다.");
+    	return;
+    }
+
+    fetch('/editor/likeToggle', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'likePlanId=' + encodeURIComponent(likePlanId) +
+      		'&likeUserId=' + encodeURIComponent(likeUserId)
+    })
+    .then(r => r.json())
+    .then(res => {
+      // ⬇️ code(=0) 기준으로 메시지 분기
+      if (res.code === 0)
+      {
+       	alert("좋아요");
+      }
+      else if(res.code === -1)
+      {
+		alert("안좋아요");
+	  }
+      else {
+        alert("뭘까요이건: " + res.code);
+      }
+      // 무조건 새로고침
+      location.reload();
+    })
+    .catch(() => {
+      alert('서버 오류가 발생했습니다.');
+      location.reload();
+    });
+  }
+</script>
+
+<c:if test="${loginId != null && loginId != ''}">
 		<!-- 댓글 입력 폼 (textarea 옆에 버튼) -->
 		<form id="commentForm"
 		      class="d-flex align-items-center gap-2 mb-3"><!-- ★ 세로 중앙 정렬 -->
@@ -159,20 +254,62 @@ document.getElementById('deleteBtn').addEventListener('click', async () => {
 		  등록
 		</button>
 		</form>
-		
+
+<!-- ★추가: 댓글 등록 AJAX -->
+<script>
+/* 댓글 작성 AJAX */
+document.getElementById('commentBtn').addEventListener('click', async () => {
+  const form  = document.getElementById('commentForm');
+
+  // ★ 필드 이름에 맞춰 읽어오기
+  const text  = form.planCommentContent.value.trim();
+  if(!text){
+    alert('댓글 내용을 입력하세요');
+    return;
+  }
+
+  // ★ form 에 들어 있는 planId + planCommentContent 를 그대로 직렬화
+  const data = new URLSearchParams(new FormData(form));
+
+  try{
+    const res  = await fetch('${pageContext.request.contextPath}/editor/commentInsert', {
+      method : 'POST',
+      headers: { 'Content-Type':'application/x-www-form-urlencoded' },
+      body   : data
+    });
+    const body = await res.json();   // { code:0, message:"success" }
+
+    if(body.code === 0){
+      alert('댓글이 등록되었습니다!');
+      location.reload();
+    }else{
+      alert('등록 실패: ' + body.message);
+    }
+  }catch(err){
+    alert('오류: ' + err.message);
+  }
+});
+
+</script>
+
+</c:if>
+
 <br />
-		
 <!-- ★↓↓↓ 댓글 목록 루프 --------------------------------------- -->
 <c:forEach var="c" items="${list}">
   <div class="border rounded p-3 mb-2">
     <!-- 한 줄 세로 정렬: 내용(왼쪽) · 버튼(오른쪽) -->
     <div class="d-flex justify-content-between align-items-start">
       <!-- 댓글 본문 -->
-      <p class="mb-1 flex-grow-1 me-3" id="comment-${c.commentId}" }>${c.planCommentContent}</p>
+      <p class="mb-1 flex-grow-1 me-3"
+      id="comment-${c.commentId}">
+      ${c.planCommentContent}
+      </p>
 
-      <!-- 수정‧삭제 버튼 -->
+      <!-- 댓글삭제 버튼 -->
       <div class="btn-group btn-group-sm" role="group">
-
+      
+<c:if test="${loginId eq c.userId}">
         <!-- 삭제 -->
         <button type="button"
                 class="btn btn-outline-dark"
@@ -180,16 +317,8 @@ document.getElementById('deleteBtn').addEventListener('click', async () => {
                 onclick="deleteComment(this.dataset.id)">
           삭제
         </button>
-      </div>
-    </div>
-
-    <!-- 메타 정보 -->
-    <small class="text-muted">
-      작성자: ${c.userId} | 날짜: ${c.planCommentDate}
-    </small>
-  </div>
-</c:forEach>
-
+        
+<!-- 댓글 삭제 -->
 <script>
   function deleteComment(id) {
 
@@ -227,48 +356,27 @@ document.getElementById('deleteBtn').addEventListener('click', async () => {
   <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
 </form>
 
+</c:if>
+        
+      </div>
+    </div>
+
+    <!-- 메타 정보 -->
+    <small class="text-muted">
+      작성자: ${c.userName} | 날짜: ${c.planCommentDate}
+    </small>
+    
+  </div>
+</c:forEach>
+
+
 <!-- ★↓↓↓ 댓글이 없을 때 --------------------------------------- -->
 <c:if test="${empty list}">
   <div class="text-muted">등록된 댓글이 없습니다.</div>
 </c:if>
 <!-- ★↑↑↑ 끝 ---------------------------------------------------- -->
+
 <br /><br />
-		<!-- ★추가: 댓글 등록 AJAX -->
-<script>
-/* 댓글 작성 AJAX */
-document.getElementById('commentBtn').addEventListener('click', async () => {
-  const form  = document.getElementById('commentForm');
-
-  // ★ 필드 이름에 맞춰 읽어오기
-  const text  = form.planCommentContent.value.trim();
-  if(!text){
-    alert('댓글 내용을 입력하세요');
-    return;
-  }
-
-  // ★ form 에 들어 있는 planId + planCommentContent 를 그대로 직렬화
-  const data = new URLSearchParams(new FormData(form));
-
-  try{
-    const res  = await fetch('${pageContext.request.contextPath}/editor/commentInsert', {
-      method : 'POST',
-      headers: { 'Content-Type':'application/x-www-form-urlencoded' },
-      body   : data
-    });
-    const body = await res.json();   // { code:0, message:"success" }
-
-    if(body.code === 0){
-      alert('댓글이 등록되었습니다!');
-      location.reload();
-    }else{
-      alert('등록 실패: ' + body.message);
-    }
-  }catch(err){
-    alert('오류: ' + err.message);
-  }
-});
-
-</script>
 
       </div><!-- /card-body -->
     </div><!-- /card -->
