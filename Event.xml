@@ -79,8 +79,6 @@
         SELECT COUNT(*) FROM T_EVENT WHERE EVENT_ID = #{eventId}
     </select>
 
-    
-
     <!-- 사용자 쿠폰 보유 여부 확인 -->
     <select id="existsUserCoupon" resultType="int">
         SELECT COUNT(*) FROM T_USER_COUPON
@@ -97,6 +95,21 @@
         ORDER BY EVENT_REGDATE DESC
     </select>
 
+    <!-- 진행중 이벤트 더보기 방식 (ROWNUM 기반 페이징) -->
+    <select id="selectActiveEventsByPage" resultMap="eventResultMap">
+        SELECT * FROM (
+            SELECT A.*, ROWNUM RN
+            FROM (
+                SELECT *
+                FROM T_EVENT
+                WHERE EVENT_ENDDATE &gt;= SYSDATE
+                ORDER BY EVENT_REGDATE DESC
+            ) A
+            WHERE ROWNUM &lt;= #{startRow} + #{pageSize}
+        )
+        WHERE RN &gt; #{startRow}
+    </select>
+
     <!-- 종료된 이벤트 조회 -->
     <select id="selectEndedEvents" resultMap="eventResultMap">
         SELECT EVENT_ID, ADMIN_ID, EVENT_TITLE, EVENT_CONTENT, EVENT_REGDATE, EVENT_COUNT,
@@ -106,59 +119,76 @@
         ORDER BY EVENT_REGDATE DESC
     </select>
 
-	<select id="selectNoticeEvent" resultMap="eventResultMap">
-    SELECT * FROM T_EVENT
-    WHERE EVENT_ID = 'NOTICE'  <!-- 또는 IS_NOTICE = 'Y' -->
-	</select>
-
-	<select id="selectEventListPaging" resultMap="eventResultMap">
-	  SELECT * 
-	  FROM (
-	      SELECT A.*, ROWNUM AS RN 
-	      FROM (
-	          SELECT * 
-	          FROM T_EVENT 
-	          ORDER BY EVENT_REGDATE DESC, EVENT_ID DESC
-	      ) A
-	      WHERE ROWNUM &lt;= #{startRow} + #{pageSize}
-	  ) 
-	  WHERE RN &gt; #{startRow}
-	</select>
-	
-	<select id="countAllEvents" resultType="int">
-    SELECT COUNT(*) FROM T_EVENT
-	</select>
-	
-	<!-- 검색어에 따른 이벤트 개수 -->
-    <select id="getSearchEventCount" resultType="int">
-        SELECT COUNT(*) 
-        FROM T_EVENT
-        <where>
-            <if test="keyword != null and keyword != ''">
-                EVENT_TITLE LIKE '%' || #{keyword} || '%'
-            </if>
-        </where>
+    <select id="selectNoticeEvent" resultMap="eventResultMap">
+        SELECT * FROM T_EVENT
+        WHERE EVENT_ID = 'NOTICE'
     </select>
 
-    <!-- 검색어에 따른 이벤트 목록 (페이징 포함) -->
-    <select id="searchEventList" resultMap="eventResultMap">
+    <select id="selectEventListPaging" resultMap="eventResultMap">
         SELECT * 
         FROM (
             SELECT A.*, ROWNUM AS RN 
             FROM (
                 SELECT * 
-                FROM T_EVENT
-                <where>
-                    <if test="keyword != null and keyword != ''">
-                        EVENT_TITLE LIKE '%' || #{keyword} || '%'
-                    </if>
-                </where>
+                FROM T_EVENT 
                 ORDER BY EVENT_REGDATE DESC, EVENT_ID DESC
             ) A
             WHERE ROWNUM &lt;= #{startRow} + #{pageSize}
         ) 
         WHERE RN &gt; #{startRow}
     </select>
-	
-	
+
+    <select id="countAllEvents" resultType="int">
+        SELECT COUNT(*) FROM T_EVENT
+    </select>
+
+    <!-- 검색어에 따른 이벤트 개수 -->
+    <select id="getSearchEventCount" resultType="int" parameterType="map">
+    SELECT COUNT(*) 
+    FROM T_EVENT
+    <where>
+        <if test="keyword != null and keyword != ''">
+            EVENT_TITLE LIKE '%' || #{keyword} || '%'
+        </if>
+        <if test="status == 'active'">
+            AND EVENT_ENDDATE &gt;= SYSDATE
+        </if>
+        <if test="status == 'closed'">
+            AND EVENT_ENDDATE &lt; SYSDATE
+        </if>
+    </where>
+</select>
+
+    <!-- 검색어에 따른 이벤트 목록 (페이징 포함) -->
+    <select id="searchEventList" resultMap="eventResultMap" parameterType="map">
+    SELECT * 
+    FROM (
+        SELECT A.*, ROWNUM AS RN 
+        FROM (
+            SELECT * 
+            FROM T_EVENT
+            <where>
+                <if test="keyword != null and keyword != ''">
+                    EVENT_TITLE LIKE '%' || #{keyword} || '%'
+                </if>
+                <if test="status == 'active'">
+                    AND EVENT_ENDDATE &gt;= SYSDATE
+                </if>
+                <if test="status == 'closed'">
+                    AND EVENT_ENDDATE &lt; SYSDATE
+                </if>
+            </where>
+            ORDER BY EVENT_REGDATE DESC, EVENT_ID DESC
+        ) A
+        WHERE ROWNUM &lt;= #{startRow} + #{pageSize}
+    ) 
+    WHERE RN &gt; #{startRow}
+</select>
+
+	<!-- 진행중인이벤트개수 -->
+	<select id="countActiveEvents" resultType="int">
+    SELECT COUNT(*)
+    FROM T_EVENT
+    WHERE EVENT_ENDDATE >= SYSDATE
+	</select>
 </mapper>

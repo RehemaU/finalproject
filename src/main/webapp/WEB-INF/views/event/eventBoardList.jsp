@@ -105,6 +105,19 @@
             font-size: 16px;
             color: #666;
         }
+        
+        .filter-btn {
+	    padding: 6px 12px;
+	    margin-left: 5px;
+	    background-color: #eee;
+	    border: 1px solid #ccc;
+	    border-radius: 4px;
+	    font-size: 14px;
+	    cursor: pointer;
+	}
+	.filter-btn:hover {
+	    background-color: #ddd;
+	}
     </style>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -112,8 +125,11 @@
 <body>
 
 <div class="container">
-    <h2>이벤트 게시판 <span class="total-count">총 <c:out value="${totalCount}"/>건</span></h2>
-
+	<h2>이벤트 게시판 <span class="total-count">총 <span id="totalCountText"><c:out value="${totalCount}"/></span>건</span></h2>
+	<div style="text-align: right; margin-bottom: 10px;">
+    <button class="filter-btn" data-status="active">진행 중 이벤트</button>
+    <button class="filter-btn" data-status="closed">종료된 이벤트</button>
+	</div>
     <form id="searchForm" class="search-form" onsubmit="return false;">
         <input type="text" id="searchKeyword" name="searchKeyword" placeholder="검색어를 입력해주세요" />
         <button type="submit">검색</button>
@@ -133,7 +149,7 @@
                 <tr>
                     <td>${totalCount - (curPage - 1) * pageSize - status.index}</td>
                     <td class="title-col">
-                        <a href="/event/view?eventId=${event.eventId}">
+                        <a href="/event/eventDetail?eventId=${event.eventId}">
                             <c:out value="${event.eventTitle}" />
                         </a>
                     </td>
@@ -168,6 +184,8 @@
 </div>
 
 <script>
+let currentStatus = "active"; // 기본값: 진행 중
+
 function fetchSearchResults(page = 1) {
     const keyword = $("#searchKeyword").val().trim();
 
@@ -176,7 +194,8 @@ function fetchSearchResults(page = 1) {
         url: "/event/ajaxSearch",
         data: {
             searchKeyword: keyword,
-            page: page
+            page: page,
+            status: currentStatus // 🔥 상태 필터 같이 전송
         },
         success: function(res) {
             if (res.tableHtml.trim() === "") {
@@ -191,7 +210,6 @@ function fetchSearchResults(page = 1) {
             }
         },
         error: function() {
-            // 검색 실패 시에도 조용히 결과 없음 이미지 표시
             $("#eventTableBody").empty();
             $("#paginationDiv").empty();
             $("#noResultDiv").show();
@@ -209,12 +227,18 @@ function bindPaginationClick() {
 
 $(document).ready(function() {
     $("#searchForm").on("submit", function() {
-        fetchSearchResults(1); // 첫 검색은 1페이지
+        fetchSearchResults(1); // 검색은 항상 1페이지부터
     });
 
-    bindPaginationClick(); // 최초 페이지 로딩 시에도 바인딩
+    $(".filter-btn").on("click", function() {
+        currentStatus = $(this).data("status"); // 🔥 버튼 data-status 읽기
+        fetchSearchResults(1);
+    });
+
+    bindPaginationClick();
 });
 </script>
+
 
 </body>
 </html>
