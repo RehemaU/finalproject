@@ -48,7 +48,9 @@
       #{standardPrice}, #{roomImage}
     )
   </insert>
-
+	
+ 	
+ 
   <!-- 저장된 객실 전체 조회 -->
   <select id="getAllAccommodationRooms" resultMap="accomRoomResultMap">
     SELECT ACCOMM_ROOM_ID, ACCOMM_ROOM_STANDARD_PRICE FROM T_ACCOMM_ROOM
@@ -73,4 +75,6 @@
 	<select id = "searchByAccommId" parameterType = "String" resultMap="accomRoomResultMap">
 		SELECT * FROM T_ACCOMM_ROOM WHERE ACCOMM_ID = #{accommId}
 	</select>
+	
+	<!-- 객실 ID로 객실 예약할 때 객체 가져오기 -->
 </mapper>

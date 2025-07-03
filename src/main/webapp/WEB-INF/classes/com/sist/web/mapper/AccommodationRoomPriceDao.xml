@@ -10,9 +10,32 @@
     <result column="ACCOMM_ROOM_PRICE_SUNDAY" property="accommRoomPriceSunday"/>
 </resultMap>
 
+<!-- 기간 별 객실 금액 데이터 삽입 -->
 <insert id="insertAccommodationRoomPrice" parameterType="com.sist.web.model.AccommodationRoomPrice">
     INSERT INTO T_ACCOMM_ROOM (ACCOMM_ROOM_PRICE_ID, ACCOMM_ROOM_ID, ACCOMM_ROOM_PRICE_WEEKDAY, ACCOMM_ROOM_PRICE_FRIDAY, ACCOMM_ROOM_PRICE_SATURDAY, ACCOMM_ROOM_PRICE_SUNDAY)
     VALUES (#{accommRoomPriceId}, #{accommRoomId}, #{accommRoomPriceWeekday}, #{accommRoomPriceFriday}, #{accommRoomPriceSaturday}, #{accommRoomPriceSunday})
 </insert>
 
+<!-- 객실 금액 조회(기간받고), 만약 조건 늘어날 시 새로운 모델 생성해서 할 예정@@  -->
+<select id="selectAccommodationRoomPrice"
+        parameterType="map"
+        resultType="com.sist.web.model.AccommodationRoomPrice">
+	SELECT ACCOMM_ROOM_PRICE_ID,
+	       ACCOMM_ROOM_ID,
+	       ACCOMM_ROOM_PRICE_WEEKDAY,
+	       ACCOMM_ROOM_PRICE_FRIDAY,
+	       ACCOMM_ROOM_PRICE_SATURDAY,
+	       ACCOMM_ROOM_PRICE_SUNDAY
+	FROM T_ACCOMM_ROOM_PRICE
+	WHERE ACCOMM_ROOM_ID = #{roomId}
+	 AND TRUNC(TO_DATE(#{targetDate}, 'YYYY-MM-DD'))
+    BETWEEN TRUNC(ACCOMM_ROOM_PRICE_START) AND TRUNC(ACCOMM_ROOM_PRICE_END)
+</select>
+
+<select id="selectRoomPriceByDate" parameterType="map" resultType="com.sist.web.model.AccommodationRoomPrice">
+	SELECT *
+	FROM T_ACCOMM_ROOM_PRICE
+	WHERE ACCOMM_ROOM_ID = #{roomId}
+	  AND #{targetDate} BETWEEN ACCOMM_ROOM_PRICE_START AND ACCOMM_ROOM_PRICE_END
+</select>
 </mapper>
