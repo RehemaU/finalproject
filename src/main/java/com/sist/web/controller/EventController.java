@@ -113,19 +113,20 @@ public class EventController {
     @RequestMapping("/event/eventList")
     public String eventThumbnailListPage(ModelMap model) {
         try {
-            List<Event> activeEvents = eventService.getActiveEvents();
-            List<Event> endedEvents = eventService.getEndedEvents();
+            int pageSize = 6;
+            int startRow = 0;
 
-            logger.debug("🔎 [이벤트 목록] 진행중 이벤트 수: {}", activeEvents.size());
-            for (Event evt : activeEvents) {
-                logger.debug("📦 ACTIVE EVT ID: {}, 썸네일 경로: {}", evt.getEventId(), evt.getEventThumbnailUrl());
-            }
+            List<Event> activeEvents = eventService.getActiveEventsByPage(startRow, pageSize);
+            List<Event> endedEvents = eventService.getEndedEvents();
+            int totalCount = eventService.getActiveEventCount();
 
             model.addAttribute("activeEvents", activeEvents);
+            model.addAttribute("hasMore", pageSize < totalCount);
             model.addAttribute("endedEvents", endedEvents);
         } catch (Exception e) {
             logger.error("[EventController] 이벤트 리스트 조회 중 오류", e);
             model.addAttribute("activeEvents", null);
+            model.addAttribute("hasMore", false);
             model.addAttribute("endedEvents", null);
         }
         return "/event/eventList";
@@ -146,13 +147,13 @@ public class EventController {
         try {
             eventService.increaseEventCount(eventId);
             Event event = eventService.getEventById(eventId);
-
+            logger.debug("✅ 쿠폰 ID 확인: {}", event.getCouponId());
             String fileName = eventId + ".png";
             event.setEventThumbnailUrl("/resources/eventimage/" + fileName);
             event.setEventImageUrl("/resources/eventdetailimage/" + fileName);
 
-            logger.debug("🖼️ 이벤트 ID: {}, 썸네일: {}, 상세: {}",
-                    eventId, event.getEventThumbnailUrl(), event.getEventImageUrl());
+            logger.debug("🖼️ 이벤트 ID: {}, 썸네일: {}, 상세: {}, 쿠폰: {}",
+            	    eventId, event.getEventThumbnailUrl(), event.getEventImageUrl(), event.getCouponId());
 
             model.addAttribute("event", event);
         } catch (Exception e) {
@@ -171,19 +172,29 @@ public class EventController {
     @ResponseBody
     public Map<String, Object> ajaxSearch(
             @RequestParam(name = "searchKeyword", required = false) String keyword,
-            @RequestParam(name = "page", defaultValue = "1") int curPage) {
+            @RequestParam(name = "page", defaultValue = "1") int curPage,
+            @RequestParam(name = "status", defaultValue = "active") String status) { // 🔥 status 추가
 
         Map<String, Object> result = new HashMap<>();
         int pageSize = 10;
         int startRow = (curPage - 1) * pageSize;
 
-        int totalCount = eventService.getSearchEventCount(keyword);
+        // 🔧 Map에 검색 파라미터들 추가
+        Map<String, Object> param = new HashMap<>();
+        param.put("keyword", keyword);
+        param.put("status", status);        // 🔥 진행/종료 필터
+        param.put("startRow", startRow);
+        param.put("pageSize", pageSize);
+        
+
+        // 🔍 DB 조회
+        int totalCount = eventService.getSearchEventCount(param);
         int totalPage = (int) Math.ceil((double) totalCount / pageSize);
         int startNum = totalCount - startRow;
+        
+        List<Event> eventList = eventService.searchEventList(param);
 
-        List<Event> eventList = eventService.searchEventList(keyword, startRow, pageSize);
-
-        // HTML 만들기
+        // 🔧 HTML 테이블 생성
         StringBuilder tableHtml = new StringBuilder();
         for (int i = 0; i < eventList.size(); i++) {
             Event event = eventList.get(i);
@@ -192,13 +203,14 @@ public class EventController {
             tableHtml.append("<tr>");
             tableHtml.append("<td>").append(num).append("</td>");
             tableHtml.append("<td class='title-col'>")
-                     .append("<a href='/event/view?eventId=").append(event.getEventId()).append("'>")
+                     .append("<a href='/event/eventDetail?eventId=").append(event.getEventId()).append("'>")
                      .append(event.getEventTitle()).append("</a></td>");
             tableHtml.append("<td>").append(event.getEventCount()).append("</td>");
             tableHtml.append("<td>").append(event.getEventRegdate().substring(0, 10)).append("</td>");
             tableHtml.append("</tr>");
         }
 
+        // 🔧 페이지네이션 HTML 생성
         StringBuilder paginationHtml = new StringBuilder();
         for (int i = 1; i <= totalPage; i++) {
             paginationHtml.append("<a href='?page=").append(i).append("'")
@@ -211,28 +223,61 @@ public class EventController {
 
         return result;
     }
+
     
     @RequestMapping("/event/eventBoardList")
     public String eventBoardListPage(HttpServletRequest request, ModelMap model) {
         int curPage = 1;
         int pageSize = 10;
 
-        // 추후 request.getParameter("page") 받아도 되고
         String keyword = request.getParameter("searchKeyword");
+        String status = request.getParameter("status"); // 🔥 추가됨 ("active" or "closed")
+        if (status == null || status.isEmpty()) {
+            status = "active"; // 기본값
+        }
 
-        int totalCount = eventService.getSearchEventCount(keyword);
-        int totalPage = (int) Math.ceil((double) totalCount / pageSize);
         int startRow = (curPage - 1) * pageSize;
 
-        List<Event> eventList = eventService.searchEventList(keyword, startRow, pageSize);
+        // 🔧 검색 파라미터 Map 구성
+        Map<String, Object> param = new HashMap<>();
+        param.put("keyword", keyword);
+        param.put("status", status);
+        param.put("startRow", startRow);
+        param.put("pageSize", pageSize);
 
+        int totalCount = eventService.getSearchEventCount(param);
+        int totalPage = (int) Math.ceil((double) totalCount / pageSize);
+        List<Event> eventList = eventService.searchEventList(param);
+
+        // 🔧 JSP로 데이터 전달
         model.addAttribute("eventList", eventList);
         model.addAttribute("totalCount", totalCount);
         model.addAttribute("curPage", curPage);
         model.addAttribute("pageSize", pageSize);
         model.addAttribute("totalPage", totalPage);
         model.addAttribute("searchKeyword", keyword);
+        model.addAttribute("status", status); // 🔥 상태 필터도 뷰에 전달
 
-        return "/event/eventBoardList"; // JSP 경로와 일치해야 함
+        return "/event/eventBoardList";
+    }
+    
+    @GetMapping("/event/activeListAjax")
+    @ResponseBody
+    public Map<String, Object> getActiveListAjax(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "6") int size) {
+
+        logger.debug("📥 Ajax 이벤트 요청 page={}, size={}", page, size);
+
+        Map<String, Object> result = new HashMap<>();
+        int startRow = (page - 1) * size;
+
+        List<Event> events = eventService.getActiveEventsByPage(startRow, size);
+        int totalCount = eventService.getActiveEventCount();
+
+        result.put("events", events);
+        result.put("hasMore", startRow + size < totalCount);
+        result.put("totalCount", totalCount);
+        return result;
     }
 }

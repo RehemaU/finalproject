@@ -15,7 +15,7 @@
         }
         .event-list {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 가로로 3개 */
+            grid-template-columns: repeat(3, 1fr);
             gap: 24px;
         }
         .event-box {
@@ -28,7 +28,7 @@
         }
         .event-box img {
             width: 100%;
-            height: 220px; /* 기존보다 높게 */
+            height: 220px;
             object-fit: cover;
         }
         .event-info {
@@ -46,25 +46,27 @@
     </style>
 </head>
 <body>
-    <div class="wrap">
+<div class="wrap">
 
-        <h2 class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
-            <span>진행 중인 이벤트</span>
-            <a href="${pageContext.request.contextPath}/event/eventBoardList" style="font-size: 14px; color: gray; text-decoration: underline;">더보기</a>
-        </h2>
+    <h2 class="section-title" style="display: flex; justify-content: space-between; align-items: center;">
+        <span>진행 중인 이벤트</span>
+        <a href="${pageContext.request.contextPath}/event/eventBoardList" style="font-size: 14px; color: gray; text-decoration: underline;">더보기</a>
+    </h2>
 
-        <div class="event-list">
-            <c:forEach var="event" items="${activeEvents}" begin="0" end="5">
-                <a href="/event/eventDetail?eventId=${event.eventId}" class="event-box">
+    <div class="event-list">
+        <c:forEach var="event" items="${activeEvents}">
+            <c:if test="${not empty event.eventThumbnailUrl}">
+                <a href="${pageContext.request.contextPath}/event/eventDetail?eventId=${event.eventId}" class="event-box">
                     <img src="${pageContext.request.contextPath}${event.eventThumbnailUrl}" alt="이벤트 이미지">
                     <div class="event-info">
                         <div class="event-title">${event.eventTitle}</div>
                         <div class="event-date">~ ${event.eventEnddate}</div>
                     </div>
                 </a>
-            </c:forEach>
-        </div>
-
+            </c:if>
+        </c:forEach>
     </div>
+
+</div>
 </body>
 </html>

@@ -1,6 +1,7 @@
 package com.sist.web.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -30,13 +31,15 @@ public interface EventDao {
     int countAllEvents();
     
     
+    
     // 검색 이벤트 개수
-    int getSearchEventCount(@Param("keyword") String keyword);
+    int getSearchEventCount(Map<String, Object> param);
+    List<Event> searchEventList(Map<String, Object> param);
+    
+    // 진행 중 이벤트 페이징 조회
+    public List<Event> selectActiveEventsByPage(@Param("startRow") int startRow, @Param("pageSize") int pageSize);
 
-    // 검색된 이벤트 리스트 (페이징)
-    List<Event> searchEventList(@Param("keyword") String keyword,
-                                @Param("startRow") int startRow,
-                                @Param("pageSize") int pageSize);
-    
-    
+    // 전체 개수 조회 (진행 중 이벤트만)
+    public int countActiveEvents();
+
 }
