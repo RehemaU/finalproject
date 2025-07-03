@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import com.sist.web.model.Accommodation;
 import com.sist.web.model.AccommodationRoom;
 import com.sist.web.model.Region;
+import com.sist.web.model.RoomAvailabilityRequest;
 import com.sist.web.model.RoomPriceRequest;
 import com.sist.web.model.RoomPriceResult;
 import com.sist.web.model.Sigungu;
@@ -20,9 +21,12 @@ import com.sist.web.service.AccommodationService;
 import com.sist.web.service.EventService;
 import com.sist.web.service.RegionService;
 import com.sist.web.service.SigunguService;
+import com.sist.web.service.UserCouponService;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +38,7 @@ public class AccommodationController {
     private AccommodationService accommodationService;
     
     @Autowired
-    private EventService eventService;
+    private UserCouponService userCouponService;
 
     @Autowired
     private AccommodationRoomService accommodationRoomService;
@@ -111,6 +115,16 @@ public class AccommodationController {
     public RoomPriceResult calculateRoomPrice(@RequestBody RoomPriceRequest req) {
         return accommodationRoomPriceService.calculateTotalPrice(req.getRoomId(), req.getCheckIn(), req.getCheckOut());
     }
+    
+    @PostMapping("/accommDetail/availableRooms")
+    @ResponseBody
+    public List<AccommodationRoom> getAvailableRooms(@RequestBody RoomAvailabilityRequest req) {
+        return accommodationRoomService.getAvailableRoomsByDate(
+            req.getAccommId(),
+            req.getCheckIn(),
+            req.getCheckOut()
+        );
+    }
  
     @PostMapping("/accomm/reservation")
     public String accommReservation(
@@ -125,10 +139,9 @@ public class AccommodationController {
             return "redirect:/user/login"; // 로그인 페이지 경로에 맞게 수정
         }
         RoomPriceResult result = accommodationRoomPriceService.calculateTotalPrice(roomId, checkIn.toString(), checkOut.toString());
-        List<UserCoupon> couponList = eventService.selectUserCouponList(userId);
+        List<UserCoupon> couponList = userCouponService.getUserCouponList(userId);
         AccommodationRoom room = accommodationRoomService.searchByAccommRoomId(roomId);
         
-        // ✅ View에 데이터 넘기기
         model.addAttribute("couponList", couponList);
         model.addAttribute("room", room);
         model.addAttribute("checkIn", checkIn);

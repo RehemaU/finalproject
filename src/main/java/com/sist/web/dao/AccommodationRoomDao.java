@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import com.sist.web.model.AccommodationRoom;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository("AccommodationRoomDao")
 public interface AccommodationRoomDao {
@@ -15,4 +16,5 @@ public interface AccommodationRoomDao {
     List<AccommodationRoom> getAllAccommodationRooms();
     List<AccommodationRoom> searchByAccommId(String accommId);
     AccommodationRoom searchByAccommRoomId(String accommRoomId);
+    List<AccommodationRoom> getAvailableRoomsByDate(Map<String, Object> param);
 }

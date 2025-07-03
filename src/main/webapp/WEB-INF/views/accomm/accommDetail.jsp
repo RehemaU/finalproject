@@ -86,6 +86,33 @@
 
 <!-- ✅ 스크립트: 가격 계산 함수 및 초기 실행 -->
 <script>
+function fetchAvailableRooms(checkInDate, checkOutDate) {
+    const checkIn = checkInDate.toISOString().split("T")[0];
+    const checkOut = checkOutDate.toISOString().split("T")[0];
+
+    fetch("/accommDetail/availableRooms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            accommId: "${accommodation.accomId}",
+            checkIn,
+            checkOut
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        const availableIds = new Set(data.map(room => room.accommRoomId));
+        document.querySelectorAll(".room-card").forEach(card => {
+            const roomId = card.querySelector(".reserve-btn").dataset.roomId;
+            card.style.display = availableIds.has(roomId) ? "flex" : "none";
+        });
+    })
+    .catch(err => {
+        console.error("예약 가능한 객실 조회 실패", err);
+    });
+}
+
+
 function fetchRoomPrices(checkInDate, checkOutDate) {
     const checkIn = checkInDate.toISOString().split("T")[0];
     const checkOut = checkOutDate.toISOString().split("T")[0];
@@ -131,8 +158,11 @@ flatpickr("#dateRange", {
     dateFormat: "Y-m-d",
     defaultDate: [today, tomorrow],
     onClose: function(selectedDates) {
+    	  console.log("📆 onClose 호출됨!");
+    	    console.log("선택된 날짜:", selectedDates);
         if (selectedDates.length === 2) {
             fetchRoomPrices(selectedDates[0], selectedDates[1]);
+            fetchAvailableRooms(selectedDates[0], selectedDates[1]); // ✅ 이 줄 추가!
         }
     }
 });

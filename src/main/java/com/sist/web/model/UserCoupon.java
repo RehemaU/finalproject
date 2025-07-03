@@ -18,6 +18,13 @@ public class UserCoupon implements Serializable {
 	private	String userCouponUseday;
 	private String userCouponExpiredate;
 	
+	
+	// T_COUPON에서 가져오는 필드
+    private String couponType;
+    private int couponAmount;
+    private int couponMaxAmount; // 🔥 추가된 필드
+	
+	
 	public UserCoupon()
 	{
 		this.userCouponId = "";
@@ -28,6 +35,36 @@ public class UserCoupon implements Serializable {
 		this.userCouponUse = "";
 		this.userCouponUseday = "";
 		this.userCouponExpiredate = "";
+		
+		
+		// ✅ T_COUPON 필드 초기값 설정
+		this.couponType = "";
+		this.couponAmount = 0;
+		this.couponMaxAmount = 0;
+	}
+
+	public String getCouponType() {
+		return couponType;
+	}
+
+	public void setCouponType(String couponType) {
+		this.couponType = couponType;
+	}
+
+	public int getCouponAmount() {
+		return couponAmount;
+	}
+
+	public void setCouponAmount(int couponAmount) {
+		this.couponAmount = couponAmount;
+	}
+
+	public int getCouponMaxAmount() {
+		return couponMaxAmount;
+	}
+
+	public void setCouponMaxAmount(int couponMaxAmount) {
+		this.couponMaxAmount = couponMaxAmount;
 	}
 
 	public String getUserCouponId() {

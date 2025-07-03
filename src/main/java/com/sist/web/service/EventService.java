@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +18,9 @@ import com.sist.web.dao.UserCouponDao;
 import com.sist.web.model.Coupon;
 import com.sist.web.model.Event;
 import com.sist.web.model.UserCoupon;
-import javax.sql.DataSource; // 꼭 필요
+import javax.sql.DataSource;
 import java.sql.Connection;
 import org.springframework.jdbc.datasource.DataSourceUtils;
-
 
 @Service("eventService")
 public class EventService {
@@ -29,8 +30,6 @@ public class EventService {
     @Autowired
     private EventDao eventDao;
 
- 
-    
     @Autowired
     private UserCouponDao userCouponDao;
 
@@ -39,10 +38,10 @@ public class EventService {
 
     @Autowired
     private DataSource dataSource;
-    
+
     public boolean issueCoupon(String eventId, String userId) {
         logger.debug(">>> issueCoupon 시작 - eventId: {}, userId: {}", eventId, userId);
-        
+
         try {
             Connection conn = DataSourceUtils.getConnection(dataSource);
             String dbUser = conn.getMetaData().getUserName();
@@ -51,11 +50,10 @@ public class EventService {
         } catch (Exception e) {
             logger.error("DB 유저명 확인 중 오류 발생", e);
         }
-        
+
         int eventCountTotal = eventDao.countEvent();
         logger.debug("T_EVENT 전체 개수: {}", eventCountTotal);
-        
-        // 1. 이벤트 조회
+
         Event event = eventDao.selectEventById(eventId);
         logger.debug("eventDao.selectEventById() 결과 null 여부: {}", event == null);
         if (event == null) {
@@ -63,10 +61,8 @@ public class EventService {
             return false;
         }
 
-        // 로그로 전체 이벤트 객체 찍기
         logger.debug("조회된 이벤트 객체: {}", event);
 
-     // 2. 쿠폰 ID 확인 (전체 필드 디버깅)
         logger.debug("===== 이벤트 전체 필드 디버깅 =====");
         logger.debug("event.getEventId(): {}", event.getEventId());
         logger.debug("event.getAdminId(): {}", event.getAdminId());
@@ -81,7 +77,6 @@ public class EventService {
         logger.debug("eventId: {}, userId: {}", eventId, userId);
         logger.debug("couponId 원본 값: [{}]", couponId);
         logger.debug("couponId == null ? {}", couponId == null);
-        logger.debug("\"\".equals(couponId) ? {}", "".equals(couponId));
         logger.debug("===============================");
 
         if (couponId == null || couponId.trim().isEmpty()) {
@@ -91,7 +86,6 @@ public class EventService {
 
         logger.debug("이벤트 연결 쿠폰 ID: {}", couponId);
 
-        // 3. 기존 발급 여부 확인
         int existCount = userCouponDao.existsUserCoupon(userId, couponId);
         logger.debug("기존 발급 여부 수: {}", existCount);
         if (existCount > 0) {
@@ -99,7 +93,6 @@ public class EventService {
             return false;
         }
 
-        // 4. 쿠폰 정보 조회
         Coupon coupon = couponDao.selectCouponById(couponId);
         if (coupon == null) {
             logger.debug("쿠폰 정보 없음: couponId = {}", couponId);
@@ -115,27 +108,30 @@ public class EventService {
             return false;
         }
 
-        // 5. 날짜 처리
+        // 쿠폰 발급일 (오늘 날짜)
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String issueDateStr = sdf.format(new Date());
+        
 
+        // 쿠폰 만료일 계산: 발급일 + N일
+        int expireAfterDays = coupon.getCouponExpiredate(); // 이 값이 T_COUPON.COUPON_EXPRIEDATE 컬럼
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
-        cal.add(Calendar.DATE, coupon.getCouponExpiredate());
-        String expirDateStr = sdf.format(cal.getTime());
+        cal.add(Calendar.DATE, expireAfterDays); // N일 추가
+        String expireDateStr = sdf.format(cal.getTime());
 
-        // 6. UserCoupon 객체 생성
         UserCoupon userCoupon = new UserCoupon();
         userCoupon.setUserId(userId);
         userCoupon.setCouponId(couponId);
         userCoupon.setUserCouponName(coupon.getCouponName());
         userCoupon.setUserCouponIssueday(issueDateStr);
         userCoupon.setUserCouponUse("N");
-        userCoupon.setUserCouponExpiredate(expirDateStr);
+        userCoupon.setUserCouponExpiredate(expireDateStr);
+        logger.debug("쿠폰 발급일: {}", issueDateStr);
+        logger.debug("쿠폰 만료일 (발급일 + {}일): {}", expireAfterDays, expireDateStr);
 
         logger.debug("UserCoupon insert 준비: {}", userCoupon);
 
-        // 7. 인서트 + 수량 차감
         try {
             userCouponDao.insertUserCoupon(userCoupon);
             couponDao.decreaseCouponCount(couponId);
@@ -145,22 +141,20 @@ public class EventService {
             return false;
         }
 
-        
-        
-        
         return true;
     }
-    
+
     public List<Event> getActiveEvents() {
-        return eventDao.selectActiveEvents();
+        return eventDao.selectActiveEvents()
+                .stream()
+                .filter(e -> e.getEventThumbnailUrl() != null && !e.getEventThumbnailUrl().trim().isEmpty())
+                .collect(Collectors.toList());
     }
 
-    // 종료된 이벤트 조회
     public List<Event> getEndedEvents() {
         return eventDao.selectEndedEvents();
     }
-    
-    
+
     public Event getEventById(String eventId) {
         return eventDao.selectEventById(eventId);
     }
@@ -168,41 +162,40 @@ public class EventService {
     public void increaseEventCount(String eventId) {
         eventDao.increaseEventCount(eventId);
     }
-    
- // 공지 이벤트 조회
+
     public Event getNoticeEvent() {
-        return eventDao.selectNoticeEvent(); // 공지 1건 (예: EVENT_ID='NOTICE' 또는 IS_NOTICE='Y')
+        return eventDao.selectNoticeEvent();
     }
 
-    // 페이징된 이벤트 목록 조회
     public List<Event> getPagedEvents(int offset, int limit) {
-        return eventDao.selectEventListPaging(offset, limit); // LIMIT/OFFSET 기반
+        return eventDao.selectEventListPaging(offset, limit);
     }
 
-    // 전체 이벤트 수
     public int getTotalEventCount() {
-        return eventDao.countAllEvents(); // SELECT COUNT(*) FROM T_EVENT
-    }
-    
-    public List<Event> selectEventListPaging(int startRow, int pageSize)
-    {
-    	return eventDao.selectEventListPaging(startRow, pageSize);
-    }
-    
-    // 이벤트 제목으로 검색한 총 개수
-    public int getSearchEventCount(String keyword) {
-        return eventDao.getSearchEventCount(keyword);
+        return eventDao.countAllEvents();
     }
 
-    // 검색된 이벤트 목록 (페이징)
-    public List<Event> searchEventList(String keyword, int startRow, int pageSize) {
-        return eventDao.searchEventList(keyword, startRow, pageSize);
+    public List<Event> selectEventListPaging(int startRow, int pageSize) {
+        return eventDao.selectEventListPaging(startRow, pageSize);
     }
     
-    // 유저가 가진 쿠폰 리스트 조회
-    public List<UserCoupon> selectUserCouponList(String userId){
-    	return userCouponDao.selectUserCouponList(userId);
+    public int getSearchEventCount(Map<String, Object> param) {
+        return eventDao.getSearchEventCount(param);
     }
-    
-    
+
+    public List<Event> searchEventList(Map<String, Object> param) {
+        return eventDao.searchEventList(param);
+    }
+
+    public List<Event> getActiveEventsByPage(int startRow, int pageSize) {
+        return eventDao.selectActiveEventsByPage(startRow, pageSize)
+                .stream()
+                .filter(e -> e.getEventThumbnailUrl() != null && !e.getEventThumbnailUrl().trim().isEmpty())
+                .collect(Collectors.toList());
+    }
+
+    public int getActiveEventCount() {
+        return eventDao.countActiveEvents();
+    }
+
 }
