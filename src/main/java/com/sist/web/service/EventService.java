@@ -199,4 +199,10 @@ public class EventService {
         return eventDao.searchEventList(keyword, startRow, pageSize);
     }
     
+    // 유저가 가진 쿠폰 리스트 조회
+    public List<UserCoupon> selectUserCouponList(String userId){
+    	return userCouponDao.selectUserCouponList(userId);
+    }
+    
+    
 }

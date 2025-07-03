@@ -77,4 +77,7 @@
 	</select>
 	
 	<!-- 객실 ID로 객실 예약할 때 객체 가져오기 -->
+	<select id = "searchByAccommRoomId" parameterType = "String" resultMap = "accomRoomResultMap">
+		SELECT * FROM T_ACCOMM_ROOM WHERE ACCOMM_ROOM_ID = #{accommRoomId}
+	</select>
 </mapper>

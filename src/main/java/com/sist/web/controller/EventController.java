@@ -76,7 +76,7 @@ public class EventController {
 
         String eventId = request.getParameter("eventId");
         String userId = (String) request.getSession().getAttribute("userId");
-
+     
         if (userId == null || StringUtil.isEmpty(eventId)) {
             result.put("code", 1);
             result.put("msg", "로그인 또는 이벤트 ID가 누락되었습니다.");

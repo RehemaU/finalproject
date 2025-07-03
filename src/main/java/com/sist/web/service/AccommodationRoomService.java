@@ -118,5 +118,9 @@ public class AccommodationRoomService {
     public List<AccommodationRoom> searchByAccommid(String accommId){
     	return accommodationRoomDao.searchByAccommId(accommId);
     }
+    
+    public AccommodationRoom searchByAccommRoomId(String accommRoomId) {
+    	return accommodationRoomDao.searchByAccommRoomId(accommRoomId);
+    }
 
 }

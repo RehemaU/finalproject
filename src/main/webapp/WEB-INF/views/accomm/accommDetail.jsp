@@ -32,6 +32,7 @@
     <!-- 숙소 정보 -->
     <div class="accomm-header">
         <img src="${accommodation.firstImage}" alt="${accommodation.accomName}" />
+
         <div class="accomm-info">
             <h1>${accommodation.accomName}</h1>
             <p>${accommodation.accomDes}</p>
@@ -123,7 +124,8 @@ function fetchRoomPrices(checkInDate, checkOutDate) {
 const today = new Date();
 const tomorrow = new Date();
 tomorrow.setDate(today.getDate() + 1);
-
+const imgSrc = "${accommodation.firstImage}";
+console.log("이미지 URL:", imgSrc);
 flatpickr("#dateRange", {
     mode: "range",
     dateFormat: "Y-m-d",
@@ -134,6 +136,46 @@ flatpickr("#dateRange", {
         }
     }
 });
+
+document.querySelectorAll(".reserve-btn").forEach(button => {
+    button.addEventListener("click", () => {
+        const roomId = button.dataset.roomId;
+        const dateRange = document.getElementById("dateRange")._flatpickr.selectedDates;
+
+        if (dateRange.length !== 2) {
+            alert("날짜를 선택해주세요.");
+            return;
+        }
+
+        const checkIn = dateRange[0].toISOString().split("T")[0];
+        const checkOut = dateRange[1].toISOString().split("T")[0];
+
+        // POST 방식으로 서버에 데이터 전송
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "/accomm/reservation";  // 예약 확인 or 결제 페이지
+
+        const input1 = document.createElement("input");
+        input1.name = "roomId";
+        input1.value = roomId;
+
+        const input2 = document.createElement("input");
+        input2.name = "checkIn";
+        input2.value = checkIn;
+
+        const input3 = document.createElement("input");
+        input3.name = "checkOut";
+        input3.value = checkOut;
+
+        form.appendChild(input1);
+        form.appendChild(input2);
+        form.appendChild(input3);
+
+        document.body.appendChild(form);
+        form.submit();
+    });
+});
+
 
 // ✅ 최초 자동 계산
 fetchRoomPrices(today, tomorrow);

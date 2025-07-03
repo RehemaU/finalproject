@@ -14,4 +14,5 @@ public interface AccommodationRoomDao {
     Long getNextAccommRoomSeq();  // 시퀀스 nextval
     List<AccommodationRoom> getAllAccommodationRooms();
     List<AccommodationRoom> searchByAccommId(String accommId);
+    AccommodationRoom searchByAccommRoomId(String accommRoomId);
 }
