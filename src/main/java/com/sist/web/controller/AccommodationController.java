@@ -9,7 +9,10 @@ import org.springframework.web.bind.annotation.*;
 import com.sist.web.model.Accommodation;
 import com.sist.web.model.AccommodationRoom;
 import com.sist.web.model.Region;
+import com.sist.web.model.RoomPriceRequest;
+import com.sist.web.model.RoomPriceResult;
 import com.sist.web.model.Sigungu;
+import com.sist.web.service.AccommodationRoomPriceService;
 import com.sist.web.service.AccommodationRoomService;
 import com.sist.web.service.AccommodationService;
 import com.sist.web.service.RegionService;
@@ -28,6 +31,8 @@ public class AccommodationController {
     @Autowired
     private AccommodationRoomService accommodationRoomService;
     
+    @Autowired
+    private AccommodationRoomPriceService accommodationRoomPriceService;
     @Autowired
     private SigunguService sigunguService;
     
@@ -91,6 +96,12 @@ public class AccommodationController {
     	System.out.println("숙소 = " + accommodation.getAccomName());
     	System.out.println("객실 수 = " + roomList.size());
     	return "/accomm/accommDetail";
+    }
+    
+    @PostMapping("/accommDetail/calculatePrice")
+    @ResponseBody
+    public RoomPriceResult calculateRoomPrice(@RequestBody RoomPriceRequest req) {
+        return accommodationRoomPriceService.calculateTotalPrice(req.getRoomId(), req.getCheckIn(), req.getCheckOut());
     }
  
     
