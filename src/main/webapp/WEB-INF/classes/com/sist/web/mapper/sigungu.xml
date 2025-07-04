@@ -40,5 +40,12 @@
         WHERE REGION_ID = #{regionId}
           AND SIGUNGU_ID = #{sigunguId}
     </select>
+    
+    <select id="sigunguSelect" resultMap="sigunguResultMap">
+        SELECT REGION_ID, SIGUNGU_ID
+        FROM T_SIGUNGU 
+        WHERE REGION_ID = #{regionId}
+        AND SIGUNGU_NAME = #{sigunguName}   
+    </select>
 
 </mapper>

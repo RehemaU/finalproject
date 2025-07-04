@@ -67,7 +67,7 @@ public class SellerController
 			
 					// 로그인 성공 → 세션 저장
 			        HttpSession session = request.getSession(true); // 세션이 없으면 생성
-			        session.setAttribute("userId", sellerId);
+			        session.setAttribute("sellerId", sellerId);
 			        
 			    	logger.debug("userId : " + sellerId);
 					logger.debug("userPassword hex : " + CookieUtil.stringToHex(sellerId));

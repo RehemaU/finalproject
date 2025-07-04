@@ -140,4 +140,13 @@ public class RegionService {
     public List<Region> getAllRegions(){
     	return regionDao.getAllRegions();
     }
+    
+    //지역코드조회 추가
+    public Region regionSelect(String regionName)
+    {
+    	Region region = regionDao.regionSelect(regionName);
+    	
+    	return region;
+    	
+    }
 }

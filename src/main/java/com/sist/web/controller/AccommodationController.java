@@ -51,7 +51,13 @@ public class AccommodationController {
     @Autowired
     private RegionService regionService;
     
-
+    
+    @GetMapping("/order/fail")
+    public String orderFail(HttpServletRequest request) {
+        String referer = request.getHeader("Referer");
+        return "redirect:" + (referer != null ? referer : "/fallback");
+    }
+    
     @GetMapping("/list")
     public String accommodationList() {
     	
