@@ -15,10 +15,12 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sist.web.model.Calander;
 import com.sist.web.model.CalanderList;
+import com.sist.web.model.Editor;
 import com.sist.web.model.Region;
 import com.sist.web.model.Sigungu;
 import com.sist.web.model.UserPlace;
 import com.sist.web.service.CalanderService;
+import com.sist.web.service.EditorService;
 import com.sist.web.service.RegionService;
 import com.sist.web.service.SigunguService;
 
@@ -33,6 +35,9 @@ public class CalanderController {
 
     @Autowired
     private SigunguService sigunguService;
+    
+    @Autowired
+    private EditorService editorService;
 
     /* ① 지역 및 시군구 목록 주입 (addList.jsp 진입 시) */
     @GetMapping("/schedule/addList")
@@ -416,13 +421,45 @@ public class CalanderController {
 
         return "redirect:/schedule/addList";
     }
+    
     @GetMapping("/schedule/myList")
     public String myList(ModelMap model, HttpSession session){
+    	
         String userId = (String)session.getAttribute("userId");
+        
         if(userId == null){          // 로그인 안됐을 때 처리
             return "redirect:/user/login";
         }
+        
         List<CalanderList> lists = calanderService.getListsByUser(userId);
+        
+        for(CalanderList c : lists)
+        {
+        	System.out.println("1번체크");
+        	
+        	boolean isPlan = false;
+        	int planId = 0;
+        	
+        	Editor editor = new Editor();
+        	
+        	editor.setUserId(userId);
+        	editor.setTCalanderListId(c.getCalanderListId());
+        	
+        	if(editorService.editorScheduleChk(editor) > 0)
+        	{
+        		isPlan = true;
+        		c.setIsPlan(isPlan);
+        		
+        		planId = editorService.editorPlanId(editor);
+        		c.setPlanId(planId);
+        	}
+        	else
+        	{
+        		c.setIsPlan(isPlan);
+        	}
+        }
+        
+        
         model.addAttribute("lists", lists);
         return "/schedule/calList";   // ↓ JSP 파일명
     }

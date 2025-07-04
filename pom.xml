@@ -125,6 +125,14 @@
 		</dependency>		
 		<!-- 추가끝 -->
 				
+																	<!-- 날씨api를 위한 JSONArray import -->
+																	<dependency>
+																	    <groupId>org.json</groupId>
+																	    <artifactId>json</artifactId>
+																	    <version>20210307</version>
+																	</dependency>
+																	<!-- 임포트 끝 -->
+				
 		<!-- @Inject -->
 		<!-- dependency>
 			<groupId>javax.inject</groupId>

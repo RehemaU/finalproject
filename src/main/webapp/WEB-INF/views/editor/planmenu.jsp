@@ -44,7 +44,7 @@
       </button>
 
       <!-- 오른쪽: 작성 -->
-      <button class="big-btn write-btn" onclick="location.href='/editor/planeditor'">
+      <button class="big-btn write-btn" onclick="location.href='/schedule/myList'">
         후기&nbsp;작성
       </button>
     </div>

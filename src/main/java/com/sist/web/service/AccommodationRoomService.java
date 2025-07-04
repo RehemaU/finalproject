@@ -14,7 +14,9 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 @Service
 public class AccommodationRoomService {
 
@@ -118,5 +120,17 @@ public class AccommodationRoomService {
     public List<AccommodationRoom> searchByAccommid(String accommId){
     	return accommodationRoomDao.searchByAccommId(accommId);
     }
-
+    
+    public AccommodationRoom searchByAccommRoomId(String accommRoomId) {
+    	return accommodationRoomDao.searchByAccommRoomId(accommRoomId);
+    }
+    
+    public List<AccommodationRoom> getAvailableRoomsByDate(String accommId, String checkIn, String checkOut) {
+        // 파라미터를 Map으로 구성해서 Dao에 전달
+        Map<String, Object> param = new HashMap<>();
+        param.put("accommId", accommId);
+        param.put("checkIn", checkIn);
+        param.put("checkOut", checkOut);
+        return accommodationRoomDao.getAvailableRoomsByDate(param);
+    }
 }

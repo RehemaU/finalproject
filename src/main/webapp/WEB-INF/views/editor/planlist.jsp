@@ -104,7 +104,7 @@
   
 <!-- ✨ 떠다니는 “후기 작성” 버튼 -->
 <button id="floatingWriteBtn"
-        onclick="location.href='/editor/planeditor'"
+        onclick="location.href='/schedule/myList'"
         aria-label="후기 작성">
   <i class="fas fa-pen" style="font-size:18px;"></i> <!-- ← fa-sm 으로 조금 작게 -->
 </button>
@@ -190,7 +190,7 @@
           <div class="card h-100 shadow-sm">
 
             <!-- 썸네일 -->
-		    <a href="${pageContext.request.contextPath}/editor/planview?planId=${post.planId}"
+		    <a href="${pageContext.request.contextPath}/editor/planview?planId=${post.planId}&tCalanderListId=${post.tCalanderListId}"
 		       class="card-img-container d-block">
 		      <c:choose>
 		        <c:when test="${not empty post.thumbnail}">
@@ -206,7 +206,7 @@
             <div class="card-body d-flex flex-column">
               <!-- 제목 -->
               <h5 class="card-title mb-2">
-                <a href="${pageContext.request.contextPath}/editor/planview?planId=${post.planId}"
+                <a href="${pageContext.request.contextPath}/editor/planview?planId=${post.planId}&tCalanderListId=${post.tCalanderListId}"
                    class="text-dark text-decoration-none">
                   ${post.planTitle}
                 </a>

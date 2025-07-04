@@ -50,8 +50,14 @@
 	  
 	  <!-- 댓글 삭제 -->
 	  <delete id="pcommentDelete" parameterType="int">
-	  DELETE T_PLAN_COMMENT
-	  WHERE COMMENT_ID = #{value}
+		  DELETE T_PLAN_COMMENT
+		   WHERE COMMENT_ID = #{value}
+	  </delete>
+	  
+	  <!-- 게시글 삭제 시 댓글 삭제 -->
+	  <delete id="pcommentAllDelete" parameterType="int">
+		DELETE T_PLAN_COMMENT
+		 WHERE PLAN_ID = #{value}
 	  </delete>
 	  
 	  <!-- 댓글 선택 -->

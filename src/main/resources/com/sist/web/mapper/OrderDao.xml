@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sist.web.dao.OrderDao">
+
+    <!-- 주문 resultMap -->
+    <resultMap id="orderResultMap" type="com.sist.web.model.Order">
+        <id column="ORDER_ID" property="orderId"/>
+        <result column="USER_ID" property="userId"/>
+        <result column="REFUND_ID" property="refundId"/>
+        <result column="ORDER_TOTAL_AMOUNT" property="orderTotalAmount"/>
+        <result column="ORDER_DATE" property="orderDate"/>
+        <result column="ORDER_STATUS" property="orderStatus"/>
+        <result column="ORDER_EXPEND_POINT" property="orderExpendPoint"/>
+        <result column="ORDER_COUPON_ID" property="orderCouponId"/>
+    </resultMap>
+
+    <!-- 상세 주문 resultMap -->
+    <resultMap id="orderDetailResultMap" type="com.sist.web.model.OrderDetail">
+        <id column="ORDER_DETAILS_ID" property="orderDetailsId"/>
+        <result column="ACCOMM_ROOM_ID" property="accommRoomId"/>
+        <result column="ORDER_ID" property="orderId"/>
+        <result column="ORDER_DETAILS_ROOM_EACH_PRICE" property="orderDetailsRoomEachPrice"/>
+        <result column="ORDER_DETAILS_PEOPLE_COUNT" property="orderDetailsPeopleCount"/>
+        <result column="ORDER_DETAILS_PAYMENT_METHOD" property="orderDetailsPaymentMethod"/>
+        <result column="ORDER_DETAILS_COUNT" property="orderDetailsCount"/>
+        <result column="ORDER_DETAILS_CHECKIN_DATE" property="orderDetailsCheckinDate"/>
+        <result column="ORDER_DETAILS_CHECKOUT_DATE" property="orderDetailsCheckoutDate"/>
+    </resultMap>
+
+    <!-- 주문 INSERT -->
+    <insert id="insertOrder" parameterType="com.sist.web.model.Order">
+        INSERT INTO T_ORDER (
+            ORDER_ID,
+            USER_ID,
+            REFUND_ID,
+            ORDER_TOTAL_AMOUNT,
+            ORDER_DATE,
+            ORDER_STATUS,
+            ORDER_EXPEND_POINT,
+            ORDER_COUPON_ID
+        )
+        VALUES (
+            #{orderId},
+            #{userId},
+            #{refundId},
+            #{orderTotalAmount},
+            SYSDATE,
+            #{orderStatus},
+            #{orderExpendPoint},
+            #{orderCouponId}
+        )
+    </insert>
+
+    <!-- 상세 주문 INSERT -->
+    <insert id="insertOrderDetail" parameterType="com.sist.web.model.OrderDetail">
+        INSERT INTO T_ORDER_DETAILS (
+            ORDER_DETAILS_ID,
+            ACCOMM_ROOM_ID,
+            ORDER_ID,
+            ORDER_DETAILS_ROOM_EACH_PRICE,
+            ORDER_DETAILS_PEOPLE_COUNT,
+            ORDER_DETAILS_PAYMENT_METHOD,
+            ORDER_DETAILS_COUNT,
+            ORDER_DETAILS_CHECKIN_DATE,
+            ORDER_DETAILS_CHECKOUT_DATE
+        )
+        VALUES (
+            #{orderDetailsId},
+            #{accommRoomId},
+            #{orderId},
+            #{orderDetailsRoomEachPrice},
+            #{orderDetailsPeopleCount},
+            #{orderDetailsPaymentMethod},
+            #{orderDetailsCount},
+            #{orderDetailsCheckinDate},
+            #{orderDetailsCheckoutDate}
+        )
+    </insert>
+
+    <!-- 주문 단건 조회 -->
+    <select id="selectOrderById" parameterType="String" resultMap="orderResultMap">
+        SELECT *
+        FROM T_ORDER
+        WHERE ORDER_ID = #{orderId}
+    </select>
+
+    <!-- 상세 주문 조회 -->
+    <select id="selectOrderDetailsByOrderId" parameterType="String" resultMap="orderDetailResultMap">
+        SELECT *
+        FROM T_ORDER_DETAILS
+        WHERE ORDER_ID = #{orderId}
+    </select>
+
+</mapper>

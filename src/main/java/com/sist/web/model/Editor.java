@@ -59,6 +59,14 @@ public class Editor implements Serializable {
 	    thumbnail = "";
 	}
 
+	public String gettCalanderListId() {
+		return tCalanderListId;
+	}
+
+	public void settCalanderListId(String tCalanderListId) {
+		this.tCalanderListId = tCalanderListId;
+	}
+
 	//getter-setter
 	public String getPlanId() {
 		return planId;
