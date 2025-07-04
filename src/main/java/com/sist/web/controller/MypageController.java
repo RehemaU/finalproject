@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.sist.web.model.Editor;
+import com.sist.web.model.Pcomment;
 import com.sist.web.service.EditorService;
 import com.sist.web.service.PcommentService;
 import com.sist.web.service.UserService;
@@ -59,12 +60,41 @@ public class MypageController {
 		}
 		catch(Exception e)
 		{
-			logger.error("[EditorController]myPlanlist Exception", e);
+			logger.error("[MypageController]myPlanlist Exception", e);
 		}
 		
 		model.addAttribute("list", list);
 		
 		return "/mypage/planlist";
+	}
+	
+	//내댓글조회
+	@RequestMapping(value="/user/mycomment")
+	public String myCommentlist(ModelMap model, HttpServletRequest request, HttpServletResponse response)
+	{
+		String userId = (String) request.getSession().getAttribute("userId");
+		
+		List<Pcomment> list = null;
+		
+		try
+		{
+			if(userId != null)
+			{
+				list = pcommentService.pcommentMycomment(userId);
+			}
+			else
+			{
+				System.out.println("로그인 필요");
+			}
+		}
+		catch(Exception e)
+		{
+			logger.error("[MypageController]pcommentMycomment Exception", e);
+		}
+		
+		model.addAttribute("list", list);
+		
+		return "/mypage/commentlist";
 	}
 	
 }

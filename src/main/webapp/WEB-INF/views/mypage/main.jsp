@@ -40,9 +40,23 @@
   <script>
     function loadContent(type) {
       let contentDiv = document.getElementById("contentArea");
+      
       if(type === 'profile') {
-        contentDiv.innerHTML = "<h2>마이 프로필</h2><p>여기에 회원정보를 보여줄거야.</p>";
+          fetch('/user/userUpdateForm')
+          .then(response => response.text())
+          .then(html => {
+            contentDiv.innerHTML = html;
+          })
+          .catch(error => {
+            console.error(error);
+            contentDiv.innerHTML = "<p>불러오기 실패</p>";
+          });
       }
+      
+      else if(type === 'likes') {
+        contentDiv.innerHTML = "<h2>내 찜 목록</h2><p>여기에 찜한 상품이나 게시글을 보여줄거야.</p>";
+      }
+      
       else if(type === 'posts') {
         fetch('/user/myplan')
           .then(response => response.text())
@@ -54,8 +68,17 @@
             contentDiv.innerHTML = "<p>불러오기 실패</p>";
           });
       }
-      else if(type === 'likes') {
-        contentDiv.innerHTML = "<h2>내 찜 목록</h2><p>여기에 찜한 상품이나 게시글을 보여줄거야.</p>";
+      
+      else if(type === 'comments') {
+          fetch('/user/mycomment')
+          .then(response => response.text())
+          .then(html => {
+            contentDiv.innerHTML = html;
+          })
+          .catch(error => {
+            console.error(error);
+            contentDiv.innerHTML = "<p>불러오기 실패</p>";
+          });
       }
     }
   </script>
@@ -66,8 +89,8 @@
   <div class="mypage-container">
     <div class="menu">
       <button onclick="loadContent('profile')">마이 프로필</button>
-      <button onclick="loadContent('posts')">내가 쓴 게시글</button>
       <button onclick="loadContent('likes')">내 찜 목록</button>
+      <button onclick="loadContent('posts')">내가 쓴 게시글</button>
       <button onclick="loadContent('comments')">내 댓글</button>
       <!-- 필요한 메뉴 계속 추가 가능 -->
     </div>
