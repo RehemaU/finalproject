@@ -336,7 +336,7 @@
 	
       <div class="form-group">
         <label>아이디</label>
-        <input type="text" id="userId" name="userId" value="${user.userId}" maxlength="20">
+        <input type="text" id="userId" name="userId" value="${user.userId}" maxlength="20" readonly>
       </div>
 
       <div class="form-group">

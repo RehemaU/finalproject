@@ -91,6 +91,11 @@ public class SigunguService {
         return sigunguDao.getAllSigungu();
     }
     
-    
-    
+    //시군구코드조회 추가
+    public Sigungu sigunguSelect(String regionId, String sigunguName)
+    {
+    	Sigungu sigungu = sigunguDao.sigunguSelect(regionId, sigunguName);
+    	
+    	return sigungu;
+    }
 }
