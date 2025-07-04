@@ -136,14 +136,31 @@
     </div>
   </a>
 
+<c:if test="${not l.isPlan}">
+
   <!-- 후기작성 버튼 -->
   <div class="review-form">
     <form action="${pageContext.request.contextPath}/editor/planeditor" method="get">
-      <input type="hidden" name="listId" value="${l.calanderListId}">
+      <input type="hidden" name="tCalanderListId" value="${l.calanderListId}">
       <button type="submit" class="btn">후기작성</button>
     </form>
   </div>
+  
+</c:if>
+<c:if test="${l.isPlan}">
+
+  <!-- 후기수정 버튼 -->
+  <div class="review-form">
+    <form action="${pageContext.request.contextPath}/editor/planupdate" method="get">
+      <input type="hidden" name="planId" value="${l.planId}">
+      <button type="submit" class="btn">후기수정</button>
+    </form>
+  </div>
+
+</c:if>
+
 </div>
+
 
 </c:forEach>
 

@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.google.gson.JsonObject;
+import com.sist.web.service.CalanderService;
 import com.sist.web.service.EditorService;
 import com.sist.web.service.PcommentService;
 import com.sist.web.service.RecommendService;
@@ -48,6 +49,8 @@ public class EditorController
 	private UserService userService;
 	@Autowired
 	private RecommendService recommendService;
+	@Autowired
+	private CalanderService calanderService;
 	
 	private static final int LIST_COUNT = 10; 	// 한 페이지의 게시물 수
 	private static final int PAGE_COUNT = 2;	// 페이징 수
@@ -121,8 +124,11 @@ public class EditorController
 
 	    String planTitle = editor.getPlanTitle();
 	    String planContent = editor.getPlanContent();
+	    
+	    String tCalanderListId = editor.getTCalanderListId();
+	    
 	    String userId = (String) request.getSession().getAttribute("userId");
-
+	    
 	    JsonObject data = new JsonObject();
 	    data.addProperty("title", planTitle);
 	    data.addProperty("content", planContent);
@@ -130,7 +136,9 @@ public class EditorController
 	    editor.setUserId(userId);
 	    editor.setPlanTitle(planTitle);
 	    editor.setPlanContent(planContent);
-	    editor.setTCalanderListId("CL005");
+	    editor.setTCalanderListId(tCalanderListId);
+	    
+	    editor.setTCalanderListId(tCalanderListId);
 
 	    logger.info("제목: " + planTitle);
 	    logger.info("내용: " + planContent);
@@ -279,11 +287,19 @@ public class EditorController
 		Recommend recom = new Recommend();
 		// 좋아요 누른 여부
 		boolean liked = false;
+		//--
+		CalanderList calanderlist = null;
+		List<Calander> cals = null;
+		//--
 		
 		if(planId > 0)
 		{
 			editor = editorService.editorSelect(planId);
 			list = pcommentService.pcommentList(planId);
+			//--
+			calanderlist   = calanderService.getListById(editor.gettCalanderListId());
+			cals = calanderService.getCalanders(editor.gettCalanderListId());
+			//--
 			
 			for (Pcomment p : list)
 			{
@@ -330,6 +346,11 @@ public class EditorController
 		
 		model.addAttribute("loginId", loginId);
 		model.addAttribute("liked", liked);
+		
+		//--
+		model.addAttribute("calanderlist", calanderlist);
+		model.addAttribute("calList", cals);
+		//--
 		
 		return "/editor/planview";
 	}
@@ -433,6 +454,9 @@ public class EditorController
 			{
 				try
 				{
+					int comDelCnt = pcommentService.pcommentAllDelete(planId);
+					System.out.println("게시글 삭제 시 삭제된 댓글 수: " + comDelCnt);
+					
 					if(editorService.editorDelete(planId) > 0)
 					{
 						ajaxResponse.setResponse(0, "success");
@@ -444,7 +468,7 @@ public class EditorController
 				}
 				catch(Exception e)
 				{
-					logger.error("[HiBoardController]delete Exception", e);
+					logger.error("[EditorController]delete Exception", e);
 					ajaxResponse.setResponse(500, "server error2");
 				}
 			}
@@ -460,4 +484,6 @@ public class EditorController
 		
 		return ajaxResponse;
 	}
+	
+	
 }

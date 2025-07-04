@@ -122,8 +122,8 @@
 	  
 	  </select>
 	  
-	  <!-- 게시글 상세 조회 -->
-	  <select id="editorSelect" parameterType="int" resultMap="editorResultMap">
+		<!-- 게시글 상세 조회 -->
+		<select id="editorSelect" parameterType="int" resultMap="editorResultMap">
 			SELECT
 			    A.PLAN_ID,
 			    A.USER_ID,
@@ -141,9 +141,9 @@
 			    ON A.USER_ID = B.USER_ID
 			WHERE
 			A.PLAN_ID = #{value}
-	  </select>
+		</select>
 	  
-	    <!-- 게시물 수정 -->
+		<!-- 게시물 수정 -->
 		<update id="editorUpdate" parameterType="com.sist.web.model.Editor">
 			UPDATE T_PLAN
 			   SET PLAN_TITLE = #{planTitle},
@@ -153,8 +153,8 @@
 		
 		<!-- 게시물 삭제 -->
 		<delete id="editorDelete" parameterType="int">
-		DELETE T_PLAN
-		WHERE PLAN_ID = #{value}
+			DELETE T_PLAN
+			WHERE PLAN_ID = #{value}
 		</delete>
 	  
 	  <!-- 게시물 썸네일 -->
@@ -184,5 +184,40 @@
 		SET PLAN_RECOMMEND = PLAN_RECOMMEND - 1
 		WHERE PLAN_ID = #{value}
 	  </update>
+	  
+	  <!-- 일정에 대한 후기가 있는지 체크 -->
+	  <select id="editorScheduleChk" parameterType="com.sist.web.model.Editor" resultType="int">
+		SELECT COUNT(*) AS CNT
+		FROM T_PLAN
+		WHERE USER_ID = #{userId}
+		AND T_CALANDER_LIST_ID = #{tCalanderListId}
+	  </select>
+	  
+	  <!-- 캘린더아이디로 플랜아이디 조회 -->
+	  <select id="editorPlanId" parameterType="com.sist.web.model.Editor" resultType="int">
+		SELECT PLAN_ID
+		FROM T_PLAN
+		WHERE USER_ID = #{userId}
+		AND T_CALANDER_LIST_ID = #{tCalanderListId}
+	  </select>
+	  
+	  <!-- 내가 쓴 게시글 조회 -->
+	  <select id="editorMyplan" parameterType="String" resultMap="editorResultMap">
+		  SELECT
+			    PLAN_ID,
+			    USER_ID,
+			    PLAN_TITLE,
+			    PLAN_CONTENT,
+			    PLAN_REGDATE,
+			    PLAN_COUNT,
+			    PLAN_REPORT,
+			    PLAN_RECOMMEND,
+			    T_CALANDER_LIST_ID
+			FROM
+			    T_PLAN
+			WHERE
+			    USER_ID = #{value}
+			ORDER BY PLAN_REGDATE DESC
+	  </select>
 	  
 </mapper>

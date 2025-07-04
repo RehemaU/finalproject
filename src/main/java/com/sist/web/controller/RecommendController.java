@@ -47,9 +47,6 @@ public class RecommendController {
 			{
 				if(recommendService.recommendInquiry(recom) > 0)
 				{
-					System.out.println("ㅇㅇ");
-					System.out.println(recommendService.recommendInquiry(recom));
-					System.out.println("ㅇㅇ");
 					
 					if(recommendService.recommendDelete(recom) > 0)
 					{
