@@ -454,6 +454,9 @@ public class EditorController
 			{
 				try
 				{
+					int comDelCnt = pcommentService.pcommentAllDelete(planId);
+					System.out.println("게시글 삭제 시 삭제된 댓글 수: " + comDelCnt);
+					
 					if(editorService.editorDelete(planId) > 0)
 					{
 						ajaxResponse.setResponse(0, "success");
@@ -465,7 +468,7 @@ public class EditorController
 				}
 				catch(Exception e)
 				{
-					logger.error("[HiBoardController]delete Exception", e);
+					logger.error("[EditorController]delete Exception", e);
 					ajaxResponse.setResponse(500, "server error2");
 				}
 			}
@@ -481,4 +484,6 @@ public class EditorController
 		
 		return ajaxResponse;
 	}
+	
+	
 }

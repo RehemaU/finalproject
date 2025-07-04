@@ -83,7 +83,7 @@
     display: flex;
     justify-content: flex-end;
     gap: 12px;
-    margin: 32px 280px;
+    margin: 10px 0px;
   }
 
   .action-btn {
@@ -141,16 +141,23 @@
       <div class="card-body">
 
         <!-- ▣ 제목 + 수정·삭제 버튼 (우측 정렬) -->
-        <div class="position-relative mb-3">
-          <h1 class="card-title mb-0">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <h1 class="card-title mb-2">
             ${editor.planTitle}
           </h1>
-      
+        <!-- 메타 정보 -->
+        <p class="text-muted mb-4">
+          작성자: ${editor.userName}
+          | 날짜: ${editor.planRegdate}
+          | 추천: ${editor.planRecommend}
+          | 조회: ${editor.planCount}
+        </p>
+        </div>
         <!-- 버튼 그룹 -->
-        <div class="btn-group ms-auto">
+        <div class="btn-group flex-shrink-0 ms-3">
 
 <c:if test="${loginId eq editor.userId}">
-
 
         <!-- 수정 버튼 -->
         <form action="${pageContext.request.contextPath}/editor/planupdate"
@@ -218,14 +225,6 @@ document.getElementById('deleteBtn').addEventListener('click', async () => {
 
         </div><!-- /btn-group -->
         </div><!-- /제목+버튼 -->
-
-        <!-- 메타 정보 -->
-        <p class="text-muted mb-4">
-          작성자: ${editor.userName}
-          | 날짜: ${editor.planRegdate}
-          | 추천: ${editor.planRecommend}
-          | 조회: ${editor.planCount}
-        </p>
 
         <hr/>
         

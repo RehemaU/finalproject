@@ -221,4 +221,21 @@ public class EditorService {
 		
 		return count;
 	}
+	
+	//내게시글조회
+	public List<Editor> editorMyplan(String userId)
+	{
+		 List<Editor> list = null;
+		 
+		 try
+		 {
+			 list = editorDao.editorMyplan(userId);
+		 }
+		 catch(Exception e)
+		 {
+			 logger.error("[EditorService]editorMyplan Exception", e);
+		 }
+		 
+		 return list;
+	}
 }

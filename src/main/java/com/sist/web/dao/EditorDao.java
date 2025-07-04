@@ -30,4 +30,6 @@ public interface EditorDao {
 	public int editorScheduleChk(Editor editor);
 	//캘린더아이디로플랜아이디조회
 	public int editorPlanId(Editor editor);
+	//내후기조회
+	public List<Editor> editorMyplan(String userId);
 }

@@ -201,4 +201,23 @@
 		AND T_CALANDER_LIST_ID = #{tCalanderListId}
 	  </select>
 	  
+	  <!-- 내가 쓴 게시글 조회 -->
+	  <select id="editorMyplan" parameterType="String" resultMap="editorResultMap">
+		  SELECT
+			    PLAN_ID,
+			    USER_ID,
+			    PLAN_TITLE,
+			    PLAN_CONTENT,
+			    PLAN_REGDATE,
+			    PLAN_COUNT,
+			    PLAN_REPORT,
+			    PLAN_RECOMMEND,
+			    T_CALANDER_LIST_ID
+			FROM
+			    T_PLAN
+			WHERE
+			    USER_ID = #{value}
+			ORDER BY PLAN_REGDATE DESC
+	  </select>
+	  
 </mapper>
