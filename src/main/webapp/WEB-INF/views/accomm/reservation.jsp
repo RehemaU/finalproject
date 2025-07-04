@@ -123,12 +123,20 @@ function payWithKakao() {
     })
     .then(res => res.json())
     .then(data => {
-        if (data.nextRedirectPcUrl) {
-            window.location.href = data.nextRedirectPcUrl;
-        } else {
-            alert('결제 요청 중 문제가 발생했습니다.');
-        }
-    })
+	    if (data.nextRedirectPcUrl) {
+	        const popup = window.open(
+	            data.nextRedirectPcUrl,
+	            'kakaoPayPopup',
+	            'width=500,height=700,resizable=no,scrollbars=yes'
+	        );
+	
+	        if (!popup || popup.closed || typeof popup.closed === "undefined") {
+	            alert("팝업이 차단되었습니다. 브라우저 설정에서 허용해주세요.");
+	        }
+	    } else {
+	        alert('결제 요청 중 문제가 발생했습니다.');
+	    }
+	})
     .catch(err => {
         console.error(err);
         alert('결제 요청 실패');
