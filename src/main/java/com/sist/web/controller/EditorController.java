@@ -137,8 +137,6 @@ public class EditorController
 	    editor.setPlanTitle(planTitle);
 	    editor.setPlanContent(planContent);
 	    editor.setTCalanderListId(tCalanderListId);
-	    
-	    editor.setTCalanderListId(tCalanderListId);
 
 	    logger.info("제목: " + planTitle);
 	    logger.info("내용: " + planContent);
