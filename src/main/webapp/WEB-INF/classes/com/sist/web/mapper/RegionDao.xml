@@ -27,5 +27,11 @@
     <select id="existsRegion" parameterType="String" resultType="int">
         SELECT COUNT(*) FROM T_REGION WHERE REGION_ID = #{regionId}
     </select>
+    
+    
+    <select id="regionSelect" resultMap="regionResultMap">
+        SELECT REGION_ID FROM T_REGION 
+        WHERE REGION_NAME like  '%' || #{regionName} || '%'
+    </select>
 
 </mapper>
