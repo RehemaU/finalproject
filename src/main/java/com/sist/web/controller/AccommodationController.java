@@ -2,6 +2,7 @@ package com.sist.web.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -9,14 +10,26 @@ import org.springframework.web.bind.annotation.*;
 import com.sist.web.model.Accommodation;
 import com.sist.web.model.AccommodationRoom;
 import com.sist.web.model.Region;
+import com.sist.web.model.RoomAvailabilityRequest;
+import com.sist.web.model.RoomPriceRequest;
+import com.sist.web.model.RoomPriceResult;
 import com.sist.web.model.Sigungu;
+import com.sist.web.model.UserCoupon;
+import com.sist.web.service.AccommodationRoomPriceService;
 import com.sist.web.service.AccommodationRoomService;
 import com.sist.web.service.AccommodationService;
+import com.sist.web.service.EventService;
 import com.sist.web.service.RegionService;
 import com.sist.web.service.SigunguService;
+import com.sist.web.service.UserCouponService;
 
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Controller("AcommodationController")
 public class AccommodationController {
@@ -24,10 +37,14 @@ public class AccommodationController {
     @Autowired
     private AccommodationService accommodationService;
     
+    @Autowired
+    private UserCouponService userCouponService;
 
     @Autowired
     private AccommodationRoomService accommodationRoomService;
     
+    @Autowired
+    private AccommodationRoomPriceService accommodationRoomPriceService;
     @Autowired
     private SigunguService sigunguService;
     
@@ -92,7 +109,49 @@ public class AccommodationController {
     	System.out.println("객실 수 = " + roomList.size());
     	return "/accomm/accommDetail";
     }
+    
+    @PostMapping("/accommDetail/calculatePrice")
+    @ResponseBody
+    public RoomPriceResult calculateRoomPrice(@RequestBody RoomPriceRequest req) {
+        return accommodationRoomPriceService.calculateTotalPrice(req.getRoomId(), req.getCheckIn(), req.getCheckOut());
+    }
+    
+    @PostMapping("/accommDetail/availableRooms")
+    @ResponseBody
+    public List<AccommodationRoom> getAvailableRooms(@RequestBody RoomAvailabilityRequest req) {
+        return accommodationRoomService.getAvailableRoomsByDate(
+            req.getAccommId(),
+            req.getCheckIn(),
+            req.getCheckOut()
+        );
+    }
  
+    @PostMapping("/accomm/reservation")
+    public String accommReservation(
+            @RequestParam("roomId") String roomId,
+            @RequestParam("checkIn") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkIn,
+            @RequestParam("checkOut") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkOut,
+            Model model, HttpServletRequest request) {
+
+    	String userId = (String) request.getSession().getAttribute("userId");
+        if (userId == null) {
+            // 로그인 안 되어 있으면 로그인 페이지로 리다이렉트
+            return "redirect:/user/login"; // 로그인 페이지 경로에 맞게 수정
+        }
+        RoomPriceResult result = accommodationRoomPriceService.calculateTotalPrice(roomId, checkIn.toString(), checkOut.toString());
+        List<UserCoupon> couponList = userCouponService.getUserCouponList(userId);
+        AccommodationRoom room = accommodationRoomService.searchByAccommRoomId(roomId);
+        
+        model.addAttribute("couponList", couponList);
+        model.addAttribute("room", room);
+        model.addAttribute("checkIn", checkIn);
+        model.addAttribute("checkOut", checkOut);
+        model.addAttribute("days", result.getDays());
+        model.addAttribute("totalPrice", result.getTotalPrice());
+
+        return "/accomm/reservation"; 
+    }
+
     
     
     

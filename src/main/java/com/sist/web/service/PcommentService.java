@@ -88,5 +88,22 @@ public class PcommentService {
 		
 		return count;
 	}
-
+	
+	//게시글 삭제 시 댓글 삭제
+	public int pcommentAllDelete(int planId)
+	{
+		int count = 0;
+		
+		try
+		{
+			count = pcommentDao.pcommentAllDelete(planId);
+		}
+		catch(Exception e)
+		{
+			logger.error("[PcommentService] pcommentAllDelete : ", e);
+		}
+		
+		return count;
+	}
+	
 }

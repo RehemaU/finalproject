@@ -1,6 +1,4 @@
-
 <!-- head.jsp : 공통 <head> -->
-
 
 <!DOCTYPE html>
 <html lang="ko">

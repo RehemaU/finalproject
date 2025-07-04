@@ -16,15 +16,15 @@ public class AccommodationRoomPriceController {
     @Autowired
     private AccommodationRoomPriceService accommodationRoomPriceService;
 
-    @GetMapping("/syncRoomPrice")
-    public String RoomPrice() {
-        int totalCount = 0;
-        try {
-        	accommodationRoomPriceService.insertAllRoomPrice();
-        	return "객실 가격 동기화 완료";
-        } catch (Exception e) {   
-            return "객실 가격 동기화 중 에러 발생: " + e.getMessage();
-        }
-    }
+//    @GetMapping("/syncRoomPrice")
+//    public String RoomPrice() {
+//        int totalCount = 0;
+//        try {
+//        	accommodationRoomPriceService.insertAllRoomPrice();
+//        	return "객실 가격 동기화 완료";
+//        } catch (Exception e) {   
+//            return "객실 가격 동기화 중 에러 발생: " + e.getMessage();
+//        }
+//    }
 
 }
