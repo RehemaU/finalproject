@@ -214,5 +214,14 @@ public class AccommodationService {
     public Accommodation selectAccommodation(String accommId) {
     	return accommodationDao.selectAccommodation(accommId);
     }
-
+    public void insertAccommodation(Accommodation accom) {
+        // 혹시 accomId가 없다면 직접 생성하거나 UUID 활용 가능
+        if (accom.getAccomId() == null || accom.getAccomId().isEmpty()) 
+        {
+            accom.setAccomId("A_" + System.currentTimeMillis());
+        }
+    }
+    public int insertAccommodationForm(Accommodation accommodation) {
+        return accommodationDao.insertAccommodationForm(accommodation);
+    }
    }
