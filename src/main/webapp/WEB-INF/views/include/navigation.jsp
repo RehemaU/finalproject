@@ -28,7 +28,7 @@
   <nav class="gnb wrap flex center">
     <a href="/tour/list">TOUR</a><a href="/accomm/list">STAY</a><a href="/schedule/addList">SCHEDULE</a>
 
-    <a href="/editor/planmenu">REVIEW</a><a href="/coupon">COUPON</a><a href="/event/eventList">EVENT</a><a href="/qna">Q&A</a>
+    <a href="/editor/planmenu">REVIEW</a><a href="/coupon">COUPON</a><a href="/event/eventList">EVENT</a><a href="/notice/noticetList">NOTICE</a><a href="/qna">Q&A</a>
 
   </nav>
 </header>
