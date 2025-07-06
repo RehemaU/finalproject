@@ -1,5 +1,5 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -45,12 +45,12 @@
   <div class="mypage-container">
     <h2 class="mypage-title">마이페이지</h2>
     <ul class="mypage-menu">
-      <li><a href="/mypage/info">회원정보 (수정/탈퇴)</a></li>
-      <li><a href="/mypage/board">내가 쓴 게시글</a></li>
-      <li><a href="/mypage/schedule">내가 쓴 일정</a></li>
-      <li><a href="/mypage/comment">내가 쓴 댓글</a></li>
+      <li><a href="/user/userUpdateForm">회원정보 (수정/탈퇴)</a></li>
+      <li><a href="/schedule/myList">내가 쓴 일정</a></li>
+      <li><a href="/mypage/planlist">내가 쓴 게시글</a></li>
+      <li><a href="/mypage/mycomment">내가 쓴 댓글</a></li>
       <li><a href="/mypage/like">좋아요 누른 게시글</a></li>
-      <li><a href="/mypage/favorite">찜한 상품/게시글</a></li>
+      <li><a href="/mypage/favorite">찜한 장소</a></li>
       <li><a href="/mypage/cart">장바구니</a></li>
       <li><a href="/mypage/order">결제 내역</a></li>
       <li><a href="/mypage/cancel">취소 내역</a></li>

@@ -39,7 +39,7 @@ public class MypageController {
 	//------------------------------------------------------------------------------
 	
 	//내후기조회
-	@RequestMapping(value="/user/myplan")
+	@RequestMapping(value="/mypage/planlist")
 	public String myPlanlist(ModelMap model, HttpServletRequest request, HttpServletResponse response)
 	{
 		String userId = (String) request.getSession().getAttribute("userId");
