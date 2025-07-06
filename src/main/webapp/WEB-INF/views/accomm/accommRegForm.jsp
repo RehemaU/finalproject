@@ -1,232 +1,189 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ include file="/WEB-INF/views/include/taglib.jsp" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<%@ include file="/WEB-INF/views/include/head.jsp" %>
-  <title>회원가입</title>
-<style>
-  :root{
-    --fg:#000;            /* 기본 글자색 */
-    --bg:#ffffff;         /* 배경색 */
-    --border:#e5e5e5;     /* 얇은 회색선 */
-    --primary:#000000;    /* 액션‧포인트 컬러 = 블랙 */
-    --radius:12px;        /* 둥근 정도 */
-  }
-
-  /* 레이아웃 ──────────────────────────── */
-  body{
-    margin:0;
-    background:var(--bg);
-    color:var(--fg);
-    font-family:'Pretendard', sans-serif;
-    font-size:15px;
-    line-height:1.5;
-  }
-  .signup-container{
-    max-width:480px;               /* 여백 넉넉하게 */
-    margin:80px auto;              /* 위·아래 간격 */
-    padding:48px 56px;
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-    background:#fff;
-    box-shadow:0 4px 20px rgba(0,0,0,.04);
-  }
-  .signup-container h2{
-    font-size:28px;
-    font-weight:700;
-    text-align:center;
-    margin-bottom:40px;
-    letter-spacing:-.4px;
-  }
-
-  /* 폼 요소 ───────────────────────────── */
-  .form-group{margin-bottom:24px;display:flex;flex-direction:column;gap:8px;}
-  label{font-size:15px;font-weight:600;}
-
-  input[type="text"],
-  input[type="password"],
-  input[type="email"],
-  input[type="file"],
-  select{
-    padding:14px 16px;
-    font-size:15px;
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-    background:#fafafa;
-    transition:border-color .15s;
-  }
-  input[type="text"]:focus,
-  input[type="password"]:focus,
-  input[type="email"]:focus,
-  input[type="file"]:focus,
-  select:focus{
-    outline:none;
-    border-color:#666;
-    background:#fff;
-  }
-  input[readonly]{background:#f5f5f5;color:#888;cursor:not-allowed;}
-
-  /* 주소 섹션 – 버튼 옆 정렬 */
-  .address-group{gap:16px}
-  .address-group button{
-    height:46px;
-    padding:0 24px;
-    border:none;
-    border-radius:var(--radius);
-    background:var(--primary);
-    color:#fff;
-    font-weight:600;
-    cursor:pointer;
-    transition:opacity .15s;
-  }
-  .address-group button:hover{opacity:.85;}
-
-  /* date 입력이 텍스트로 바뀐 뒤도 동일 스타일 유지 */
-  input[type="date"],
-  input[type="text"][id="userBirth"]{
-    appearance:none;
-    -webkit-appearance:none;
-  }
-
-  /* 제출 버튼 ─────────────────────────── */
-  .submit-btn{
-    width:100%;
-    padding:16px 0;
-    font-size:16px;
-    font-weight:700;
-    background:var(--primary);
-    color:#fff;
-    border:none;
-    border-radius:var(--radius);
-    cursor:pointer;
-    transition:opacity .15s;
-    margin-top:32px;
-  }
-  .submit-btn:hover{opacity:.85;}
-</style>
-
-  <script type="text/javascript">
-  	
-  	
-  function execPostCode()
-  {
-    new daum.Postcode({
-        oncomplete: function(data) {
-        	// 우편번호 
-        	//alert(data.zonecode);
-            $("#zipCode").val(data.zonecode);
-            // 도로명 및 지번주소
-            //alert(data.roadAddress);
-            $("#streetAdr").val(data.roadAddress);
-            
-            $.ajax({
-                type: "POST",
-                url: "/accomm/regionSelect",
-                data: {
-                  zipCode: data.zonecode,                // 또는 $("#zipCode").val()
-    			  streetAdr: data.roadAddress            // 또는 $("#streetAdr").val()
-                },
-                dataType: "json",  // 컨트롤러에서 JSON 응답 시 사용
-                success: function(response) 
-                {
-               	  if (response.code === 0 && response.data) {
-               		
-               		let regionId = response.data.regionId;
-                    $("#regionId").val(regionId);
-                    
-                    $.ajax({
-                        type: "POST",
-                        url: "/accomm/sigunguSelect",
-                        data: {
-                          zipCode: data.zonecode,                
-            			  streetAdr: data.roadAddress, 
-            			  regionId : $("#regionId").val()
-                        },
-                        dataType: "json",  // 컨트롤러에서 JSON 응답 시 사용
-                        success: function(response) 
-                        {
-                       	  if (response.code === 0 && response.data) {
-                       	      $("#sigunguId").val(response.data.sigunguId);
-                       	  } else {
-                       	      alert("시군구 코드 조회 실패: " + response.message);
-                       	  }
-                         },
-                        error: function(xhr, status, error) {
-                          alert("서버 오류 발생: " + error);
-                        }
-                    });
-               	  } else {
-               	      alert("지역 코드 조회 실패: " + response.message);
-               	 }
-               },
-               error: function(xhr, status, error) {
-                 alert("서버 오류 발생: " + error);
-               }
-           });
-        }
-    }).open();
-   } 
-	    
-	function addrCheck() 
-	{
-     if($("#zipCode").val() == '' && $("#streetAdr").val() == ''){
-         alert("우편번호를 클릭하여 주소를 검색해주세요.");
-         $("#zipCode").focus();
-     }
-    }
-	
-  	</script>
-  	 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  	 <!-- 우편번호 daum api -->
-  	 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-  	 
-  	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-  	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <%@ include file="/WEB-INF/views/include/head.jsp" %>
+  <title>숙소 등록</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=e91447aad4b4b7e4b923ab8dd1acde77&libraries=services,clusterer"></script>
+  <style>
+    .container { max-width:600px; margin:40px auto; padding:40px; border:1px solid #ddd; border-radius:12px; background:#fff; }
+    .form-group { margin-bottom:20px; display:flex; flex-direction:column; }
+    label { font-weight:600; margin-bottom:6px; }
+    input, select { padding:12px; border:1px solid #ccc; border-radius:8px; }
+    #map { width:100%; height:300px; border-radius:8px; margin-top:12px; }
+    button { padding:10px; border:none; background:#000; color:#fff; border-radius:8px; font-weight:bold; cursor:pointer; }
+    .btn-secondary { background:#444; margin-top:8px; }
+  </style>
 </head>
 <body>
 <%@ include file="/WEB-INF/views/include/navigation2.jsp" %>
-  <div class="signup-container">
-    <h2>숙소등록</h2>
-    <form id="userRegForm" name="userRegForm" method="post">
-      
-      <div class="form-group">
-        <label>지역코드</label>
-        <input type="text" id="regionId" name="regionId"  maxlength="20">
-      </div>
-      
-      <div class="form-group">
-        <label>시군구코드</label>
-        <input type="text" id="sigunguId" name="sigunguId"  maxlength="20">
-      </div>
-      
-      
-    <div class="form-group address-group">
-      <label>우편번호</label>
-      <!--<input type="text" id="zipCode" name="zipCode" placeholder="우편번호" readonly onclick="execPostCode()">//-->
-      <div style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
-      	 <input type="text" id="zipCode" name="zipCode" placeholder="우편번호" value="${zipCode}" readonly onclick="execPostCode()" style="width: 120px;">
-     	 <button type="button" onclick="execPostCode()"
-            style="height: 45px; padding: 0 20px;">검색</button>
-      </div>
+<div class="container">
+  <h2>숙소 등록</h2>
+  <form method="post" action="/accomm/insert" enctype="multipart/form-data" onsubmit="return validateForm()">
 
-      <label>도로명 주소</label>
-      <input type="text" id="streetAdr" name="streetAdr" placeholder="도로명 주소" readonly>
-
-      <label>상세 주소</label>
-      <input type="text" id="detailAdr" name="detailAdr" placeholder="상세 주소" onclick="addrCheck()">
+    <!-- 지역 선택 -->
+    <div class="form-group">
+      <label for="regionDropdown">지역 선택</label>
+      <select id="regionDropdown" onchange="updateSigunguOptions()">
+        <option value="">-- 선택 --</option>
+        <c:forEach var="r" items="${regionList}">
+          <option value="${r.regionId}">${r.regionName}</option>
+        </c:forEach>
+      </select>
     </div>
 
-    
-      <div class="form-group">
-        <label>숙소첨부</label>
-        <input type="file" id="userProfile" name="userProfile">
-      </div>
+    <!-- 시군구 선택 -->
+    <div class="form-group">
+      <label for="sigunguDropdown">시군구 선택</label>
+      <select id="sigunguDropdown" onchange="syncSelectedCodes()">
+        <option value="">-- 선택 --</option>
+      </select>
+    </div>
 
-      <button type="button" id="btnReg" class="submit-btn">숙소등록</button>
-    </form>
-  </div>
+    <!-- 숨겨진 값 (DB insert용) -->
+    <input type="hidden" id="regionId" name="regionId">
+    <input type="hidden" id="sigunguCode" name="sigunguCode">
+    <input type="hidden" id="accomLat" name="accomLat">
+    <input type="hidden" id="accomLon" name="accomLon">
+
+    <!-- 주소 입력 -->
+    <div class="form-group">
+      <label>우편번호</label>
+      <input type="text" id="zipCode" name="zipcode" readonly onclick="execPostCode()">
+      <button type="button" class="btn-secondary" onclick="execPostCode()">주소 검색</button>
+    </div>
+
+    <div class="form-group">
+      <label>도로명 주소</label>
+      <input type="text" id="streetAdr" name="accomAdd" readonly>
+    </div>
+
+    <div class="form-group">
+      <label>상세 주소</label>
+      <input type="text" id="detailAdr" name="accomAdd2" placeholder="예: 3층 301호">
+      <button type="button" class="btn-secondary" onclick="loadMapFromAddress()">📍 위치 확인</button>
+    </div>
+
+    <!-- 지도 영역 -->
+    <div id="map"></div>
+
+    <!-- 기타 입력 -->
+    <div class="form-group">
+      <label>숙소명</label>
+      <input type="text" name="accomName" required>
+    </div>
+
+    <div class="form-group">
+      <label>대표 전화</label>
+      <input type="text" name="accomTel">
+    </div>
+
+    <div class="form-group">
+      <label>대표 이미지</label>
+      <input type="file" name="firstImageFile">
+    </div>
+
+    <button type="submit">숙소 등록</button>
+  </form>
+</div>
+
+<script>
+  // 서버 데이터 → JS 배열 (첫 번째 코드 패턴 적용)
+  const sigunguData = [
+    <c:forEach var="s" items="${sigunguList}" varStatus="loop">
+      { regionId:"${s.regionId}", sigunguId:"${s.sigunguId}", sigunguName:"${s.sigunguName}" }<c:if test="${!loop.last}">,</c:if>
+    </c:forEach>
+  ];
+
+  // 드롭다운 선택 로직 (첫 번째 코드 패턴 적용)
+  function updateSigunguOptions() {
+    const rId = $('#regionDropdown').val();
+    const $sSelect = $('#sigunguDropdown');
+    
+    // 시군구 드롭다운 초기화
+    $sSelect.empty().append('<option value="">-- 선택 --</option>');
+
+    // 선택된 지역에 해당하는 시군구만 필터링해서 추가
+    sigunguData.filter(v => v.regionId === rId)
+               .forEach(v => $sSelect.append(
+                 $('<option>', { value: v.sigunguId, text: v.sigunguName })
+               ));
+
+    // regionId hidden 값 갱신
+    $('#regionId').val(rId);
+    // 시군구 초기화
+    $('#sigunguId').val('');
+  }
+
+  function syncSelectedCodes() {
+	  $('#sigunguCode').val($('#sigunguDropdown').val());
+  }
+
+  function execPostCode() {
+    new daum.Postcode({
+      oncomplete: function(data) {
+        $('#zipCode').val(data.zonecode);
+        $('#streetAdr').val(data.roadAddress);
+
+        // region 자동 선택
+        $.post('/accomm/regionSelect', { streetAdr: data.roadAddress }, function(res) {
+          if (res.code === 0) {
+            const regionId = res.data.regionId;
+            $('#regionDropdown').val(regionId).trigger('change');
+
+            // sigungu 자동 선택은 region 반영 후 수행
+            setTimeout(() => {
+              $.post('/accomm/sigunguSelect', { streetAdr: data.roadAddress, regionId: regionId }, function(res2) {
+                if (res2.code === 0) {
+                  $('#sigunguDropdown').val(res2.data.sigunguId).trigger('change');
+                }
+              }, 'json');
+            }, 300);
+          }
+        }, 'json');
+      }
+    }).open();
+  }
+
+  function loadMapFromAddress() {
+    const addr = $('#streetAdr').val() + ' ' + ($('#detailAdr').val() || '');
+    if (!addr.trim()) return alert('주소를 먼저 입력하세요');
+
+    const geocoder = new kakao.maps.services.Geocoder();
+    geocoder.addressSearch(addr, function(result, status) {
+      if (status === kakao.maps.services.Status.OK) {
+        const lat = result[0].y;
+        const lon = result[0].x;
+
+        $('#accomLat').val(lat);
+        $('#accomLon').val(lon);
+
+        const mapContainer = document.getElementById('map');
+        const mapOption = { center: new kakao.maps.LatLng(lat, lon), level: 3 };
+        const map = new kakao.maps.Map(mapContainer, mapOption);
+        const marker = new kakao.maps.Marker({ position: new kakao.maps.LatLng(lat, lon) });
+        marker.setMap(map);
+      } else {
+        alert('지도를 찾을 수 없습니다.');
+      }
+    });
+  }
+
+  function validateForm() {
+    if (!$('#regionId').val() || !$('#sigunguCode').val()) {
+      alert('지역과 시군구를 선택해주세요.');
+      return false;
+    }
+    if (!$('#accomLat').val() || !$('#accomLon').val()) {
+      alert('주소를 입력한 후 위치 확인 버튼을 눌러주세요.');
+      return false;
+    }
+    return true;
+  }
+</script>
 </body>
 </html>
-    
