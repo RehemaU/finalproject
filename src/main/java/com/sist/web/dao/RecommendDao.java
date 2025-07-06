@@ -1,5 +1,7 @@
 package com.sist.web.dao;
 
+import java.util.List;
+
 import com.sist.web.model.Recommend;
 
 public interface RecommendDao {
@@ -10,4 +12,6 @@ public interface RecommendDao {
 	public int recommendInsert(Recommend recom);
 	//좋아요 DELETE
 	public int recommendDelete(Recommend recom);
+	//좋아요 LIST
+	public List<Integer> recommendList(String userId);
 }

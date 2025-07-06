@@ -20,4 +20,6 @@ public interface PcommentDao {
 	public int pcommentCount(int planId);
 	//게시글 삭제 시 댓글 삭제
 	public int pcommentAllDelete(int planId);
+	//내가단댓글조회
+	public List<Pcomment> pcommentMycomment(String userId);
 }

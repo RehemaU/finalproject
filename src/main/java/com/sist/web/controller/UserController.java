@@ -263,9 +263,15 @@ public class UserController
 	public String userUpdateForm(ModelMap model, HttpServletRequest request, HttpServletResponse response)
 	{
 		//쿠키를 가져옴
-		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		//String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		String userId = (String) request.getSession().getAttribute("userId");
 		
-		User user = userService.userSelect(cookieUserId);
+		if(userId == null || userId == "")
+		{
+			return "/user/login";
+		}
+		
+		User user = userService.userSelect(userId);
 		
 		String userAdd = user.getUserAdd(); // 예: "12345 서울시 강남구 테헤란로 1길 5"
 		String zipCode = "";

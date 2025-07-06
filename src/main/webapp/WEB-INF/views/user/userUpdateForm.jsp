@@ -113,7 +113,7 @@
   }
   .submit-btn:hover{opacity:.85}
 </style>
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script type="text/javascript">
   	$(document).ready(function(){
   		$("#userId").focus();
@@ -341,7 +341,7 @@
 
       <div class="form-group">
         <label>이름</label>
-        <input type="text" id="userName" name="userName" value="${user.userName}"  readonly maxlength="20">
+        <input type="text" id="userName" name="userName" value="${user.userName}" maxlength="20">
       </div>
 
       <div class="form-group">
