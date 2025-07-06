@@ -4,7 +4,7 @@
   <div class="util-bar wrap flex between center">
     <a href="/" class="logo">logo</a>
     <div class="util-icons flex center">
-      <a class="icon" href="/mypage">MY PAGE</a>
+      <a class="icon" href="/mypage/main">MY PAGE</a>
       <a class="icon" href="/likes">MY LIKE</a>
       <a class="icon" href="/bag">BAG</a>
       <a class="icon" href="/user/login">LOGIN</a>
