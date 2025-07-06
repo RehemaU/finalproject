@@ -1,10 +1,13 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="/WEB-INF/views/include/taglib.jsp" %>
+
 <!-- navigation.jsp : 공통 Header / GNB -->
 <header>
   <!-- 상단 유틸바 -->
   <div class="util-bar wrap flex between center">
     <a href="/" class="logo">logo</a>
     <div class="util-icons flex center">
-      <a class="icon" href="/mypage">MY PAGE</a>
+      <a class="icon" href="/mypage/main">MY PAGE</a>
       <a class="icon" href="/like/list">MY LIKE</a>
       <a class="icon" href="/bag">BAG</a>
       <a class="icon" href="/user/login">LOGIN</a>

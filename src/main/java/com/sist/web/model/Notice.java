@@ -13,7 +13,7 @@ public class Notice implements Serializable {
     private String adminId;        // 작성한 관리자 ID
     private String noticeTitle;    // 제목
     private String noticeContent;  // 내용
-    private String noticeRegDate;  // 등록일 (String으로 처리)
+    private String noticeRegdate;  // 등록일 (String으로 처리)
     private int noticeCount;       // 조회수
 	
     public Notice() 
@@ -22,7 +22,7 @@ public class Notice implements Serializable {
         this.adminId = "";
         this.noticeTitle = "";
         this.noticeContent = "";
-        this.noticeRegDate = "";
+        this.noticeRegdate = "";
         this.noticeCount = 0;
     }
 
@@ -58,12 +58,12 @@ public class Notice implements Serializable {
 		this.noticeContent = noticeContent;
 	}
 
-	public String getNoticeRegDate() {
-		return noticeRegDate;
+	public String getNoticeRegdate() {
+		return noticeRegdate;
 	}
 
-	public void setNoticeRegDate(String noticeRegDate) {
-		this.noticeRegDate = noticeRegDate;
+	public void setNoticeRegdate(String noticeRegdate) {
+		this.noticeRegdate = noticeRegdate;
 	}
 
 	public int getNoticeCount() {

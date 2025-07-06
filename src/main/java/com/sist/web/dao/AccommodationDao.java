@@ -11,4 +11,6 @@ public interface AccommodationDao {
     void updateAccommodationDescription(Accommodation accomm);
     List<Accommodation> searchBySigungu(List<Sigungu> list);
     Accommodation selectAccommodation(String accommId);
+    int insertAccommodationForm(Accommodation accommodation);
+
 }
