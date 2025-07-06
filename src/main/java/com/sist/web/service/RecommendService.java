@@ -1,5 +1,7 @@
 package com.sist.web.service;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,4 +68,20 @@ public class RecommendService {
 		return count;
 	}
 	
+	//좋아요 LIST
+	public List<Integer> recommendList(String userId)
+	{
+		List<Integer> list = null;
+		
+		try
+		{
+			list = recommendDao.recommendList(userId);
+		}
+		catch(Exception e)
+		{
+			logger.error("[RecommendService] recommendList : ", e);
+		}
+		
+		return list;
+	}
 }

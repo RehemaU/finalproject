@@ -94,4 +94,21 @@
 			PLAN_ID = #{value}
 	  </select>
 	  
+	  <!-- 댓글 목록 -->
+	  <select id="pcommentMycomment" parameterType="String" resultMap="pcommentResultMap">
+		  SELECT
+			    COMMENT_ID,
+			    PLAN_ID,
+			    USER_ID,
+			    PLAN_COMMENT_CONTENT,
+			    PLAN_COMMENT_PARENT,
+			    PLAN_COMMENT_DATE,
+			    PLAN_COMMENT_REPORT
+			FROM
+			    T_PLAN_COMMENT
+			WHERE
+			    USER_ID = #{value}
+			ORDER BY PLAN_COMMENT_DATE DESC
+	  </select>
+	  
 </mapper>

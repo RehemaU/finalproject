@@ -48,8 +48,8 @@
       <li><a href="/user/userUpdateForm">회원정보 (수정/탈퇴)</a></li>
       <li><a href="/schedule/myList">내가 쓴 일정</a></li>
       <li><a href="/mypage/planlist">내가 쓴 게시글</a></li>
-      <li><a href="/mypage/mycomment">내가 쓴 댓글</a></li>
-      <li><a href="/mypage/like">좋아요 누른 게시글</a></li>
+      <li><a href="/mypage/commentlist">내가 쓴 댓글</a></li>
+      <li><a href="/mypage/recommendlist">좋아요 누른 게시글</a></li>
       <li><a href="/mypage/favorite">찜한 장소</a></li>
       <li><a href="/mypage/cart">장바구니</a></li>
       <li><a href="/mypage/order">결제 내역</a></li>
