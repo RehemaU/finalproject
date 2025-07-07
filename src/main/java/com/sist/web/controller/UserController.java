@@ -1,5 +1,8 @@
 package com.sist.web.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -8,11 +11,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.sist.common.model.FileData;
@@ -454,12 +467,98 @@ public class UserController
 
 	}
 	
-	//회원댓글관리
-	@RequestMapping(value="/user/userCommentForm", method=RequestMethod.GET)
-	public String userCommentForm(HttpServletRequest request, HttpServletResponse response)
+	//카카오로그인
+	//로그인 페이지
+	@RequestMapping(value = "/user/kakaoLogin", method=RequestMethod.GET)
+	public String kakaoLogin(@RequestParam("code") String code, HttpSession session)
 	{
-		//쿠키값
-		//String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
-		return "/user/userCommentForm";
+        
+		String clientId = "80e4419557c7b5feaa6bcbaa1cae6ae8";
+	    //String redirectUri = "http://finalproject.sist.co.kr:8088/user/kakaoLogin";
+		String redirectUri = "http://finalproject.sist.co.kr:8088/user/kakaoLogin";
+	    String tokenUrl = "https://kauth.kakao.com/oauth/token";
+
+	    RestTemplate restTemplate = new RestTemplate();
+	    HttpHeaders headers = new HttpHeaders();
+	    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+	    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+	    params.add("grant_type", "authorization_code");
+	    params.add("client_id", clientId);
+	    params.add("redirect_uri", redirectUri);
+	    params.add("code", code);
+
+	    HttpEntity<MultiValueMap<String, String>> tokenRequest = new HttpEntity<>(params, headers);
+
+	    ResponseEntity<Map> response = restTemplate.postForEntity(tokenUrl, tokenRequest, Map.class);
+	    Map<String, Object> body = response.getBody();
+
+	    if (body == null || body.get("access_token") == null) {
+	        throw new RuntimeException("Access Token 요청 실패 (응답 없음 또는 access_token 누락)");
+	    }
+
+	    String accessToken = (String) body.get("access_token");
+
+	    // 세션에 저장 (추후 사용자 정보 조회에도 사용)
+	    session.setAttribute("kakao_access_token", accessToken);
+
+		//다음 단계로 리디렉션 (예: 사용자 정보 조회)
+	   return "redirect:/user/kakaoUserInfo";  // 또는 메인페이지
 	}
+	
+	
+	@RequestMapping(value="/user/kakaoUserInfo", method=RequestMethod.GET)
+	public String kakaoUserInfo(HttpSession session, Model model)
+	{
+		String accessToken = (String)session.getAttribute("kakao_access_token");
+		
+		if(accessToken == null)
+		{
+			throw new RuntimeException("accessToken이 세션에 없습니다.로그인부터 다시 진행하세요.");
+		}
+		
+		//1.요청준비
+		String userInfoUrl = "https://kapi.kakao.com/v2/user/me";
+		RestTemplate restTemplate = new RestTemplate();
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Authorization", "Bearer " + accessToken);
+		
+		HttpEntity<String> entity = new HttpEntity<>(headers);
+		
+		//2.요청전송
+		ResponseEntity<Map> response = restTemplate.exchange(userInfoUrl, HttpMethod.GET, entity, Map.class);
+		
+		Map<String, Object> body = response.getBody();
+		
+		//3.사용자 정보 파싱
+		if(body != null)
+		{
+			Map<String, Object> kakaoAccount = (Map<String, Object>) body.get("kakao_account");
+			Map<String, Object> properties = (Map<String, Object>) body.get("properties");
+			
+			String userName = (String)properties.get("nickname");
+			
+			Map<String, String> user = new HashMap<>();
+	        user.put("userName", userName);
+	        
+			session.setAttribute("user", user);
+			
+			model.addAttribute("userName", userName);
+		}
+		
+		return "/user/kakaoUserInfo";
+	}
+	
+	@RequestMapping(value = "/user/kakaoLogout", method = RequestMethod.GET)
+	public String kakaoLogout(HttpSession session) 
+	{
+	    // 세션에 저장된 로그인 정보 삭제
+	    session.invalidate(); 
+	    //session.removeAttribute("kakao_access_token");
+
+	    // 로그아웃 후 이동할 페이지로 리디렉트 (예: 로그인 페이지 또는 메인페이지)
+	    return "redirect:/user/login";
+	}
+	
 }
