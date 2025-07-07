@@ -31,7 +31,7 @@ public class SellerController
 	private SellerService sellerService;
 	
 	@Value("#{env['auth.seller.name']}")
-	private String AUTH_SELLER_NAME;
+	private String AUTH_SELLER_NAME; 
 	
 	
 	
