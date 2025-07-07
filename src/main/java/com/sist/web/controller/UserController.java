@@ -485,4 +485,60 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 		//String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
 		return "/user/userCommentForm";
 	}
+
+	
+	@RequestMapping(value="/user/kakaoUserInfo", method=RequestMethod.GET)
+	public String kakaoUserInfo(HttpSession session, Model model)
+	{
+		String accessToken = (String)session.getAttribute("kakao_access_token");
+		
+		if(accessToken == null)
+		{
+			throw new RuntimeException("accessToken이 세션에 없습니다.로그인부터 다시 진행하세요.");
+		}
+		
+		//1.요청준비
+		String userInfoUrl = "https://kapi.kakao.com/v2/user/me";
+		RestTemplate restTemplate = new RestTemplate();
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Authorization", "Bearer " + accessToken);
+		
+		HttpEntity<String> entity = new HttpEntity<>(headers);
+		
+		//2.요청전송
+		ResponseEntity<Map> response = restTemplate.exchange(userInfoUrl, HttpMethod.GET, entity, Map.class);
+		
+		Map<String, Object> body = response.getBody();
+		
+		//3.사용자 정보 파싱
+		if(body != null)
+		{
+			Map<String, Object> kakaoAccount = (Map<String, Object>) body.get("kakao_account");
+			Map<String, Object> properties = (Map<String, Object>) body.get("properties");
+			
+			String userName = (String)properties.get("nickname");
+			
+			Map<String, String> user = new HashMap<>();
+	        user.put("userName", userName);
+	        
+			session.setAttribute("user", user);
+			
+			model.addAttribute("userName", userName);
+		}
+		
+		return "/user/kakaoUserInfo";
+	}
+	
+	@RequestMapping(value = "/user/kakaoLogout", method = RequestMethod.GET)
+	public String kakaoLogout(HttpSession session) 
+	{
+	    // 세션에 저장된 로그인 정보 삭제
+	    session.invalidate(); 
+	    //session.removeAttribute("kakao_access_token");
+
+	    // 로그아웃 후 이동할 페이지로 리디렉트 (예: 로그인 페이지 또는 메인페이지)
+	    return "redirect:/user/login";
+	}
+
 }
