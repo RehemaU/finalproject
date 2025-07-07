@@ -194,7 +194,7 @@
 
 	  });
   });
-  </script>
+  </script>  
 </head>
 <body>
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
