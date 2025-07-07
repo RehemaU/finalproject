@@ -15,8 +15,17 @@ public class Order implements Serializable {
     private String orderStatus;       // 주문 상태 ('Y', 'N', etc.)
     private int orderExpendPoint;     // 사용한 포인트
     private String orderCouponId;     // 사용한 쿠폰 ID
+    private String orderTid; // Tid추가
+    
+    public String getOrderTid() {
+		return orderTid;
+	}
 
-    public Order() {
+	public void setOrderTid(String orderTid) {
+		this.orderTid = orderTid;
+	}
+
+	public Order() {
         this.orderId = "";
         this.userId = "";
         this.refundId = "";
