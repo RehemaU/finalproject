@@ -148,26 +148,25 @@ public class AccommController
 	        // 2. 상태 기본값
 	        accom.setAccomStatus("Y");
 
-	        // 3. 이미지 저장 처리
+	     // 3. 이미지 저장 처리
 	        if (firstImageFile != null && !firstImageFile.isEmpty()) {
 
-	            /* (2-1) 저장할 파일명 만들기 ─ 중복 방지를 위해 시간값 + 확장자 */
-	            String origin   = firstImageFile.getOriginalFilename();         
-	            String ext      = origin.substring(origin.lastIndexOf("."));     
-	            String saveName = "accomm_" + System.currentTimeMillis() + ext;  
+	            String origin   = firstImageFile.getOriginalFilename();
+	            String ext      = origin.substring(origin.lastIndexOf('.'));
+	            String saveName = "accomm_" + System.currentTimeMillis() + ext;
 
-	            /* (2-2) 디스크(물리) 경로에 저장 */
 	            File dir = new File(UPLOAD_SAVE_DIR_ACCOMM);
 	            if (!dir.exists()) dir.mkdirs();
 
-	            File dest = new File(dir, saveName);       
+	            File dest = new File(dir, saveName);
 	            firstImageFile.transferTo(dest);
 
-	            /* (2-3) DB에는 ‘웹 경로’만 남기기 */
-	            accom.setFirstImage("/upload/accomm/" + saveName);
+	            // === 여기만 변화 ===
+	            accom.setFirstImage("/resources/accomm/" + saveName);
 
 	            logger.debug("대표 이미지 저장 완료 : {}", dest.getAbsolutePath());
 	        }
+
 	        //-------------------------------------------------------------
 
 	        accommodationService.insertAccommodationForm(accom);
@@ -179,4 +178,6 @@ public class AccommController
 	        return "/error";
 	    }
 	}
+	
+
 }
