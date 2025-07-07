@@ -155,7 +155,7 @@
             {
                icia.common.log(response);
                var code = icia.common.objectValue(response, "code", -500);
-               if(code == 0) location.href = "/user/userUpdateForm";
+               if(code == 0) location.href = "/";
                else {
                   if(code == -1) alert("비밀번호가 올바르지 않습니다.");
                   else if(code == -99) alert("정지된 사용자 입니다.");
