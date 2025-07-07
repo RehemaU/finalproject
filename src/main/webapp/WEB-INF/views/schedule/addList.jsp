@@ -29,7 +29,7 @@
     .form-box button{padding:18px;background:#000;color:#fff;font-size:17px;font-weight:700;border-radius:10px;margin-top:36px;transition:.25s}
     .form-box button:hover{background:#222}
     #calendarArea .container__main{font-size:16px}
-    .swiper-slide{display:flex;align-items:center;justify-content:center;min-height:100vh}
+    .swiper-slide{display:flex;align-items:center;justify-content:center;min-height:72.5vh}
   </style>
 </head>
 <body class="bg-[#f5f5f5]">

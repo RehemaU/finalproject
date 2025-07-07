@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/views/include/taglib.jsp" %>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!-- navigation.jsp : 공통 Header / GNB -->
 <header>
   <!-- 상단 유틸바 -->
@@ -10,7 +10,14 @@
       <a class="icon" href="/mypage/main">MY PAGE</a>
       <a class="icon" href="/like/list">MY LIKE</a>
       <a class="icon" href="/bag">BAG</a>
-      <a class="icon" href="/user/login">LOGIN</a>
+<c:choose>
+  <c:when test="${not empty sessionScope.userId}">
+    <a class="icon" href="/user/loginOut">LOGOUT</a>
+  </c:when>
+  <c:otherwise>
+    <a class="icon" href="/user/login">LOGIN</a>
+  </c:otherwise>
+</c:choose>
       <span class="search" aria-label="Search"></span>
     </div>
   </div>
@@ -28,7 +35,7 @@
   <nav class="gnb wrap flex center">
     <a href="/tour/list">TOUR</a><a href="/accomm/list">STAY</a><a href="/schedule/addList">SCHEDULE</a>
 
-    <a href="/editor/planmenu">REVIEW</a><a href="/coupon">COUPON</a><a href="/event/eventList">EVENT</a><a href="/qna">Q&A</a>
+    <a href="/editor/planmenu">REVIEW</a><a href="/notice/noticeList">NOTICE</a><a href="/event/eventList">EVENT</a><a href="/weather">WEATHER</a>
 
   </nav>
 </header>

@@ -38,7 +38,7 @@
 
 </head>
 <body>
-<%@ include file="/WEB-INF/views/include/navigation.jsp" %> <%-- 공통 Header/Nav --%>
+<%@ include file="/WEB-INF/views/include/navigation_editor.jsp" %> <%-- 공통 Header/Nav --%>
 
 <!-- 메뉴(햄버거) 버튼 -->
 <button type="button"
@@ -48,7 +48,7 @@
   <i class="fa-solid fa-bars fa-lg"></i>
 </button>
 
-  <h1>${param.tCalanderListId}</h1>
+  <h1>후기 작성 페이지</h1>
   <br /><br />
 
   <!-- ⭐️ 래퍼 시작 -->
