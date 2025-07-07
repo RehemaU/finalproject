@@ -26,5 +26,13 @@
 		   AND PLAN_ID = #{planId}
 	  </delete>
 	  
+	  <select id="recommendList" parameterType="String" resultType="int">
+		  SELECT
+			    PLAN_ID
+			FROM
+			    T_RECOMMEND
+			WHERE
+			    USER_ID = #{value}
+	  </select>
 	  
 </mapper>
