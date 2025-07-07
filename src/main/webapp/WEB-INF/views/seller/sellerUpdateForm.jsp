@@ -5,72 +5,113 @@
 <html lang="ko">
 <head>
 <%@ include file="/WEB-INF/views/include/userHead.jsp" %>
-  <title>판매자등록</title>
+  <title>판매자등록수정</title>
   <style>
-    .signup-container {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 30px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    font-family: 'Arial', sans-serif;
-    background-color: #fff;
+    :root{
+    --fg:#000;            /* 텍스트 - 블랙 */
+    --bg:#ffffff;         /* 배경 - 화이트 */
+    --border:#e5e5e5;     /* 연한 회색선 */
+    --radius:12px;        /* 둥근 정도 */
+    --primary:#000000;    /* 액션·포인트 컬러 = 블랙 */
   }
 
-  .signup-container h2 {
-    text-align: center;
-    margin-bottom: 30px;
+  /* 레이아웃 ─────────────────────────── */
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--fg);
+    font-family:'Pretendard', sans-serif;
+    font-size:15px;
+    line-height:1.5;
+  }
+  .signup-container{
+    max-width:520px;
+    margin:80px auto;
+    padding:56px 60px;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    background:#fff;
+    box-shadow:0 4px 20px rgba(0,0,0,.05);
+  }
+  .signup-container h2{
+    font-size:28px;
+    font-weight:700;
+    text-align:center;
+    margin-bottom:44px;
+    letter-spacing:-.4px;
   }
 
-  .form-group {
-    margin-bottom: 15px;
-    display: flex;
-    flex-direction: column;
-  }
+  /* 폼 그룹 ──────────────────────────── */
+  .form-group{margin-bottom:28px;display:flex;flex-direction:column;gap:10px}
+  label{font-size:15px;font-weight:600}
 
-  label {
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
-
+  /* 입력·셀렉트·파일 */
   input[type="text"],
   input[type="password"],
   input[type="email"],
   input[type="file"],
-  select {
-    padding: 10px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+  select{
+    padding:14px 16px;
+    font-size:15px;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    background:#fafafa;
+    transition:border-color .15s;
+  }
+  input[type="text"]:focus,
+  input[type="password"]:focus,
+  input[type="email"]:focus,
+  input[type="file"]:focus,
+  select:focus{
+    outline:none;
+    border-color:#666;
+    background:#fff;
+  }
+  input[readonly]{background:#f5f5f5;color:#888;cursor:not-allowed}
+
+  /* 주소 검색 영역 */
+  .address-group{gap:18px}
+  .address-group button{
+    height:46px;
+    padding:0 26px;
+    border:none;
+    border-radius:var(--radius);
+    background:var(--primary);
+    color:#fff;
+    font-weight:600;
+    cursor:pointer;
+    transition:opacity .15s;
+  }
+  .address-group button:hover{opacity:.85}
+
+  /* 프로필 이미지 썸네일 */
+  .form-group img{
+    width:80px;height:80px;object-fit:cover;
+    border-radius:6px;border:1px solid var(--border);
   }
 
-  input[readonly] {
-    background-color: #f5f5f5;
-    cursor: not-allowed;
+  /* date 입력을 YYYYMMDD 포맷으로 바꾼 뒤에도 동일 스타일 유지 */
+  input[type="date"],
+  input[type="text"][id="userBirth"]{
+    appearance:none;
+    -webkit-appearance:none;
   }
 
-  .address-group {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  /* 제출 버튼 ────────────────────────── */
+  .submit-btn{
+    width:100%;
+    padding:16px 0;
+    margin-top:36px;
+    font-size:16px;
+    font-weight:700;
+    background:var(--primary);
+    color:#fff;
+    border:none;
+    border-radius:var(--radius);
+    cursor:pointer;
+    transition:opacity .15s;
   }
-
-  .submit-btn {
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
-    background-color: #2d7df6;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 20px;
-  }
-
-  .submit-btn:hover {
-    background-color: #135fd4;
-  }
- 
+  .submit-btn:hover{opacity:.85}
   </style>
   <script type="text/javascript">
   	$(document).ready(function(){
@@ -263,7 +304,7 @@
   	</script>
 </head>
 <body>
-<%@ include file="/WEB-INF/views/include/navigation2.jsp" %>
+<%@ include file="/WEB-INF/views/include/navigation.jsp" %>
   <div class="signup-container">
     <h2>판매자수정</h2>
     <form id="sellerUpdateForm"  method="post">
