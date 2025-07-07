@@ -5,15 +5,30 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.sist.web.dao.CouponDao;
 import com.sist.web.dao.UserCouponDao;
+import com.sist.web.model.Coupon;
 import com.sist.web.model.UserCoupon;
 
 @Service("userCouponService")
 public class UserCouponService {
-
+	
+	@Autowired
+	private CouponDao couponDao;
+	
     @Autowired
     private UserCouponDao userCouponDao;
-
+    
+    //유저쿠폰ID에서 쿠폰ID 추출
+    public String getCouponId(String userCouponId) {
+    	return userCouponDao.selectUserCouponById(userCouponId).getCouponId();
+    }
+    // 단순 쿠폰 조회용도(사용자용)
+    public Coupon selectCoupon(String userCouponId) {
+    	String couponId = getCouponId(userCouponId);
+    	return couponDao.selectCouponById(couponId);
+    }
+    
     // ✅ 특정 유저가 특정 쿠폰을 발급받았는지 확인
     public boolean hasCoupon(String userId, String couponId) {
         return userCouponDao.existsUserCoupon(userId, couponId) > 0;
@@ -24,9 +39,9 @@ public class UserCouponService {
         return userCouponDao.insertUserCoupon(userCoupon) > 0;
     }
 
-    // ✅ 유저가 가진 모든 쿠폰 리스트 조회 (마이페이지용)
+    // ✅ 유저가 가진 모든 쿠폰 리스트 조회 (쿼리조인)
     public List<UserCoupon> getUserCouponList(String userId) {
-        return userCouponDao.selectUserCouponList(userId);
+        return userCouponDao.selectUserCouponsByUserId(userId);
     }
 
     // ✅ 특정 유저 쿠폰 상세 조회

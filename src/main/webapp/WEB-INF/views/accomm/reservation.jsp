@@ -77,18 +77,23 @@ let discountedPrice = originalTotalPrice;
 
 document.getElementById("coupon").addEventListener("change", function() {
     const selected = this.options[this.selectedIndex];
+    console.log({
+    	  type: selected.getAttribute("data-type"),
+    	  amount: selected.getAttribute("data-amount"),
+    	  max: selected.getAttribute("data-max")
+    	});
     const type = selected.getAttribute("data-type");
     const amount = parseInt(selected.getAttribute("data-amount"));
     const maxAmount = parseInt(selected.getAttribute("data-max"));
 
     let discount = 0;
 
-    if (type === "P") {
+    if (type === "PERCNET") {
         discount = Math.floor(originalTotalPrice * (amount / 100));
         if (!isNaN(maxAmount) && discount > maxAmount) {
             discount = maxAmount;
         }
-    } else if (type === "A") {
+    } else if (type === "AMOUNT") {
         discount = amount;
     }
 
