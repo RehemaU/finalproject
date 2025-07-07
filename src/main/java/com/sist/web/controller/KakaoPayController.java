@@ -191,6 +191,8 @@ public class KakaoPayController {
         else {
         	System.out.println("씨발");
         }
+        session.setAttribute("complete_order", order);
+        session.setAttribute("complete_detail", detail);
 
         // 세션 정리
         session.removeAttribute(KAKAOPAY_TID_SESSION_NAME);
@@ -201,11 +203,16 @@ public class KakaoPayController {
         session.removeAttribute("order_userCouponId");
         session.removeAttribute("order_totalPrice");
 
+        model.addAttribute("order", order);
+        model.addAttribute("detail", detail);
+
         model.addAttribute("code", 0);
         model.addAttribute("msg", "결제가 완료되었습니다.");
         model.addAttribute("orderId", orderId);
-
-        return "/order/success";
+        
+        
+        
+        return "/order/kakaoSuccessPopup";
     }
 
     @GetMapping("/fail")
@@ -220,5 +227,24 @@ public class KakaoPayController {
         model.addAttribute("code", -2);
         model.addAttribute("msg", "결제가 취소되었습니다.");
         return "/order/fail";
+    }
+    
+    @GetMapping("/complete")
+    public String paymentCompletePage(HttpSession session, Model model) {
+        Order order = (Order) session.getAttribute("complete_order");
+        OrderDetail detail = (OrderDetail) session.getAttribute("complete_detail");
+
+        if (order == null || detail == null) {
+            return "redirect:/"; // 또는 오류 처리
+        }
+
+        model.addAttribute("order", order);
+        model.addAttribute("detail", detail);
+
+        // 사용 후 세션 제거
+        session.removeAttribute("complete_order");
+        session.removeAttribute("complete_detail");
+
+        return "/order/complete";  // 결제 완료 정보 보여줄 JSP
     }
 }

@@ -216,7 +216,7 @@
               <div class="mt-auto">
                 <!-- 작성일자 · 댓글수 -->
                 <p class="card-text text-muted mb-1">
-                  <small>작성일: ${post.planRegdate} | 댓글: ${post.comCount}</small>
+                  <small>작성일: ${post.planRegdate}</small>
                 </p>
                 <!-- 유저 · 추천수 · 조회수 -->
                 <div class="d-flex align-items-center">
@@ -225,7 +225,8 @@
                        alt="작성자"/>
                   <span class="ms-2">${post.userName}</span>
                   <span class="ms-auto">
-                    <i class="far fa-heart"></i> ${post.planRecommend}
+                    <i class="far fa-comment"></i> ${post.comCount}&nbsp;&nbsp;
+                    <i class="fas fa-heart"></i> ${post.planRecommend}
                     <i class="fas fa-eye ms-3"></i> ${post.planCount}
                   </span>
                 </div>

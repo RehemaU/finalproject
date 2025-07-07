@@ -6,7 +6,7 @@
 <head>
 <%@ include file="/WEB-INF/views/include/head.jsp" %>   <%-- 공통 head --%>
   <meta charset="UTF-8">
-  <title>내가 쓴 게시글</title>
+  <title>내가 쓴 댓글</title>
   <style>
     .board-container {
       max-width: 900px;
@@ -42,21 +42,18 @@
     }
     /* 폭 재조정 */
     .col-title {
-      width: 55%;
-      text-align: center;
+      width: 35%;
     }
-    .col-count {
-      width: 10%;
-    }
-    .col-view {
-      width: 10%;
+    .col-content {
+      width: 50%;
+      text-align: left;
     }
     .col-date {
-      width: 25%;
+      width: 30%;
     }
   </style>
   <script>
-    function goView(planId) {
+    function goToPost(planId) {
       location.href = "/editor/planview?planId=" + planId;
     }
   </script>
@@ -64,28 +61,26 @@
 <body>
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %> <%-- 공통 Header/Nav --%>
   <div class="board-container">
-    <h2 class="board-title">내가 쓴 게시글</h2>
+    <h2 class="board-title">내가 쓴 댓글</h2>
     <table class="board-table">
       <thead>
         <tr>
-          <th class="col-title">제목</th>
-          <th class="col-count">추천수</th>
-          <th class="col-view">조회수</th>
+          <th class="col-title">게시글 제목</th>
+          <th class="col-content">내용</th>
           <th class="col-date">작성일</th>
         </tr>
       </thead>
       <tbody>
-        <c:forEach var="editor" items="${list}">
-          <tr onclick="goView('${editor.planId}')">
-            <td class="col-title">${editor.planTitle}</td>
-            <td class="col-count">${editor.planRecommend}</td>
-            <td class="col-view">${editor.planCount}</td>
-            <td class="col-date">${editor.planRegdate}</td>
+        <c:forEach var="comment" items="${list}">
+          <tr onclick="goToPost('${comment.planId}')">
+            <td class="col-title">${comment.planTitle}</td>
+            <td class="col-content">${comment.planCommentContent}</td>
+            <td class="col-date">${comment.planCommentDate}</td>
           </tr>
         </c:forEach>
         <c:if test="${empty list}">
           <tr>
-            <td colspan="4">작성한 게시글이 없습니다.</td>
+            <td colspan="3">작성한 댓글이 없습니다.</td>
           </tr>
         </c:if>
       </tbody>
