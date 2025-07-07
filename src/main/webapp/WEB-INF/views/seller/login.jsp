@@ -98,7 +98,7 @@
   		$("#sellerPassword").on("keypress", function(e){
 			if(e.which == 13)
 			{
-				fn_loginCheck();
+				fn_loginCheck();  
 			}	
 		});
   		

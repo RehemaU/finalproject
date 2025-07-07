@@ -115,10 +115,14 @@
       $("#btnkakao").on("click", function(){
           //location.href = "https://kauth.kakao.com/oauth/authorize?client_id=80e4419557c7b5feaa6bcbaa1cae6ae8&redirect_uri=http://finalproject.sist.co.kr:8088/user/kakaoLogin&response_type=code&scope=profile_nickname";
     	  //location.href = "https://kauth.kakao.com/oauth/authorize?client_id=abc12345678901234567890123456789&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fkakao%2Fcallback&response_type=code&prompt=login";
-    	  location.href = "https://kauth.kakao.com/oauth/authorize?client_id=80e4419557c7b5feaa6bcbaa1cae6ae8&redirect_uri=http://finalproject.sist.co.kr:8088/user/kakaoLogin&response_type=code&scope=profile_nickname&prompt=login";
-      });
-      
-      
+    	  //location.href = "https://kauth.kakao.com/oauth/authorize?client_id=80e4419557c7b5feaa6bcbaa1cae6ae8&redirect_uri=http://finalproject.sist.co.kr:8088/user/kakaoLogin&response_type=code&scope=profile_nickname&prompt=login";
+    	  location.href = "https://kauth.kakao.com/oauth/authorize"
+    	    			+ "?client_id=80e4419557c7b5feaa6bcbaa1cae6ae8"
+    	    			+ "&redirect_uri=http://finalproject.sist.co.kr:8088/user/kakaoLogin"
+    	   			    + "&response_type=code"
+    	    			+ "&scope=profile_nickname"
+    	    			+ "&prompt=login";
+      }); 
    });
    
    function fn_loginCheck()

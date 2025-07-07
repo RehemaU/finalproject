@@ -485,6 +485,47 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 		//String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
 		return "/user/userCommentForm";
 	}
+	
+	
+	
+	//카카오로그인
+	//로그인 페이지
+	@RequestMapping(value = "/user/kakaoLogin", method=RequestMethod.GET)
+	public String kakaoLogin(@RequestParam("code") String code, HttpSession session)
+	{
+        
+		String clientId = "80e4419557c7b5feaa6bcbaa1cae6ae8";
+	    //String redirectUri = "http://finalproject.sist.co.kr:8088/user/kakaoLogin";
+		String redirectUri = "http://finalproject.sist.co.kr:8088/user/kakaoLogin";
+	    String tokenUrl = "https://kauth.kakao.com/oauth/token";
+
+	    RestTemplate restTemplate = new RestTemplate();
+	    HttpHeaders headers = new HttpHeaders();
+	    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+	    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+	    params.add("grant_type", "authorization_code");
+	    params.add("client_id", clientId);
+	    params.add("redirect_uri", redirectUri);
+	    params.add("code", code);
+
+	    HttpEntity<MultiValueMap<String, String>> tokenRequest = new HttpEntity<>(params, headers);
+
+	    ResponseEntity<Map> response = restTemplate.postForEntity(tokenUrl, tokenRequest, Map.class);
+	    Map<String, Object> body = response.getBody();
+
+	    if (body == null || body.get("access_token") == null) {
+	        throw new RuntimeException("Access Token 요청 실패 (응답 없음 또는 access_token 누락)");
+	    }
+
+	    String accessToken = (String) body.get("access_token");
+
+	    // 세션에 저장 (추후 사용자 정보 조회에도 사용)
+	    session.setAttribute("kakao_access_token", accessToken);
+
+		//다음 단계로 리디렉션 (예: 사용자 정보 조회)
+	   return "redirect:/user/kakaoUserInfo";  // 또는 메인페이지
+	}
 
 	
 	@RequestMapping(value="/user/kakaoUserInfo", method=RequestMethod.GET)
