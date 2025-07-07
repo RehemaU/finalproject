@@ -26,7 +26,7 @@ public class UserCouponService {
 
     // ✅ 유저가 가진 모든 쿠폰 리스트 조회 (마이페이지용)
     public List<UserCoupon> getUserCouponList(String userId) {
-        return userCouponDao.selectUserCouponList(userId);
+        return userCouponDao.selectUserCouponsByUserId(userId);
     }
 
     // ✅ 특정 유저 쿠폰 상세 조회
