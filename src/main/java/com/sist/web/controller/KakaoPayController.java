@@ -185,14 +185,8 @@ public class KakaoPayController {
         detail.setOrderDetailsPaymentMethod("KAKAOPAY");
         detail.setOrderDetailsCount(1);
 
-        orderService.insertOrder(order, detail);
+        orderService.insertOrder(order, detail, checkIn, checkOut);
 
-        if (userCouponId != null && !userCouponId.isEmpty()) {
-            couponService.useCoupon(userCouponId);
-        }
-        else {
-        	System.out.println("씨발");
-        }
         session.setAttribute("complete_order", order);
         session.setAttribute("complete_detail", detail);
 

@@ -107,6 +107,30 @@
 	  ]]>
 	</select>
 
+	<select id="isRoomOverbooked" parameterType="map" resultType="int">
+	  <![CDATA[
+	    SELECT COUNT(1)
+	    FROM (
+	      SELECT booked.BOOKED_DATE
+	      FROM (
+	        SELECT d.ACCOMM_ROOM_ID, d.ORDER_DETAILS_CHECKIN_DATE + LEVEL - 1 AS BOOKED_DATE
+	        FROM T_ORDER_DETAILS d
+	        WHERE d.ACCOMM_ROOM_ID = #{roomId}
+	          AND d.ORDER_DETAILS_CHECKIN_DATE < TO_DATE(#{checkOut}, 'YYYY-MM-DD')
+	          AND d.ORDER_DETAILS_CHECKOUT_DATE > TO_DATE(#{checkIn}, 'YYYY-MM-DD')
+	        CONNECT BY LEVEL <= d.ORDER_DETAILS_CHECKOUT_DATE - d.ORDER_DETAILS_CHECKIN_DATE
+	          AND PRIOR d.ACCOMM_ROOM_ID = d.ACCOMM_ROOM_ID
+	          AND PRIOR dbms_random.value IS NOT NULL
+	      ) booked
+	      GROUP BY booked.BOOKED_DATE
+	      HAVING COUNT(*) >= (
+	        SELECT ACCOMM_ROOM_COUNT
+	        FROM T_ACCOMM_ROOM
+	        WHERE ACCOMM_ROOM_ID = #{roomId}
+	      )
+	    )
+	  ]]>
+	</select>
 	
 </mapper>
 	
