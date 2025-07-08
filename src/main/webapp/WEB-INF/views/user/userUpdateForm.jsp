@@ -400,10 +400,51 @@
 		    <div style="margin-bottom:0.3em;">[첨부파일 : ${user.userId}.${user.userProfile}]</div>
         </c:if>
       </div>//-->
-
+      
+<div style="text-align: center;">
       <button type="button" id="btnUpdate" class="submit-btn">수정하기</button>
+      <button type="button" id="btnWithdrawal" class="submit-btn" style="width:30%; background-color: gray;">회원탈퇴</button>
+</div>
     </form>
   </div>
+
+<script>
+document.getElementById("btnWithdrawal").addEventListener("click", function(){
+	
+	const userId = "${user.userId}";
+	
+	if(confirm("정말로 탈퇴하시겠습니까?"))
+	{
+	fetch("/user/userWithdrawal", {
+		  method: "POST", // 또는 "GET"
+		  headers: {
+		    "Content-Type": "application/x-www-form-urlencoded" // 또는 "application/json"
+		  },
+		  body: "userId=" + encodeURIComponent(userId) // POST일 때만 사용
+		})
+		.then(res => res.json())  // 또는 res.text(), res.blob()
+		.then(data => {
+		  console.log("응답 결과:", data);
+		  if(data.code == 0)
+		  {
+			  alert("회원 탈퇴되었습니다.");
+			  location.href = "/user/loginOut";
+		  }
+		  else
+		  {
+			  alert("처리 도중 문제가 발생하였습니다.");
+			  location.reload();
+		  }
+		})
+		.catch(err => {
+		  console.error("에러 발생:", err);
+		});
+	}
+	
+});
+
+</script>
+
 </body>
 </html>
     
