@@ -2,12 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.sist.web.dao.AdminDao">
 
-    <!-- 관리자 조회 -->
-    <select id="selectAdminById" parameterType="string" resultMap="adminResultMap">
-        SELECT *
-        FROM T_ADMIN
-        WHERE ADMIN_ID = #{adminId}
-    </select>
+
 
     <!-- resultMap 정의 -->
     <resultMap id="adminResultMap" type="com.sist.web.model.Admin">
@@ -15,5 +10,111 @@
         <result property="adminPassword" column="ADMIN_PASSWORD" />
         <result property="adminName" column="ADMIN_NAME" />
     </resultMap>
+    
+    <resultMap id="sellerResultMap" type="com.sist.web.model.Seller">
+  	<id column="SELLER_ID"  	property="sellerId" />
+  	<result column="SELLER_NAME"  property="sellerName" />
+  	<result column="SELLER_NUMBER"  property="sellerNumber" />
+  	<result column="SELLER_PASSWORD"  property="sellerPassword" />
+  	<result column="SELLER_BUSINESS"  property="sellerBusiness" />
+  	<result column="SELLER_EMAIL"  property="sellerEmail" />
+  	<result column="SELLER_STATUS"   property="sellerStatus" />
+  	<result column="SELLER_REGDATE"  property="sellerRegdate" />
+  	<result column="SELLER_SELLNUMBER" property="sellerSellnumber" />
+	</resultMap>
+
+  <!-- User resultMap 정의 -->
+    <resultMap id="userResultMap" type="com.sist.web.model.User">
+    <id property="userId" column="USER_ID" />
+    <result property="userName" column="USER_NAME" />
+    <result property="userEmail" column="USER_EMAIL" />
+    <result property="userOut" column="USER_OUT" />
+    <result property="userRegdate" column="USER_REGDATE" />
+    <result property="userNumber" column="USER_NUMBER"	/>
+	</resultMap>
+	
+	    <!-- 관리자 조회 -->
+    <select id="selectAdminById" parameterType="string" resultMap="adminResultMap">
+        SELECT *
+        FROM T_ADMIN
+        WHERE ADMIN_ID = #{adminId}
+    </select>
+    
+    <select id="getAllUsers" resultMap="userResultMap">
+    SELECT 
+        USER_ID,
+        USER_NAME,
+        USER_EMAIL,
+        USER_NUMBER,
+        USER_OUT,
+        USER_REGDATE
+    FROM T_USER
+    ORDER BY USER_REGDATE DESC
+</select>
+
+    <!-- 유저 상태 변경 -->
+    <update id="updateUserStatus">
+    UPDATE T_USER
+    SET USER_OUT = #{status}
+    WHERE USER_ID = #{userId}
+	</update>
+    
+	
+	
+	  	<!-- 아래 yw가 추가 -->
+	<select id="sellerList" resultMap="sellerResultMap">
+	    SELECT *
+	    FROM T_SELLER
+	    ORDER BY SELLER_REGDATE DESC
+	</select>
+	
+	<update id="approveSeller" parameterType="String">
+	    UPDATE T_SELLER
+	    SET SELLER_STATUS = 'Y'
+	    WHERE SELLER_ID = #{value}
+	</update>
+	
+	<!-- 전체 카운트 -->
+	<select id="getSellerCount" resultType="int" parameterType="string">
+	  SELECT COUNT(*) FROM T_SELLER
+	  <where>
+	    <if test="keyword != null and keyword != ''">
+	      AND SELLER_ID LIKE '%' || #{keyword} || '%'
+	    </if>
+	  </where>
+	</select>
+	
+	<!-- 페이징 리스트 -->
+	<select id="getSellerList" resultMap="sellerResultMap" parameterType="map">
+	  SELECT * FROM (
+	    SELECT A.*, ROWNUM AS RNUM
+	    FROM (
+	      SELECT * FROM T_SELLER
+	      <where>
+	        <if test="keyword != null and keyword != ''">
+	          AND SELLER_ID LIKE '%' || #{keyword} || '%'
+	        </if>
+	      </where>
+	      ORDER BY SELLER_REGDATE DESC
+	    ) A
+	    WHERE ROWNUM &lt;= #{offset} + #{pageSize}
+	  )
+	  WHERE RNUM &gt; #{offset}
+	</select>
+	  
+	 <update id="updateSellerStatus" parameterType="map">
+	    UPDATE T_SELLER
+	    SET SELLER_STATUS = #{status}
+	    WHERE SELLER_ID = #{sellerId}
+	</update>
+	
+	<select id="searchUsersById" resultMap="userResultMap" parameterType="string">
+    SELECT * 
+    FROM T_USER 
+    WHERE USER_ID LIKE '%' || #{keyword} || '%'
+    ORDER BY USER_REGDATE DESC
+	</select>
+	  
+	  <!-- 여기까지가 어드민에서호출 yw -->
 
 </mapper>
