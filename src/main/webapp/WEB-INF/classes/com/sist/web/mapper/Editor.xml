@@ -11,7 +11,8 @@
 	       <result column="PLAN_COUNT" property="planCount" />
 	       <result column="PLAN_REPORT" property="planReport" />
 	       <result column="PLAN_RECOMMEND" property="planRecommend" />
-	       <result column="T_CALANDER_LIST_ID" property="tCalanderListId"/>
+	       <result column="T_CALANDER_LIST_ID" property="tCalanderListId" />
+	       <result column="PLAN_STATUS" property="planStatus" />
 	  </resultMap>
 	  
 	  <!-- 게시글 등록 -->
@@ -34,7 +35,8 @@
 		0,
 		0,
 		0,
-		#{tCalanderListId})
+		#{tCalanderListId},
+		Y)
 
 	  </insert>
 	  
@@ -45,7 +47,7 @@
 		    FROM T_PLAN A
 		    JOIN T_USER B
 		      ON A.USER_ID = B.USER_ID
-		      
+		   WHERE PLAN_STATUS = 'Y'
 		  <where>
 		  	<if test='searchType != null and searchType != "" and searchValue != null and searchValue !=""'>
 		  	<choose>
@@ -81,6 +83,7 @@
 		  FROM T_PLAN A
 		  JOIN T_USER B
 		    ON A.USER_ID = B.USER_ID
+		 WHERE A.PLAN_STATUS = 'Y'
 		
 		  <!-- searchType 1: 이름으로 검색 -->
 		  <!-- searchType 2: 제목으로 검색 -->
@@ -141,6 +144,7 @@
 			    ON A.USER_ID = B.USER_ID
 			WHERE
 			A.PLAN_ID = #{value}
+			AND A.PLAN_STATUS = 'Y'
 		</select>
 	  
 		<!-- 게시물 수정 -->
