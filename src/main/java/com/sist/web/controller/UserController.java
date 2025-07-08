@@ -559,6 +559,7 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 			Map<String, Object> properties = (Map<String, Object>) body.get("properties");
 			
 			String userName = (String)properties.get("nickname");
+
 			
 			Map<String, String> user = new HashMap<>();
 	        user.put("userName", userName);
@@ -581,5 +582,99 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 	    // 로그아웃 후 이동할 페이지로 리디렉트 (예: 로그인 페이지 또는 메인페이지)
 	    return "redirect:/user/login";
 	}
+	
+	
+	//구글로그인
+	//로그인 페이지
+	@RequestMapping(value = "/user/googleLogin", method=RequestMethod.GET)
+	public String googleLogin(@RequestParam("code") String code, HttpSession session)
+	{
+		// 이 부분 두줄 비밀키 문제로 지웠음.
+         String redirectUri = "http://finalproject.sist.co.kr:8088/user/googleLogin";
+		 String tokenUrl = "https://oauth2.googleapis.com/token";
+		 
+		 
+		 RestTemplate restTemplate = new RestTemplate();
+		 HttpHeaders headers = new HttpHeaders();
+		 headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		 
+		 MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+	     params.add("grant_type", "authorization_code");
+//	     params.add("client_id", clientId);
+//	     params.add("client_secret", clientSecret);
+	     params.add("redirect_uri", redirectUri);
+	     params.add("code", code);
+	     
+	     HttpEntity<MultiValueMap<String, String>> tokenRequest = new HttpEntity<>(params, headers);
+	     
+	     ResponseEntity<Map> response = restTemplate.postForEntity(tokenUrl, tokenRequest, Map.class);
+	     Map<String, Object> body = response.getBody();
 
+	     if (body == null || body.get("access_token") == null) {
+	         throw new RuntimeException("구글 Access Token 요청 실패");
+	     }
+
+	     String accessToken = (String) body.get("access_token");
+
+	     // 세션에 저장
+	     session.setAttribute("google_access_token", accessToken);
+		 
+		 return "redirect:/user/googleUserInfo";
+	}
+	
+	@RequestMapping(value = "/user/googleUserInfo", method = RequestMethod.GET)
+	public String googleUserInfo(HttpSession session, Model model)
+	{
+		String accessToken = (String) session.getAttribute("google_access_token");
+
+	    if (accessToken == null) {
+	        throw new RuntimeException("accessToken이 세션에 없습니다. 로그인부터 다시 진행하세요.");
+	    }
+	    
+	    // 1. 요청 준비
+	    String userInfoUrl = "https://www.googleapis.com/oauth2/v3/userinfo";
+	    RestTemplate restTemplate = new RestTemplate();
+	    
+	    HttpHeaders headers = new HttpHeaders();
+	    headers.set("Authorization", "Bearer " + accessToken);
+
+	    HttpEntity<String> entity = new HttpEntity<>(headers);
+	    
+	    // 2. 요청 전송
+	    ResponseEntity<Map> response = restTemplate.exchange(userInfoUrl, HttpMethod.GET, entity, Map.class);
+
+	    Map<String, Object> body = response.getBody();
+	    
+	    
+	    // 3. 사용자 정보 파싱
+	    if (body != null) {
+	        String userName = (String) body.get("name");
+	        String email = (String) body.get("email");
+
+	        Map<String, String> user = new HashMap<>();
+	        user.put("userName", userName);
+	        user.put("email", email);
+
+	        // 세션에 저장
+	        session.setAttribute("user", user);
+
+	        // 모델에 전달
+	        model.addAttribute("userName", userName);
+	        model.addAttribute("email", email);
+	        
+	    }
+	    
+		return "/user/googleUserInfo"; // JSP 경로
+	}
+	
+	 
+	@RequestMapping(value = "/user/googleLogout", method = RequestMethod.GET)
+	public String googleLogout(HttpSession session) 
+	{
+	    // 세션에 저장된 로그인 정보 삭제
+	    session.invalidate(); 
+
+	    // 로그아웃 후 이동할 페이지로 리디렉트 (예: 로그인 페이지 또는 메인페이지)
+	    return "redirect:/user/login";
+	}
 }
