@@ -21,6 +21,7 @@ import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -580,6 +581,38 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 
 	    // 로그아웃 후 이동할 페이지로 리디렉트 (예: 로그인 페이지 또는 메인페이지)
 	    return "redirect:/user/login";
+	}
+	
+	//회원탈퇴
+	@PostMapping("/user/userWithdrawal")
+	@ResponseBody
+	public Map<String, Object> userWithdrawal(@RequestParam String userId) {
+	    Map<String, Object> result = new HashMap<>();
+
+	    try {
+	        if (userId == null || userId.trim().isEmpty()) {
+	            result.put("code", 400);
+	            result.put("message", "userId 누락");
+	            return result;
+	        }
+
+	        int success = userService.userWithdrawal(userId);  // 실제 서비스 로직
+
+	        if (success > 0) {
+	            result.put("code", 0);
+	            result.put("message", "회원 탈퇴 완료");
+	        } else {
+	            result.put("code", 500);
+	            result.put("message", "회원 탈퇴 실패");
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        result.put("code", 500);
+	        result.put("message", "서버 에러: " + e.getMessage());
+	    }
+
+	    return result;
 	}
 
 }
