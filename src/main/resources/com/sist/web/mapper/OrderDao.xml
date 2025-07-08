@@ -13,6 +13,7 @@
         <result column="ORDER_STATUS" property="orderStatus"/>
         <result column="ORDER_EXPEND_POINT" property="orderExpendPoint"/>
         <result column="ORDER_COUPON_ID" property="orderCouponId"/>
+        <result column="ORDER_TID" property="orderTid"/>
     </resultMap>
 
     <!-- 상세 주문 resultMap -->
@@ -38,7 +39,8 @@
             ORDER_DATE,
             ORDER_STATUS,
             ORDER_EXPEND_POINT,
-            ORDER_COUPON_ID
+            ORDER_COUPON_ID,
+            ORDER_TID
         )
         VALUES (
             #{orderId},
@@ -48,7 +50,8 @@
             SYSDATE,
             #{orderStatus},
             #{orderExpendPoint},
-            #{orderCouponId}
+            #{orderCouponId},
+            #{orderTid}
         )
     </insert>
 

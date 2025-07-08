@@ -21,6 +21,7 @@ import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,7 +42,7 @@ import com.sist.web.util.SessionUtil;
 @Controller("userController")
 public class UserController 
 {
-	private static Logger logger = LoggerFactory.getLogger(UserController.class);
+private static Logger logger = LoggerFactory.getLogger(UserController.class);
 	
 	
 	@Value("#{env['upload.save.dir']}")
@@ -50,8 +51,8 @@ public class UserController
 	@Autowired
 	private	 UserService userService;
 	
-	@Value("#{env['auth.cookie.name']}")
-	private String AUTH_COOKIE_NAME;
+	@Value("#{env['auth.user.name']}")
+	private String AUTH_USER_NAME;
 	
 	
 	//로그인 페이지
@@ -83,7 +84,7 @@ public class UserController
 					
 					if(StringUtil.equals(user.getUserOut(), "N"))
 					{
-						CookieUtil.addCookie(response, "/", -1, AUTH_COOKIE_NAME, 
+						CookieUtil.addCookie(response, "/", -1, AUTH_USER_NAME, 
                                 CookieUtil.stringToHex(userId));
 						
 				        // 로그인 성공 → 세션 저장
@@ -134,24 +135,24 @@ public class UserController
 		// 세션 종료
 	    request.getSession().invalidate();
 	    
-		if(CookieUtil.getCookie(request, AUTH_COOKIE_NAME) != null)
+		if(CookieUtil.getCookie(request, AUTH_USER_NAME) != null)
 		{
-			CookieUtil.deleteCookie(request, response, "/", AUTH_COOKIE_NAME);
+			CookieUtil.deleteCookie(request, response, "/", AUTH_USER_NAME);
 		}
 		
-		return "redirect:/user/login";
+		return "redirect:/";
 	}
 	
 	//회원가입화면
 	@RequestMapping(value="/user/userRegForm", method=RequestMethod.GET)
 	public String userRegForm(HttpServletRequest request, HttpServletResponse response)
 	{
-		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		String cookieUserId = CookieUtil.getHexValue(request, AUTH_USER_NAME);
 		logger.debug("cookieUserId : " + cookieUserId);
 		
 		if(!StringUtil.isEmpty(cookieUserId))
 		{
-			CookieUtil.deleteCookie(request, response, "/", AUTH_COOKIE_NAME);
+			CookieUtil.deleteCookie(request, response, "/", AUTH_USER_NAME);
 			
 			return "redirect:/user/login";
 			
@@ -276,8 +277,12 @@ public class UserController
 	public String userUpdateForm(ModelMap model, HttpServletRequest request, HttpServletResponse response)
 	{
 		//쿠키를 가져옴
+
 		//String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
 		String userId = (String) request.getSession().getAttribute("userId");
+
+		String cookieUserId = CookieUtil.getHexValue(request, AUTH_USER_NAME);
+
 		
 		if(userId == null || userId == "")
 		{
@@ -337,7 +342,7 @@ public class UserController
 			userBirth = userBirth.replaceAll("-", "");
 		}
 		//cookieUserId 와 userid는 같아야 수정가능
-		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		String cookieUserId = CookieUtil.getHexValue(request, AUTH_USER_NAME);
 		
 		if(!StringUtil.isEmpty(cookieUserId))
 		{
@@ -385,7 +390,7 @@ public class UserController
 				else
 				{
 					//사용자 정보가 없는경우
-					CookieUtil.deleteCookie(request, response, "/", AUTH_COOKIE_NAME);
+					CookieUtil.deleteCookie(request, response, "/", AUTH_USER_NAME);
 					ajaxResponse.setResponse(404, "not found");
 				}
 				
@@ -393,7 +398,7 @@ public class UserController
 			else
 			{
 				//쿠키정보와 넘어온 userId가 다른 경우
-				CookieUtil.deleteCookie(request, response, "/", AUTH_COOKIE_NAME);
+				CookieUtil.deleteCookie(request, response, "/", AUTH_USER_NAME);
 				ajaxResponse.setResponse(430, "id infomation is different");	
 			}
 		}
@@ -428,7 +433,7 @@ public class UserController
 	{
 		Response<Object> ajaxResponse = new Response<Object>();
 		{
-			String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+			String cookieUserId = CookieUtil.getHexValue(request, AUTH_USER_NAME);
 			String newPassword = HttpUtil.get(request, "userPassword");
 			
 			logger.debug("입력한 비밀번호3333333:>>>>>>>>>>><<<<<<<<<<<<<<<<"+newPassword);
@@ -462,7 +467,7 @@ public class UserController
 	public boolean checkCurrentPassword(HttpServletRequest request)
 	{
 		String currentPassword = HttpUtil.get(request, "currentPassword");
-		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		String cookieUserId = CookieUtil.getHexValue(request, AUTH_USER_NAME);
 		
 		logger.debug("입력한 비밀번호:>>>>>>>>>>><<<<<<<<<<<<<<<<"+currentPassword);
 		
@@ -472,6 +477,17 @@ public class UserController
 		return user.getUserPassword().equals(currentPassword);
 
 	}
+	
+	//회원댓글관리
+	@RequestMapping(value="/user/userCommentForm", method=RequestMethod.GET)
+	public String userCommentForm(HttpServletRequest request, HttpServletResponse response)
+	{
+		//쿠키값
+		//String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		return "/user/userCommentForm";
+	}
+	
+	
 	
 	//카카오로그인
 	//로그인 페이지
@@ -511,7 +527,7 @@ public class UserController
 		//다음 단계로 리디렉션 (예: 사용자 정보 조회)
 	   return "redirect:/user/kakaoUserInfo";  // 또는 메인페이지
 	}
-	
+
 	
 	@RequestMapping(value="/user/kakaoUserInfo", method=RequestMethod.GET)
 	public String kakaoUserInfo(HttpSession session, Model model)
@@ -544,6 +560,7 @@ public class UserController
 			Map<String, Object> properties = (Map<String, Object>) body.get("properties");
 			
 			String userName = (String)properties.get("nickname");
+
 			
 			Map<String, String> user = new HashMap<>();
 	        user.put("userName", userName);
@@ -567,4 +584,130 @@ public class UserController
 	    return "redirect:/user/login";
 	}
 	
+	//회원탈퇴
+	@PostMapping("/user/userWithdrawal")
+	@ResponseBody
+	public Map<String, Object> userWithdrawal(@RequestParam String userId) {
+	    Map<String, Object> result = new HashMap<>();
+
+	    try {
+	        if (userId == null || userId.trim().isEmpty()) {
+	            result.put("code", 400);
+	            result.put("message", "userId 누락");
+	            return result;
+	        }
+
+	        int success = userService.userWithdrawal(userId);  // 실제 서비스 로직
+
+	        if (success > 0) {
+	            result.put("code", 0);
+	            result.put("message", "회원 탈퇴 완료");
+	        } else {
+	            result.put("code", 500);
+	            result.put("message", "회원 탈퇴 실패");
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        result.put("code", 500);
+	        result.put("message", "서버 에러: " + e.getMessage());
+	    }
+
+	    return result;
+	}
+
+	
+	//구글로그인
+	//로그인 페이지
+	@RequestMapping(value = "/user/googleLogin", method=RequestMethod.GET)
+	public String googleLogin(@RequestParam("code") String code, HttpSession session)
+	{
+		// 이 부분 두줄 비밀키 문제로 지웠음.
+         String redirectUri = "http://finalproject.sist.co.kr:8088/user/googleLogin";
+		 String tokenUrl = "https://oauth2.googleapis.com/token";
+		 
+		 
+		 RestTemplate restTemplate = new RestTemplate();
+		 HttpHeaders headers = new HttpHeaders();
+		 headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		 
+		 MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+	     params.add("grant_type", "authorization_code");
+//	     params.add("client_id", clientId);
+//	     params.add("client_secret", clientSecret);
+	     params.add("redirect_uri", redirectUri);
+	     params.add("code", code);
+	     
+	     HttpEntity<MultiValueMap<String, String>> tokenRequest = new HttpEntity<>(params, headers);
+	     
+	     ResponseEntity<Map> response = restTemplate.postForEntity(tokenUrl, tokenRequest, Map.class);
+	     Map<String, Object> body = response.getBody();
+
+	     if (body == null || body.get("access_token") == null) {
+	         throw new RuntimeException("구글 Access Token 요청 실패");
+	     }
+
+	     String accessToken = (String) body.get("access_token");
+
+	     // 세션에 저장
+	     session.setAttribute("google_access_token", accessToken);
+		 
+		 return "redirect:/user/googleUserInfo";
+	}
+	
+	@RequestMapping(value = "/user/googleUserInfo", method = RequestMethod.GET)
+	public String googleUserInfo(HttpSession session, Model model)
+	{
+		String accessToken = (String) session.getAttribute("google_access_token");
+
+	    if (accessToken == null) {
+	        throw new RuntimeException("accessToken이 세션에 없습니다. 로그인부터 다시 진행하세요.");
+	    }
+	    
+	    // 1. 요청 준비
+	    String userInfoUrl = "https://www.googleapis.com/oauth2/v3/userinfo";
+	    RestTemplate restTemplate = new RestTemplate();
+	    
+	    HttpHeaders headers = new HttpHeaders();
+	    headers.set("Authorization", "Bearer " + accessToken);
+
+	    HttpEntity<String> entity = new HttpEntity<>(headers);
+	    
+	    // 2. 요청 전송
+	    ResponseEntity<Map> response = restTemplate.exchange(userInfoUrl, HttpMethod.GET, entity, Map.class);
+
+	    Map<String, Object> body = response.getBody();
+	    
+	    
+	    // 3. 사용자 정보 파싱
+	    if (body != null) {
+	        String userName = (String) body.get("name");
+	        String email = (String) body.get("email");
+
+	        Map<String, String> user = new HashMap<>();
+	        user.put("userName", userName);
+	        user.put("email", email);
+
+	        // 세션에 저장
+	        session.setAttribute("user", user);
+
+	        // 모델에 전달
+	        model.addAttribute("userName", userName);
+	        model.addAttribute("email", email);
+	        
+	    }
+	    
+		return "/user/googleUserInfo"; // JSP 경로
+	}
+	
+	 
+	@RequestMapping(value = "/user/googleLogout", method = RequestMethod.GET)
+	public String googleLogout(HttpSession session) 
+	{
+	    // 세션에 저장된 로그인 정보 삭제
+	    session.invalidate(); 
+
+	    // 로그아웃 후 이동할 페이지로 리디렉트 (예: 로그인 페이지 또는 메인페이지)
+	    return "redirect:/user/login";
+	}
 }

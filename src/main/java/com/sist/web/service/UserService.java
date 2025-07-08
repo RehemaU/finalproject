@@ -98,6 +98,22 @@ public class UserService {
 		
 		return count;
 	}
+	
+	public int userWithdrawal(String userId)
+	{
+		int count = 0;
+		
+		try
+		{
+			count = userDao.userWithdrawal(userId);
+		}
+		catch(Exception e)
+		{
+			logger.error("[UserService]userWithdrawal Exception", e);
+		}
+		
+		return count;
+	}
 }
 
 

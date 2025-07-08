@@ -31,6 +31,7 @@ public class KakaoPayController {
     @Autowired private AccommodationRoomPriceService accommodationRoomPriceService;
     @Autowired private UserCouponService couponService;
     @Autowired private OrderService orderService;
+    
 
     @Value("#{env['kakaopay.tid.session.name']}")
     private String KAKAOPAY_TID_SESSION_NAME;
@@ -171,7 +172,8 @@ public class KakaoPayController {
         order.setOrderTotalAmount(finalPrice);
         order.setOrderStatus(ORDER_STATUS_COMPLETE);
         order.setOrderCouponId(userCouponId);
-
+        order.setOrderTid(tid);
+        
         OrderDetail detail = new OrderDetail();
         detail.setOrderDetailsId(UUID.randomUUID().toString());
         detail.setOrderId(orderId);
@@ -183,14 +185,8 @@ public class KakaoPayController {
         detail.setOrderDetailsPaymentMethod("KAKAOPAY");
         detail.setOrderDetailsCount(1);
 
-        orderService.insertOrder(order, detail);
+        orderService.insertOrder(order, detail, checkIn, checkOut);
 
-        if (userCouponId != null && !userCouponId.isEmpty()) {
-            couponService.useCoupon(userCouponId);
-        }
-        else {
-        	System.out.println("씨발");
-        }
         session.setAttribute("complete_order", order);
         session.setAttribute("complete_detail", detail);
 
@@ -233,18 +229,36 @@ public class KakaoPayController {
     public String paymentCompletePage(HttpSession session, Model model) {
         Order order = (Order) session.getAttribute("complete_order");
         OrderDetail detail = (OrderDetail) session.getAttribute("complete_detail");
-
+        Coupon coupon = couponService.selectCoupon(order.getOrderCouponId());
         if (order == null || detail == null) {
             return "redirect:/"; // 또는 오류 처리
         }
-
+        int discountAmount = calculateDiscount(order.getOrderTotalAmount(), coupon);
+        int originAmount = order.getOrderTotalAmount() + discountAmount;
+        
+        model.addAttribute("coupon", coupon);
+        model.addAttribute("originAmount", originAmount);
+        model.addAttribute("discountAmount", discountAmount);
         model.addAttribute("order", order);
         model.addAttribute("detail", detail);
-
+        
         // 사용 후 세션 제거
         session.removeAttribute("complete_order");
         session.removeAttribute("complete_detail");
 
         return "/order/complete";  // 결제 완료 정보 보여줄 JSP
+    }
+    
+    // 할인금액 역추적용 메서드
+    public int calculateDiscount(int originalAmount, Coupon coupon) {
+        if (coupon == null) return 0;
+
+        if ("AMOUNT".equalsIgnoreCase(coupon.getCouponType())) {
+            return coupon.getCouponAmount();
+        } else if ("PERCENT".equalsIgnoreCase(coupon.getCouponType())) {
+            int discount = (int) Math.floor(originalAmount * (coupon.getCouponAmount() / 100.0));
+            return Math.min(discount, coupon.getCouponMaxAmount()); // 최대할인 적용
+        }
+        return 0;
     }
 }

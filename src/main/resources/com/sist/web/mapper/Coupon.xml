@@ -12,6 +12,7 @@
         <result column="COUPON_EXPIREDATE" property="couponExpiredate"/>
         <result column="COUPON_PLACE" property="couponPlace"/>
         <result column="COUPON_COUNT" property="couponCount"/>
+        <result column="COUPON_MAX_AMOUNT" property="couponMaxAmount"/>
     </resultMap>
 
     <!-- 쿠폰 상세 조회 -->

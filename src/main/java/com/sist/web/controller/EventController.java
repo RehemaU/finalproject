@@ -89,7 +89,7 @@ public class EventController {
             result.put("code", 0);
             result.put("msg", "쿠폰이 발급되었습니다!");
             Map<String, String> data = new HashMap<>();
-            data.put("redirectUrl", "/mypage/couponList");
+            data.put("redirectUrl", "/event/eventList");
             result.put("data", data);
         } else {
             result.put("code", 1);
@@ -179,22 +179,23 @@ public class EventController {
         int pageSize = 10;
         int startRow = (curPage - 1) * pageSize;
 
-        // 🔧 Map에 검색 파라미터들 추가
+        //  Map에 검색 파라미터들 추가
         Map<String, Object> param = new HashMap<>();
         param.put("keyword", keyword);
-        param.put("status", status);        // 🔥 진행/종료 필터
+        param.put("status", status);        // 
         param.put("startRow", startRow);
         param.put("pageSize", pageSize);
         
 
-        // 🔍 DB 조회
+        //  DB 조회
         int totalCount = eventService.getSearchEventCount(param);
         int totalPage = (int) Math.ceil((double) totalCount / pageSize);
         int startNum = totalCount - startRow;
         
         List<Event> eventList = eventService.searchEventList(param);
 
-        // 🔧 HTML 테이블 생성
+        
+        //  HTML 테이블 생성
         StringBuilder tableHtml = new StringBuilder();
         for (int i = 0; i < eventList.size(); i++) {
             Event event = eventList.get(i);
@@ -210,13 +211,22 @@ public class EventController {
             tableHtml.append("</tr>");
         }
 
-        // 🔧 페이지네이션 HTML 생성
+        //  페이지네이션 HTML 생성
         StringBuilder paginationHtml = new StringBuilder();
-        for (int i = 1; i <= totalPage; i++) {
-            paginationHtml.append("<a href='?page=").append(i).append("'")
-                          .append(i == curPage ? " class='active'" : "")
-                          .append(">").append(i).append("</a>");
-        }
+
+		if (curPage > 1) {
+		    paginationHtml.append("<a href='?page=").append(curPage - 1).append("' class='prev'>« 이전</a>");
+		}
+		
+		for (int i = 1; i <= totalPage; i++) {
+		    paginationHtml.append("<a href='?page=").append(i).append("'")
+		                  .append(i == curPage ? " class='active'" : "")
+		                  .append(">").append(i).append("</a>");
+		}
+		
+		if (curPage < totalPage) {
+		    paginationHtml.append("<a href='?page=").append(curPage + 1).append("' class='next'>다음 »</a>");
+		}
 
         result.put("tableHtml", tableHtml.toString());
         result.put("paginationHtml", paginationHtml.toString());
@@ -231,14 +241,14 @@ public class EventController {
         int pageSize = 10;
 
         String keyword = request.getParameter("searchKeyword");
-        String status = request.getParameter("status"); // 🔥 추가됨 ("active" or "closed")
+        String status = request.getParameter("status"); //  추가됨 ("active" or "closed")
         if (status == null || status.isEmpty()) {
             status = "active"; // 기본값
         }
 
         int startRow = (curPage - 1) * pageSize;
 
-        // 🔧 검색 파라미터 Map 구성
+        //  검색 파라미터 Map 구성
         Map<String, Object> param = new HashMap<>();
         param.put("keyword", keyword);
         param.put("status", status);
@@ -247,13 +257,15 @@ public class EventController {
 
         int totalCount = eventService.getSearchEventCount(param);
         int totalPage = (int) Math.ceil((double) totalCount / pageSize);
+        int allCount = eventService.getTotalEventCount();         // 전체 이벤트 수
         List<Event> eventList = eventService.searchEventList(param);
 
-        // 🔧 JSP로 데이터 전달
+        //  JSP로 데이터 전달
         model.addAttribute("eventList", eventList);
         model.addAttribute("totalCount", totalCount);
         model.addAttribute("curPage", curPage);
         model.addAttribute("pageSize", pageSize);
+        model.addAttribute("allCount", allCount);                 // 전체 건수도 전달
         model.addAttribute("totalPage", totalPage);
         model.addAttribute("searchKeyword", keyword);
         model.addAttribute("status", status); // 🔥 상태 필터도 뷰에 전달
@@ -267,7 +279,7 @@ public class EventController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "6") int size) {
 
-        logger.debug("📥 Ajax 이벤트 요청 page={}, size={}", page, size);
+        logger.debug("Ajax 이벤트 요청 page={}, size={}", page, size);
 
         Map<String, Object> result = new HashMap<>();
         int startRow = (page - 1) * size;

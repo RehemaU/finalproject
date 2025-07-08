@@ -132,6 +132,35 @@ public class AuthInterceptor extends HandlerInterceptorAdapter
 			ajaxFlag = HttpUtil.isAjax(request);
 		}
 		
+
+		/**
+		 * <pre>
+		 * 패키지명   : com.icia.web.interceptor
+		 * 파일명     : AuthInterceptor.java
+		 * 작성일     : 20250707
+		 * 작성자     : youngwoo
+		 * 설명       : 관리자 세션 체크 추가
+		 * </pre>
+		 */
+	    Object admin = request.getSession().getAttribute("adminLogin");
+
+	    logger.debug("[Interceptor] 현재 요청 URL: " + url);
+	    logger.debug("[Interceptor] 세션 adminLogin = " + (admin != null ? admin.toString() : "null"));
+	    
+	    if (url.startsWith("/admin/") && admin == null &&
+	    	    !url.equals("/admin/adminLogin") &&
+	    	    !url.equals("/admin/loginProc")) {
+	    	    if (ajaxFlag) {
+	    	        response.setContentType("application/json");
+	    	        response.setCharacterEncoding("UTF-8");
+	    	        response.getWriter().write(JsonUtil.toJson(new Response<Object>(HttpStatus.UNAUTHORIZED.value(), "관리자 인증 필요")));
+	    	    } else {
+	    	        response.sendRedirect("/admin/adminLogin");
+	    	    }
+	    	    return false;
+	    	}
+	    // 여기까지가 관리자 인증 체크 블럭
+		
 		if(logger.isDebugEnabled())
 		{
 			request.setAttribute("_http_logger_start_time", String.valueOf(System.currentTimeMillis()));
