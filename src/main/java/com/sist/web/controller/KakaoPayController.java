@@ -185,8 +185,14 @@ public class KakaoPayController {
         detail.setOrderDetailsPaymentMethod("KAKAOPAY");
         detail.setOrderDetailsCount(1);
 
-        orderService.insertOrder(order, detail, checkIn, checkOut);
-
+        boolean orderCheck = orderService.insertOrder(order, detail, checkIn, checkOut);
+        
+        if(orderCheck == false) {
+            model.addAttribute("code", -3);
+            model.addAttribute("msg", "주문 생성시 문제 발생");
+            return "/order/fail";
+        }
+        
         session.setAttribute("complete_order", order);
         session.setAttribute("complete_detail", detail);
 
