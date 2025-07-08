@@ -31,25 +31,23 @@
   }
 
   .tab-buttons button {
-    font-family: 'Noto Sans KR', sans-serif;
     padding: 10px 24px;
     border-radius: 24px;
     font-size: 16px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.25s ease;
+    border: 1px solid #111;
   }
 
   .tab-buttons .active {
     background-color: #111;
     color: #fff;
-    border: 1px solid #111;
   }
 
   .tab-buttons .inactive {
     background-color: #fff;
     color: #111;
-    border: 1px solid #111;
   }
 
   .card-grid {
@@ -59,6 +57,7 @@
   }
 
   .card {
+    position: relative;
     background: #fff;
     border: 1px solid #ebebeb;
     border-radius: 16px;
@@ -101,6 +100,17 @@
     margin-top: 80px;
     font-size: 16px;
   }
+
+  .heart-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #ff4d4f;
+  }
 </style>
 
 <div class="container">
@@ -132,6 +142,9 @@
                   </div>
                 </c:otherwise>
               </c:choose>
+              <button class="heart-btn" onclick="deleteLikeTour('${item.spotId}', this)">
+                ♥
+              </button>
               <div class="card-content">
                 <h3>${item.tourName}</h3>
                 <p>${item.tourAdd}</p>
@@ -163,6 +176,9 @@
                   </div>
                 </c:otherwise>
               </c:choose>
+              <button class="heart-btn" onclick="deleteLikeAccomm('${item.spotId}', this)">
+                ♥
+              </button>
               <div class="card-content">
                 <h3>${item.accomName}</h3>
                 <p>${item.accomAdd}</p>
@@ -193,5 +209,49 @@
       tourBtn.className = 'inactive';
       accommBtn.className = 'active';
     }
+  }
+
+  function deleteLikeTour(spotId, btn) {
+    if (!confirm('이 관광지를 찜 목록에서 삭제할까요?')) return;
+
+    fetch('/like/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'spotId=' + encodeURIComponent(spotId)
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        btn.closest('.card').remove();
+      } else {
+        alert('삭제 실패');
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert('오류 발생');
+    });
+  }
+
+  function deleteLikeAccomm(spotId, btn) {
+    if (!confirm('이 숙소를 찜 목록에서 삭제할까요?')) return;
+
+    fetch('/like/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'spotId=' + encodeURIComponent(spotId)
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        btn.closest('.card').remove();
+      } else {
+        alert('삭제 실패');
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert('오류 발생');
+    });
   }
 </script>

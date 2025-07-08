@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 @Controller("AcommodationController")
 public class AccommodationController {
@@ -92,8 +93,11 @@ public class AccommodationController {
     }
     
     @PostMapping("/accomm/filterList")
-    public String filterList(@RequestBody List<Sigungu> sigunguList, Model model) {
-    	 List<Accommodation> results = accommodationService.findBySigunguList(sigunguList);
+    public String filterList(@RequestBody List<Sigungu> sigunguList,
+            HttpSession session, Model model) {
+        String userId = (String) session.getAttribute("userId");  // ✅ 이 줄만 추가
+ 
+    	List<Accommodation> results = accommodationService.findBySigunguList(sigunguList);
     	    model.addAttribute("results", results);
     	    System.out.println("받은 조건 개수: " + sigunguList.size());
     	    for (Sigungu s : sigunguList) {

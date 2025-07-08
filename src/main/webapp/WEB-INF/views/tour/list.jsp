@@ -228,16 +228,28 @@ function selectRegion(regionId, element) {
 }
 
 function renderSigunguNav() {
-  const container = document.getElementById('sigunguNav');
-  container.innerHTML = '';
-  const filtered = sigunguData.filter(s => s.regionId === selectedRegionId);
-  filtered.forEach(s => {
-    const btn = document.createElement('button');
-    btn.textContent = s.sigunguName;
-    btn.onclick = () => addCondition(s.regionId, s.sigunguId, s.sigunguName);
-    container.appendChild(btn);
-  });
-}
+    const container = document.getElementById('sigunguNav');
+    container.innerHTML = '';
+
+    const filtered = sigunguData.filter(s => s.regionId === selectedRegionId);
+
+    // ▣ 기본: 한줄, 가로 스크롤
+    container.style.flexWrap = "nowrap";
+    container.style.overflowX = "auto";
+
+    // ▣ 20개 초과면 2줄 wrap 허용
+    if (filtered.length > 20) {
+      container.style.flexWrap = "wrap";
+      container.style.overflowX = "visible";
+    }
+
+    filtered.forEach(s => {
+      const btn = document.createElement('button');
+      btn.textContent = s.sigunguName;
+      btn.onclick = () => addCondition(s.regionId, s.sigunguId, s.sigunguName);
+      container.appendChild(btn);
+    });
+  }
 
 function addCondition(regionId, sigunguId, label) {
   if (conditions.some(c => c.regionId === regionId && c.sigunguId === sigunguId)) return;
@@ -292,15 +304,25 @@ function fetchLikedTourIds() {
     .catch(e => console.error('찜목록 오류', e));
 }
 function updateHeartButtons() {
-  const set = new Set(likedTourIds);
-  document.querySelectorAll('.heart-btn').forEach(btn => {
-    const sid = norm(btn.dataset.spotId);
-    const icon = btn.querySelector('.heart-icon');
-    if (!icon) return;
-    if (set.has(sid)) { btn.classList.add('liked'); icon.textContent = '♥'; }
-    else { btn.classList.remove('liked'); icon.textContent = '♡'; }
-  });
-}
+	  const set = new Set(likedTourIds);
+
+	  document.querySelectorAll('.heart-btn').forEach(btn => {
+	    const sid = norm(btn.dataset.spotId);
+	    const icon = btn.querySelector('.heart-icon');
+
+	    console.log('하트 버튼:', btn, ' | spotId:', sid);
+
+	    if (!icon) return;
+
+	    if (set.has(sid)) {
+	      btn.classList.add('liked');
+	      icon.textContent = '♥';
+	    } else {
+	      btn.classList.remove('liked');
+	      icon.textContent = '♡';
+	    }
+	  });
+	}
 function toggleLike(spotId, btn) {
   if (btn.disabled) return;
   btn.disabled = true;

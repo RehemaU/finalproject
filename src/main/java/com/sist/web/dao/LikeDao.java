@@ -15,7 +15,6 @@ public interface LikeDao {
     int insertLike(Like like);
     
     // 찜 삭제
-    int deleteLike(@Param("userId") String userId, @Param("spotId") String spotId);
     
     // 찜 상태 확인
     int checkLike(@Param("userId") String userId, @Param("spotId") String spotId);
@@ -31,5 +30,7 @@ public interface LikeDao {
     boolean isAccommLiked(@Param("userId") String userId, @Param("spotId") String spotId);
     int getAccommLikeCount(@Param("spotId") String spotId);
     List<Like> findAccommLikeListByUser(String userId);
+    void deleteLike(@Param("userId") String userId, @Param("spotId") String spotId);
+
 
 }

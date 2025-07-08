@@ -19,6 +19,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class TourService {
@@ -36,7 +37,8 @@ public class TourService {
 
     @Autowired
     private SigunguDao sigunguDao;
-
+    @Autowired
+    private LikeService likeService;
     public void syncAllTours() throws Exception {
         List<Sigungu> sigunguList = sigunguDao.getAllSigungu();
 
@@ -110,9 +112,17 @@ public class TourService {
         return tourDao.getAllTours();
     }
 
-    // 기능구현, 조건 별 리스트
-    public List<Tour> findBySigunguList(List<Sigungu> sigunguList) {
-        return tourDao.searchBySigungu(sigunguList);
+
+    public List<Tour> findBySigunguList(List<Sigungu> sigunguList, String userId) {
+        List<Tour> list = tourDao.searchBySigungu(sigunguList);
+
+        // 로그인 안 한 경우 그대로 반환
+        if (userId == null || userId.trim().isEmpty()) return list;
+
+        Set<String> likedIds = likeService.getLikedSpotIdSet(userId);
+
+        list.forEach(t -> t.setLiked(likedIds.contains(t.getTourId())));
+        return list;
     }
 
 }
