@@ -2,6 +2,8 @@ package com.sist.web.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -56,15 +58,12 @@ public class TourController {
     }
     
     @PostMapping("/tour/filterList")
-    public String filterList(@RequestBody List<Sigungu> sigunguList, Model model) {
-    	 List<Tour> results = tourService.findBySigunguList(sigunguList);
-    	    model.addAttribute("results", results);
-    	    System.out.println("받은 조건 개수: " + sigunguList.size());
-    	    for (Sigungu s : sigunguList) {
-    	        System.out.println("조건: " + s.getRegionId() + ", " + s.getSigunguId());
-    	    }
-    	    System.out.println("조회된 숙소 개수: " + results.size());
-
-    	    return "/tour/cardList";
+    public String filterList(@RequestBody List<Sigungu> sigunguList,
+                             HttpSession session,
+                             Model model) {
+        String userId = (String) session.getAttribute("userId");
+        List<Tour> results = tourService.findBySigunguList(sigunguList, userId);
+        model.addAttribute("results", results);
+        return "/tour/cardList";
     }
 }

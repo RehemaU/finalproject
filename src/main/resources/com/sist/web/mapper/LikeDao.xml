@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.sist.web.dao.LikeDao">
+<resultMap id="likeBasicResultMap" type="com.sist.web.model.Like">
+  <id property="likeId" column="LIKE_ID"/>
+  <result property="userId" column="USER_ID"/>
+  <result property="spotId" column="SPOT_ID"/>
+</resultMap>
 <resultMap id="likeSpotResultMap" type="com.sist.web.model.Like">
         <id property="likeId" column="LIKE_ID"/>
         <result property="userId" column="USER_ID"/>
@@ -41,7 +46,7 @@
   </select>
 
   <!-- 사용자별 찜 목록 -->
-  <select id="findByUserId" resultType="com.sist.web.model.Like">
+  <select id="findByUserId" resultMap="likeBasicResultMap">
     SELECT LIKE_ID, USER_ID, SPOT_ID
     FROM T_LIKE
     WHERE USER_ID = #{userId}
@@ -68,10 +73,12 @@
 </select>
 
 
-<insert id="insertAccommLike">
+<insert id="insertAccommLike" >
     INSERT INTO T_LIKE (LIKE_ID, USER_ID, SPOT_ID)
     VALUES ('A_' || TO_CHAR(SEQ_LIKE_ID.NEXTVAL), #{userId}, #{spotId})
 </insert>
+
+
   <!-- 숙소 찜 해제 -->
 <delete id="deleteAccommLike">
     DELETE FROM T_LIKE
