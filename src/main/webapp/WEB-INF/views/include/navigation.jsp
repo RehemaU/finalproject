@@ -35,7 +35,9 @@
   <nav class="gnb wrap flex center">
     <a href="/tour/list">TOUR</a><a href="/accomm/list">STAY</a><a href="/schedule/addList">SCHEDULE</a>
 
+
     <a href="/editor/planmenu">REVIEW</a><a href="/notice/noticeList">NOTICE</a><a href="/event/eventList">EVENT</a><a href="/weather">WEATHER</a>
+
 
   </nav>
 </header>

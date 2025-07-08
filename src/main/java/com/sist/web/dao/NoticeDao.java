@@ -1,6 +1,8 @@
 package com.sist.web.dao;
 
 import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -30,4 +32,12 @@ public interface NoticeDao {
 
     // 공지사항 삭제
     void deleteNotice(String noticeId);
+    
+    
+    // 🔍 검색된 공지사항 개수 조회
+    int getSearchNoticeCount(Map<String, Object> param);
+
+    // 🔍 검색된 공지사항 리스트 조회
+    List<Notice> searchNoticeList(Map<String, Object> param);
+    
 }

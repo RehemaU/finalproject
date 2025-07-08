@@ -93,37 +93,67 @@
                 <th class="col-narrow">등록일</th>
             </tr>
         </thead>
-        <tbody>
-            <c:forEach var="notice" items="${noticeList}" varStatus="status">
-                <tr>
-                    <td>${totalCount - status.index}</td>
-                    <td class="title-col">
-                        <a href="/notice/view?noticeId=${notice.noticeId}">
-                            <c:out value="${notice.noticeTitle}" />
-                        </a>
-                    </td>
-                    <td><c:out value="${notice.noticeCount}" /></td>
-                    <td><c:out value="${notice.noticeRegdate.substring(0,10)}" /></td>
-                </tr>
-            </c:forEach>
-        </tbody>
+        <tbody id="noticeTableBody">
+    <c:forEach var="notice" items="${noticeList}" varStatus="status">
+        <tr>
+            <td>${totalCount - status.index}</td>
+            <td class="title-col">
+                <a href="/notice/noticeDetail?noticeId=${notice.noticeId}">
+                    <c:out value="${notice.noticeTitle}" />
+                </a>
+            </td>
+            <td><c:out value="${notice.noticeCount}" /></td>
+            <td><c:out value="${notice.noticeRegdate.substring(0,10)}" /></td>
+        </tr>
+    </c:forEach>
+</tbody>
     </table>
 
     <!-- 페이지네이션 -->
-    <div class="pagination">
-        <c:if test="${curPage > 1}">
-            <a href="?page=${curPage - 1}">이전</a>
-        </c:if>
-
-        <c:forEach begin="1" end="${totalPage}" var="i">
-            <a href="?page=${i}" class="${i == curPage ? 'active' : ''}">${i}</a>
-        </c:forEach>
-
-        <c:if test="${curPage < totalPage}">
-            <a href="?page=${curPage + 1}">다음</a>
-        </c:if>
-    </div>
+    
+	<div class="pagination" id="paginationDiv">
+	    <c:if test="${currentPage > 1}">
+	  <a href="?page=${currentPage - 1}">이전</a>
+	</c:if>
+	<c:forEach begin="1" end="${totalPage}" var="i">
+	  <a href="?page=${i}" class="${i == currentPage ? 'active' : ''}">${i}</a>
+	</c:forEach>
+	<c:if test="${currentPage < totalPage}">
+	  <a href="?page=${currentPage + 1}">다음</a>
+	</c:if>
+	</div>
 </div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+function fetchNoticePage(page = 1) {
+    $.ajax({
+        type: "GET",
+        url: "/notice/ajaxSearch",
+        data: { page: page },
+        success: function(res) {
+            $("#noticeTableBody").html(res.tableHtml);
+            $("#paginationDiv").html(res.paginationHtml);
+        },
+        error: function() {
+            alert("공지사항을 불러오는 데 실패했습니다.");
+        }
+    });
+}
+
+function bindPaginationClick() {
+    $("#paginationDiv").on("click", "a", function(e) {
+        e.preventDefault();
+        const page = new URLSearchParams($(this).attr("href").split("?")[1]).get("page");
+        fetchNoticePage(page);
+    });
+}
+
+$(document).ready(function() {
+    bindPaginationClick();
+});
+</script>
 
 </body>
 </html>
