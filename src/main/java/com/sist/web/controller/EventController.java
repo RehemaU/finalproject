@@ -279,7 +279,7 @@ public class EventController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "6") int size) {
 
-        logger.debug("📥 Ajax 이벤트 요청 page={}, size={}", page, size);
+        logger.debug("Ajax 이벤트 요청 page={}, size={}", page, size);
 
         Map<String, Object> result = new HashMap<>();
         int startRow = (page - 1) * size;

@@ -72,6 +72,7 @@
             <li class="menu-item active" data-url="/admin/accommList">숙소 관리</li>
             <li class="menu-item" data-url="/admin/userList">유저 관리</li>
             <li class="menu-item" data-url="/admin/reviewList">리뷰 관리</li>
+            <li class="menu-item" data-url="/admin/sellerList">판매자 관리</li>
         </ul>
     </div>
 
@@ -100,6 +101,9 @@ $(function() {
     });
 
     function loadContent(url) {
+    	
+    	$("#contentArea").html("<p style='text-align:center; margin-top: 50px;'> 불러오는 중입니다...</p>");
+    	
         $.ajax({
             url: url,
             type: "GET",
