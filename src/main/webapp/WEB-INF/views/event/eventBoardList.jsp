@@ -125,7 +125,10 @@
 <body>
 
 <div class="container">
-	<h2>이벤트 게시판 <span class="total-count">총 <span id="totalCountText"><c:out value="${totalCount}"/></span>건</span></h2>
+	<h2>
+  이벤트 게시판 
+  <span class="total-count">검색 결과: <span id="totalCountText">총 ${allCount}</span>건
+</h2>
 	<div style="text-align: right; margin-bottom: 10px;">
     <button class="filter-btn" data-status="active">진행 중 이벤트</button>
     <button class="filter-btn" data-status="closed">종료된 이벤트</button>
@@ -147,7 +150,7 @@
         <tbody id="eventTableBody">
             <c:forEach var="event" items="${eventList}" varStatus="status">
                 <tr>
-                    <td>${totalCount - (curPage - 1) * pageSize - status.index}</td>
+                    <td>${totalCount - status.index}</td>
                     <td class="title-col">
                         <a href="/event/eventDetail?eventId=${event.eventId}">
                             <c:out value="${event.eventTitle}" />
@@ -195,7 +198,7 @@ function fetchSearchResults(page = 1) {
         data: {
             searchKeyword: keyword,
             page: page,
-            status: currentStatus // 🔥 상태 필터 같이 전송
+            status: currentStatus 
         },
         success: function(res) {
             if (res.tableHtml.trim() === "") {
