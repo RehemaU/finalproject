@@ -1,80 +1,60 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
   <%@ include file="/WEB-INF/views/include/head.jsp" %>   <%-- 공통 head --%>
+  <meta charset="UTF-8">
   <title>마이페이지</title>
   <style>
     .mypage-container {
-	  display: flex;
-	  max-width: 1450px;   /* 적당히 조절 가능 */
-	  margin: 0 auto;      /* 가운데 정렬 */
-	  min-height: 80vh;
-	  border: 1px solid #ddd;
-	  box-sizing: border-box;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+      font-family: Arial, sans-serif;
     }
-    .menu {
-      width: 200px;
-      background: #f8f8f8;
-      border-right: 1px solid #ddd;
-      display: flex;
-      flex-direction: column;
+    .mypage-title {
+      font-size: 28px;
+      text-align: center;
+      margin-bottom: 30px;
     }
-    .menu button {
-      border: none;
-      background: transparent;
+    .mypage-menu {
+      list-style: none;
+      padding: 0;
+    }
+    .mypage-menu li {
+      border-bottom: 1px solid #eee;
+    }
+    .mypage-menu li a {
+      display: block;
       padding: 15px 20px;
-      text-align: left;
-      cursor: pointer;
-      font-size: 16px;
+      text-decoration: none;
+      color: #333;
+      transition: background 0.2s;
     }
-    .menu button:hover {
-      background: #eee;
-    }
-    .content {
-      flex-grow: 1;
-      padding: 40px;
+    .mypage-menu li a:hover {
+      background: #f0f0f0;
     }
   </style>
-  <script>
-    function loadContent(type) {
-      let contentDiv = document.getElementById("contentArea");
-      if(type === 'profile') {
-        contentDiv.innerHTML = "<h2>마이 프로필</h2><p>여기에 회원정보를 보여줄거야.</p>";
-      }
-      else if(type === 'posts') {
-        fetch('/user/myplan')
-          .then(response => response.text())
-          .then(html => {
-            contentDiv.innerHTML = html;
-          })
-          .catch(error => {
-            console.error(error);
-            contentDiv.innerHTML = "<p>불러오기 실패</p>";
-          });
-      }
-      else if(type === 'likes') {
-        contentDiv.innerHTML = "<h2>내 찜 목록</h2><p>여기에 찜한 상품이나 게시글을 보여줄거야.</p>";
-      }
-    }
-  </script>
-
 </head>
 <body>
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %> <%-- 공통 Header/Nav --%>
   <div class="mypage-container">
-    <div class="menu">
-      <button onclick="loadContent('profile')">마이 프로필</button>
-      <button onclick="loadContent('posts')">내가 쓴 게시글</button>
-      <button onclick="loadContent('likes')">내 찜 목록</button>
-      <button onclick="loadContent('comments')">내 댓글</button>
-      <!-- 필요한 메뉴 계속 추가 가능 -->
-    </div>
-    <div class="content" id="contentArea">
-      <h2>마이페이지에 오신 것을 환영합니다!</h2>
-      <p>왼쪽 메뉴를 선택하세요.</p>
-    </div>
+    <h2 class="mypage-title">마이페이지</h2>
+    <ul class="mypage-menu">
+      <li><a href="/user/userUpdateForm">회원정보 (수정/탈퇴)</a></li>
+      <li><a href="/schedule/myList">내가 쓴 일정</a></li>
+      <li><a href="/mypage/planlist">내가 쓴 게시글</a></li>
+      <li><a href="/mypage/commentlist">내가 쓴 댓글</a></li>
+      <li><a href="/mypage/recommendlist">좋아요 누른 게시글</a></li>
+      <li><a href="/like/list">찜한 장소</a></li>
+      <li><a href="/mypage/cart">장바구니</a></li>
+      <li><a href="/mypage/order">결제 내역</a></li>
+      <li><a href="/mypage/cancel">취소 내역</a></li>
+    </ul>
   </div>
 </body>
 </html>

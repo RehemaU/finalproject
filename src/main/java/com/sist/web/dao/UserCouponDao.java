@@ -19,6 +19,7 @@ public interface UserCouponDao {
     // 마이페이지: 내가 발급받은 쿠폰 목록
     public List<UserCoupon> selectUserCouponList(String userId);
     
+   
     public int existsUserCoupon(@Param("userId") String userId, @Param("couponId") String couponId);
 
     // 특정 쿠폰 상세 조회
@@ -26,6 +27,9 @@ public interface UserCouponDao {
 
     // 쿠폰 사용 처리
     public int updateUserCouponUse(String userCouponId);
+    
+    // 기본 쿠폰 쿼리 조인해서 조회
+    public List<UserCoupon> selectUserCouponsByUserId(String userId);
     
     
 }

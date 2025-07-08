@@ -106,4 +106,21 @@ public class PcommentService {
 		return count;
 	}
 	
+	//게시글 삭제 시 댓글 삭제
+	public List<Pcomment> pcommentMycomment(String userId)
+	{
+		List<Pcomment> list = null;
+		
+		try
+		{
+			list = pcommentDao.pcommentMycomment(userId);
+		}
+		catch(Exception e)
+		{
+			logger.error("[PcommentService] pcommentMycomment : ", e);
+		}
+		
+		return list;
+	}
+	
 }

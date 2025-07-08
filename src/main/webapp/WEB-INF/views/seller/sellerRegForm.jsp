@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+    pageEncoding="UTF-8"%>  
 <%@ include file="/WEB-INF/views/include/taglib.jsp" %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -7,69 +7,104 @@
 <%@ include file="/WEB-INF/views/include/userHead.jsp" %>
   <title>판매자등록</title>
   <style>
-    .signup-container {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 30px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    font-family: 'Arial', sans-serif;
-    background-color: #fff;
+    :root{
+    --fg:#000;            /* 기본 글자색 */
+    --bg:#ffffff;         /* 배경색 */
+    --border:#e5e5e5;     /* 얇은 회색선 */
+    --primary:#000000;    /* 액션‧포인트 컬러 = 블랙 */
+    --radius:12px;        /* 둥근 정도 */
   }
 
-  .signup-container h2 {
-    text-align: center;
-    margin-bottom: 30px;
+  /* 레이아웃 ──────────────────────────── */
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--fg);
+    font-family:'Pretendard', sans-serif;
+    font-size:15px;
+    line-height:1.5;
+  }
+  .signup-container{
+    max-width:480px;               /* 여백 넉넉하게 */
+    margin:80px auto;              /* 위·아래 간격 */
+    padding:48px 56px;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    background:#fff;
+    box-shadow:0 4px 20px rgba(0,0,0,.04);
+  }
+  .signup-container h2{
+    font-size:28px;
+    font-weight:700;
+    text-align:center;
+    margin-bottom:40px;
+    letter-spacing:-.4px;
   }
 
-  .form-group {
-    margin-bottom: 15px;
-    display: flex;
-    flex-direction: column;
-  }
-
-  label {
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
+  /* 폼 요소 ───────────────────────────── */
+  .form-group{margin-bottom:24px;display:flex;flex-direction:column;gap:8px;}
+  label{font-size:15px;font-weight:600;}
 
   input[type="text"],
   input[type="password"],
   input[type="email"],
   input[type="file"],
-  select {
-    padding: 10px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+  select{
+    padding:14px 16px;
+    font-size:15px;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    background:#fafafa;
+    transition:border-color .15s;
+  }
+  input[type="text"]:focus,
+  input[type="password"]:focus,
+  input[type="email"]:focus,
+  input[type="file"]:focus,
+  select:focus{
+    outline:none;
+    border-color:#666;
+    background:#fff;
+  }
+  input[readonly]{background:#f5f5f5;color:#888;cursor:not-allowed;}
+
+  /* 주소 섹션 – 버튼 옆 정렬 */
+  .address-group{gap:16px}
+  .address-group button{
+    height:46px;
+    padding:0 24px;
+    border:none;
+    border-radius:var(--radius);
+    background:var(--primary);
+    color:#fff;
+    font-weight:600;
+    cursor:pointer;
+    transition:opacity .15s;
+  }
+  .address-group button:hover{opacity:.85;}
+
+  /* date 입력이 텍스트로 바뀐 뒤도 동일 스타일 유지 */
+  input[type="date"],
+  input[type="text"][id="userBirth"]{
+    appearance:none;
+    -webkit-appearance:none;
   }
 
-  input[readonly] {
-    background-color: #f5f5f5;
-    cursor: not-allowed;
+  /* 제출 버튼 ─────────────────────────── */
+  .submit-btn{
+    width:100%;
+    padding:16px 0;
+    font-size:16px;
+    font-weight:700;
+    background:var(--primary);
+    color:#fff;
+    border:none;
+    border-radius:var(--radius);
+    cursor:pointer;
+    transition:opacity .15s;
+    margin-top:32px;
   }
-
-  .address-group {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .submit-btn {
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
-    background-color: #2d7df6;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 20px;
-  }
-
-  .submit-btn:hover {
-    background-color: #135fd4;
-  }
+  .submit-btn:hover{opacity:.85;}
  
   </style>
   <script type="text/javascript">
@@ -324,7 +359,7 @@
   	</script>
 </head>
 <body>
-<%@ include file="/WEB-INF/views/include/navigation2.jsp" %>
+<%@ include file="/WEB-INF/views/include/navigation.jsp" %>
   <div class="signup-container">
     <h2>판매자등록</h2>
     <form id="sellerRegForm" method="post">

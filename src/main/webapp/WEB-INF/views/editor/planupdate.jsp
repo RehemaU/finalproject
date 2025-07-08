@@ -23,7 +23,7 @@
 </style>
 </head>
 <body>
-<%@ include file="/WEB-INF/views/include/navigation.jsp" %> <%-- 공통 Header/Nav --%>
+<%@ include file="/WEB-INF/views/include/navigation_editor.jsp" %> <%-- 공통 Header/Nav --%>
 
 <!-- 🔙 뒤로가기 / 게시글 보기 버튼 -->
 <button type="button"
@@ -33,7 +33,7 @@
   <i class="fa-solid fa-chevron-left fa-lg"></i>
 </button>
 
-  <h1>${param.planId}</h1>
+  <h1>후기 수정 페이지</h1>
   <br /><br />
   <div class="review-container">
     <!-- planId, editor 객체는 컨트롤러에서 모델에 담아 전달 -->

@@ -30,8 +30,8 @@ public class SellerController
 	@Autowired
 	private SellerService sellerService;
 	
-	@Value("#{env['auth.cookie.name']}")
-	private String AUTH_COOKIE_NAME;
+	@Value("#{env['auth.seller.name']}")
+	private String AUTH_SELLER_NAME; 
 	
 	
 	
@@ -62,7 +62,7 @@ public class SellerController
 			{
 				if(StringUtil.equals(sellerPassword, seller.getSellerPassword()))
 				{
-					CookieUtil.addCookie(response, "/", -1, AUTH_COOKIE_NAME, 
+					CookieUtil.addCookie(response, "/", -1, AUTH_SELLER_NAME, 
                             CookieUtil.stringToHex(sellerId));
 			
 					// 로그인 성공 → 세션 저장
@@ -112,9 +112,9 @@ public class SellerController
 	        session.invalidate(); // 세션종료
 	    }
 	    
-		if(CookieUtil.getCookie(request, AUTH_COOKIE_NAME) != null)
+		if(CookieUtil.getCookie(request, AUTH_SELLER_NAME) != null)
 		{
-			CookieUtil.deleteCookie(request, response, "/", AUTH_COOKIE_NAME);
+			CookieUtil.deleteCookie(request, response, "/", AUTH_SELLER_NAME);
 		}
 		
 		return "redirect:/seller/login";
@@ -124,8 +124,6 @@ public class SellerController
 	@RequestMapping(value="/seller/sellerRegForm", method=RequestMethod.GET)
 	public String sellerRegForm(HttpServletRequest request, HttpServletResponse response)
 	{
-		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
-		logger.debug("cookieSellerId : " + cookieUserId);
 		
 		return "/seller/sellerRegForm";
 	}
@@ -227,7 +225,7 @@ public class SellerController
 	public String sellerUpdateForm(ModelMap model, HttpServletRequest request, HttpServletResponse response)
 	{
 		//쿠키를 가져옴
-		String cookieSellerId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		String cookieSellerId = CookieUtil.getHexValue(request, AUTH_SELLER_NAME);
 		
 		Seller seller = sellerService.sellerSelect(cookieSellerId);
 		
@@ -251,7 +249,7 @@ public class SellerController
 		String sellerSellnumber = HttpUtil.get(request, "sellerSellnumber","");
 		
 		
-		String cookieSellerId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		String cookieSellerId = CookieUtil.getHexValue(request, AUTH_SELLER_NAME);
 		
 		if(!StringUtil.isEmpty(cookieSellerId))
 		{
@@ -291,14 +289,14 @@ public class SellerController
 				else
 				{
 					//사용자 정보가 없는경우
-					CookieUtil.deleteCookie(request, response, "/", AUTH_COOKIE_NAME);
+					CookieUtil.deleteCookie(request, response, "/", AUTH_SELLER_NAME);
 					ajaxResponse.setResponse(404, "not found");
 				}
 			}
 			else
 			{
 				//쿠키정보와 넘어온 userId가 다른 경우
-				CookieUtil.deleteCookie(request, response, "/", AUTH_COOKIE_NAME);
+				CookieUtil.deleteCookie(request, response, "/", AUTH_SELLER_NAME);
 				ajaxResponse.setResponse(430, "id infomation is different");
 			}
 		}
@@ -330,7 +328,7 @@ public class SellerController
 	public Response<Object> sellerPasswordChange(HttpServletRequest request, HttpServletResponse response)
 	{
 		Response<Object> ajaxResponse = new Response<Object>();
-		String cookieSellerId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		String cookieSellerId = CookieUtil.getHexValue(request, AUTH_SELLER_NAME);
 		
 		String newPassword = HttpUtil.get(request, "sellerPassword");
 		
@@ -361,7 +359,7 @@ public class SellerController
 	public boolean checkCurrentPassword(HttpServletRequest request)
 	{
 		String currentPassword = HttpUtil.get(request, "currentPassword");
-		String cookieSellerId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		String cookieSellerId = CookieUtil.getHexValue(request, AUTH_SELLER_NAME);
 		logger.debug("입력한 비밀번호:>>>>>>>>>>><<<<<<<<<<<<<<<<"+currentPassword);
 		
 		Seller seller = sellerService.sellerSelect(cookieSellerId);

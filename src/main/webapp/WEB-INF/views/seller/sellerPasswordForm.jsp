@@ -7,63 +7,95 @@
 <%@ include file="/WEB-INF/views/include/userHead.jsp" %>
   <title>비밀번호 변경</title>
   <style>
-    body {
-      font-family: 'Noto Sans KR', sans-serif;
-      margin: 40px;
-      background-color: #fff;
-      color: #333;
-    }
+    :root {
+    --bg: #ffffff;
+    --fg: #000000;
+    --border: #e5e5e5;
+    --radius: 12px;
+    --primary: #000000;
+    --gray: #666;
+  }
 
-    .container {
-      max-width: 400px;
-    }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    padding: 60px 20px;
+  }
 
-    h2 {
-      font-size: 20px;
-      margin-bottom: 10px;
-    }
+  .container {
+    max-width: 460px;
+    margin: 0 auto;
+    padding: 48px 40px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: #fff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  }
 
-    .info-text {
-      font-size: 14px;
-      margin-bottom: 20px;
-    }
+  h2 {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    text-align: center;
+  }
 
-    .info-text a {
-      color: #007bff;
-      text-decoration: none;
-    }
+  .info-text {
+    font-size: 14px;
+    margin-bottom: 36px;
+    color: var(--gray);
+    line-height: 1.6;
+  }
 
-    .info-text .red {
-      color: red;
-    }
+  .info-text a {
+    color: var(--fg);
+    font-weight: 600;
+    text-decoration: underline;
+  }
 
-    .form-group {
-      margin-bottom: 15px;
-    }
+  .info-text .red {
+    color: #c40000;
+  }
 
-    input[type="password"] {
-      width: 100%;
-      padding: 12px;
-      font-size: 14px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-sizing: border-box;
-    }
+  .form-group {
+    margin-bottom: 24px;
+  }
 
-    button {
-      width: 100%;
-      padding: 12px;
-      font-size: 15px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
+  input[type="password"] {
+    width: 100%;
+    padding: 16px;
+    font-size: 15px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background-color: #fafafa;
+    transition: border-color 0.2s ease;
+  }
 
-    button:hover {
-      background-color: #005fcc;
-    }
+  input[type="password"]:focus {
+    outline: none;
+    border-color: #999;
+    background-color: #fff;
+  }
+
+  button {
+    width: 100%;
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+
+  button:hover {
+    opacity: 0.85;
+  }
   </style>
   <script type="text/javascript">
   $(document).ready(function(){
@@ -162,11 +194,11 @@
 
 	  });
   });
-  </script>
+  </script>  
 </head>
 <body>
-<%@ include file="/WEB-INF/views/include/navigation2.jsp" %>
-
+<%@ include file="/WEB-INF/views/include/navigation.jsp" %>
+<br /><br />
   <div class="container">
     <h2>비밀번호 변경</h2>
     <div class="info-text">
