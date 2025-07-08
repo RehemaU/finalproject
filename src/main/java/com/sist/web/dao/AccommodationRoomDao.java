@@ -17,4 +17,5 @@ public interface AccommodationRoomDao {
     List<AccommodationRoom> searchByAccommId(String accommId);
     AccommodationRoom searchByAccommRoomId(String accommRoomId);
     List<AccommodationRoom> getAvailableRoomsByDate(Map<String, Object> param);
+    int isRoomOverbooked(Map<String, Object> params);
 }
