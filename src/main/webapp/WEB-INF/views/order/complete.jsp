@@ -53,6 +53,15 @@
         <span>주문번호:</span> ${order.orderId}
     </div>
     <div class="info">
+        <span>원금액:</span> <fmt:formatNumber value="${originAmount}" pattern="#,###"/>원
+    </div>
+    <div class="info">
+        <span>사용한 쿠폰:</span> ${coupon.couponName}
+    </div>
+    <div class="info">
+        <span>할인금액:</span> <fmt:formatNumber value="${discountAmount}" pattern="#,###"/>원
+    </div>
+    <div class="info">
         <span>결제금액:</span> <fmt:formatNumber value="${order.orderTotalAmount}" pattern="#,###"/>원
     </div>
     <div class="info">
@@ -64,6 +73,7 @@
     <div class="info">
         <span>결제수단:</span> ${detail.orderDetailsPaymentMethod}
     </div>
+
     <div class="info">
         <span>인원 수:</span> ${detail.orderDetailsPeopleCount}명
     </div>

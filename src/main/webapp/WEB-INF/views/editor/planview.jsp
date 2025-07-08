@@ -125,7 +125,7 @@
 </head>
 
 <body class="bg-light">
-  <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
+  <%@ include file="/WEB-INF/views/include/navigation_editor.jsp" %>
 
 <!-- 메뉴(햄버거) 버튼 -->
 <button type="button"

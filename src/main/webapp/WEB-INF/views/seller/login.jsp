@@ -5,71 +5,85 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
- <%@ include file="/WEB-INF/views/include/userHead.jsp" %>
- <title>판매자 로그인</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MYTRIP – Walkthrough · Explore · Stay · Plan · Share</title>
+
+  <!-- Fonts & Tailwind -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+
+  <!-- Scripts -->
+  <script type="text/javascript" src="/resources/js/jquery-3.5.1.min.js"></script>
+  <script type="text/javascript" src="/resources/js/icia.common.js"></script>
+  <script type="text/javascript" src="/resources/js/icia.ajax.js"></script>
+
+  <!-- Custom Fixes for Tailwind Override -->
+ 
+  <!-- 로그인 스타일 -->
   <style>
     body {
       margin: 0;
-      font-family: 'Noto Sans KR', sans-serif;
-      background-color: #fff;
+      font-family: 'Pretendard', sans-serif;
+      background-color: #ffffff;
     }
 
-    .nav {
-      background-color: #707b82;
-      padding: 10px 20px;
-      color: white;
-    }
-
-    .nav a {
-      color: #dcdcdc;
-      text-decoration: none;
-      margin-right: 15px;
-      font-weight: bold;
-    }
-
-    .container {
+    .login-container {
       display: flex;
       justify-content: center;
       align-items: center;
       height: 80vh;
+      padding: 24px;
     }
 
     .login-box {
-      width: 300px;
-      text-align: center;
+      width: 100%;
+      max-width: 360px;
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      padding: 32px;
     }
 
     .login-box h2 {
-     
-      margin-bottom: 20px;
+      font-size: 24px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 24px;
     }
 
     .input-box {
       width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
       border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 14px;
+      border-radius: 8px;
+      font-size: 15px;
+      background-color: #fafafa;
     }
 
     .btn {
       width: 100%;
-      padding: 10px;
-      background-color: #007bff;
+      padding: 12px;
+      background-color: #000;
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       font-size: 15px;
-      margin-top: 5px;
+      font-weight: 600;
       cursor: pointer;
+      margin-top: 8px;
+      transition: background-color 0.2s ease;
     }
 
     .btn:hover {
-      background-color: #0056cc;
+      background-color: #333;
     }
   </style>
+  
   <script>
   	$(document).ready(function(){
   		$("#sellerId").focus();
@@ -84,7 +98,7 @@
   		$("#sellerPassword").on("keypress", function(e){
 			if(e.which == 13)
 			{
-				fn_loginCheck();
+				fn_loginCheck();  
 			}	
 		});
   		
@@ -181,9 +195,9 @@
   </script>
 </head>
 <body>
- <%@ include file="/WEB-INF/views/include/navigation2.jsp" %>
+ <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
 
-  <div class="container">
+  <div class="login-container">
     <div class="login-box">
       <h2>판매자 로그인</h2>
       <form action="/login" method="POST">

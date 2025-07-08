@@ -15,7 +15,8 @@ public class Coupon implements Serializable {
     private int couponExpiredate;   // 만료일 계산 기준 (며칠)
     private String couponPlace;       // 사용처 (예: ACCOMM, TOUR 등)
     private int couponCount;          // 총 수량!
-
+    private int couponMaxAmount; //최대 할인 금액(추가)
+    
     public Coupon() 
     {
         this.couponId = "";
@@ -29,7 +30,17 @@ public class Coupon implements Serializable {
     }
     
     
-    public String getCouponId() {
+    public int getCouponMaxAmount() {
+		return couponMaxAmount;
+	}
+
+
+	public void setCouponMaxAmount(int couponMaxAmount) {
+		this.couponMaxAmount = couponMaxAmount;
+	}
+
+
+	public String getCouponId() {
         return couponId;
     }
 

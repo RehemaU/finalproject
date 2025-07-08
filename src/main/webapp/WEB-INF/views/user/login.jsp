@@ -115,10 +115,14 @@
       $("#btnkakao").on("click", function(){
           //location.href = "https://kauth.kakao.com/oauth/authorize?client_id=80e4419557c7b5feaa6bcbaa1cae6ae8&redirect_uri=http://finalproject.sist.co.kr:8088/user/kakaoLogin&response_type=code&scope=profile_nickname";
     	  //location.href = "https://kauth.kakao.com/oauth/authorize?client_id=abc12345678901234567890123456789&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fkakao%2Fcallback&response_type=code&prompt=login";
-    	  location.href = "https://kauth.kakao.com/oauth/authorize?client_id=80e4419557c7b5feaa6bcbaa1cae6ae8&redirect_uri=http://finalproject.sist.co.kr:8088/user/kakaoLogin&response_type=code&scope=profile_nickname&prompt=login";
-      });
-      
-      
+    	  //location.href = "https://kauth.kakao.com/oauth/authorize?client_id=80e4419557c7b5feaa6bcbaa1cae6ae8&redirect_uri=http://finalproject.sist.co.kr:8088/user/kakaoLogin&response_type=code&scope=profile_nickname&prompt=login";
+    	  location.href = "https://kauth.kakao.com/oauth/authorize"
+    	    			+ "?client_id=80e4419557c7b5feaa6bcbaa1cae6ae8"
+    	    			+ "&redirect_uri=http://finalproject.sist.co.kr:8088/user/kakaoLogin"
+    	   			    + "&response_type=code"
+    	    			+ "&scope=profile_nickname"
+    	    			+ "&prompt=login";
+      }); 
    });
    
    function fn_loginCheck()
@@ -155,7 +159,7 @@
             {
                icia.common.log(response);
                var code = icia.common.objectValue(response, "code", -500);
-               if(code == 0) location.href = "/user/userUpdateForm";
+               if(code == 0) location.href = "/";
                else {
                   if(code == -1) alert("비밀번호가 올바르지 않습니다.");
                   else if(code == -99) alert("정지된 사용자 입니다.");

@@ -51,5 +51,38 @@
     <select id="countNotice" resultType="int">
     SELECT COUNT(*) FROM T_NOTICE
 	</select>
+	
+	<!-- 🔍 검색된 공지사항 개수 조회 -->
+<select id="getSearchNoticeCount" parameterType="map" resultType="int">
+    SELECT COUNT(*)
+    FROM T_NOTICE
+    <where>
+        <if test="keyword != null and keyword != ''">
+            AND NOTICE_TITLE LIKE '%' || #{keyword} || '%'
+        </if>
+    </where>
+</select>
+
+<!-- 🔍 검색된 공지사항 리스트 조회 -->
+<select id="searchNoticeList" parameterType="map" resultType="com.sist.web.model.Notice">
+    SELECT *
+    FROM (
+        SELECT T.*, ROWNUM RNUM
+        FROM (
+            SELECT *
+            FROM T_NOTICE
+            <where>
+                <if test="keyword != null and keyword != ''">
+                    AND NOTICE_TITLE LIKE '%' || #{keyword} || '%'
+                </if>
+            </where>
+            ORDER BY NOTICE_REGDATE DESC
+        ) T
+        WHERE ROWNUM &lt;= #{startRow} + #{pageSize}
+    )
+    WHERE RNUM &gt; #{startRow}
+</select>
+
+
 
 </mapper>

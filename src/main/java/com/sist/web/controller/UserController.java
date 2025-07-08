@@ -41,7 +41,7 @@ import com.sist.web.util.SessionUtil;
 @Controller("userController")
 public class UserController 
 {
-	private static Logger logger = LoggerFactory.getLogger(UserController.class);
+private static Logger logger = LoggerFactory.getLogger(UserController.class);
 	
 	
 	@Value("#{env['upload.save.dir']}")
@@ -50,8 +50,8 @@ public class UserController
 	@Autowired
 	private	 UserService userService;
 	
-	@Value("#{env['auth.cookie.name']}")
-	private String AUTH_COOKIE_NAME;
+	@Value("#{env['auth.user.name']}")
+	private String AUTH_USER_NAME;
 	
 	
 	//로그인 페이지
@@ -83,7 +83,7 @@ public class UserController
 					
 					if(StringUtil.equals(user.getUserOut(), "N"))
 					{
-						CookieUtil.addCookie(response, "/", -1, AUTH_COOKIE_NAME, 
+						CookieUtil.addCookie(response, "/", -1, AUTH_USER_NAME, 
                                 CookieUtil.stringToHex(userId));
 						
 				        // 로그인 성공 → 세션 저장
@@ -134,24 +134,24 @@ public class UserController
 		// 세션 종료
 	    request.getSession().invalidate();
 	    
-		if(CookieUtil.getCookie(request, AUTH_COOKIE_NAME) != null)
+		if(CookieUtil.getCookie(request, AUTH_USER_NAME) != null)
 		{
-			CookieUtil.deleteCookie(request, response, "/", AUTH_COOKIE_NAME);
+			CookieUtil.deleteCookie(request, response, "/", AUTH_USER_NAME);
 		}
 		
-		return "redirect:/user/login";
+		return "redirect:/";
 	}
 	
 	//회원가입화면
 	@RequestMapping(value="/user/userRegForm", method=RequestMethod.GET)
 	public String userRegForm(HttpServletRequest request, HttpServletResponse response)
 	{
-		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		String cookieUserId = CookieUtil.getHexValue(request, AUTH_USER_NAME);
 		logger.debug("cookieUserId : " + cookieUserId);
 		
 		if(!StringUtil.isEmpty(cookieUserId))
 		{
-			CookieUtil.deleteCookie(request, response, "/", AUTH_COOKIE_NAME);
+			CookieUtil.deleteCookie(request, response, "/", AUTH_USER_NAME);
 			
 			return "redirect:/user/login";
 			
@@ -276,8 +276,12 @@ public class UserController
 	public String userUpdateForm(ModelMap model, HttpServletRequest request, HttpServletResponse response)
 	{
 		//쿠키를 가져옴
+
 		//String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
 		String userId = (String) request.getSession().getAttribute("userId");
+
+		String cookieUserId = CookieUtil.getHexValue(request, AUTH_USER_NAME);
+
 		
 		if(userId == null || userId == "")
 		{
@@ -337,7 +341,7 @@ public class UserController
 			userBirth = userBirth.replaceAll("-", "");
 		}
 		//cookieUserId 와 userid는 같아야 수정가능
-		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		String cookieUserId = CookieUtil.getHexValue(request, AUTH_USER_NAME);
 		
 		if(!StringUtil.isEmpty(cookieUserId))
 		{
@@ -385,7 +389,7 @@ public class UserController
 				else
 				{
 					//사용자 정보가 없는경우
-					CookieUtil.deleteCookie(request, response, "/", AUTH_COOKIE_NAME);
+					CookieUtil.deleteCookie(request, response, "/", AUTH_USER_NAME);
 					ajaxResponse.setResponse(404, "not found");
 				}
 				
@@ -393,7 +397,7 @@ public class UserController
 			else
 			{
 				//쿠키정보와 넘어온 userId가 다른 경우
-				CookieUtil.deleteCookie(request, response, "/", AUTH_COOKIE_NAME);
+				CookieUtil.deleteCookie(request, response, "/", AUTH_USER_NAME);
 				ajaxResponse.setResponse(430, "id infomation is different");	
 			}
 		}
@@ -428,7 +432,7 @@ public class UserController
 	{
 		Response<Object> ajaxResponse = new Response<Object>();
 		{
-			String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+			String cookieUserId = CookieUtil.getHexValue(request, AUTH_USER_NAME);
 			String newPassword = HttpUtil.get(request, "userPassword");
 			
 			logger.debug("입력한 비밀번호3333333:>>>>>>>>>>><<<<<<<<<<<<<<<<"+newPassword);
@@ -462,7 +466,7 @@ public class UserController
 	public boolean checkCurrentPassword(HttpServletRequest request)
 	{
 		String currentPassword = HttpUtil.get(request, "currentPassword");
-		String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		String cookieUserId = CookieUtil.getHexValue(request, AUTH_USER_NAME);
 		
 		logger.debug("입력한 비밀번호:>>>>>>>>>>><<<<<<<<<<<<<<<<"+currentPassword);
 		
@@ -472,6 +476,17 @@ public class UserController
 		return user.getUserPassword().equals(currentPassword);
 
 	}
+	
+	//회원댓글관리
+	@RequestMapping(value="/user/userCommentForm", method=RequestMethod.GET)
+	public String userCommentForm(HttpServletRequest request, HttpServletResponse response)
+	{
+		//쿠키값
+		//String cookieUserId = CookieUtil.getHexValue(request, AUTH_COOKIE_NAME);
+		return "/user/userCommentForm";
+	}
+	
+	
 	
 	//카카오로그인
 	//로그인 페이지
@@ -511,7 +526,7 @@ public class UserController
 		//다음 단계로 리디렉션 (예: 사용자 정보 조회)
 	   return "redirect:/user/kakaoUserInfo";  // 또는 메인페이지
 	}
-	
+
 	
 	@RequestMapping(value="/user/kakaoUserInfo", method=RequestMethod.GET)
 	public String kakaoUserInfo(HttpSession session, Model model)
@@ -566,5 +581,5 @@ public class UserController
 	    // 로그아웃 후 이동할 페이지로 리디렉트 (예: 로그인 페이지 또는 메인페이지)
 	    return "redirect:/user/login";
 	}
-	
+
 }
