@@ -384,7 +384,6 @@
   <div class="signup-container">
     <h2>회원가입</h2>
     <form id="userRegForm" name="userRegForm" method="post" enctype="multipart/form-data">
-      
       <div class="form-group">
         <label>아이디 </label>
         <input type="text" id="userId" name="userId" maxlength="20">
@@ -460,6 +459,8 @@
       </div>
 
       <button type="button" id="btnReg" class="submit-btn">가입하기</button>
+      <input type="hidden" id="uniqueId" name="uniqueId" value="${uniqueId}">
+      <input type="hidden" id="regType" name="regType" value="${regType}">
     </form>
   </div>
 </body>

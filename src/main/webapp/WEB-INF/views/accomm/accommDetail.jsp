@@ -28,24 +28,19 @@
 </head>
 <body>
 <div class="container">
-
-    <!-- 숙소 정보 -->
     <div class="accomm-header">
         <img src="${accommodation.firstImage}" alt="${accommodation.accomName}" />
-
         <div class="accomm-info">
             <h1>${accommodation.accomName}</h1>
             <p>${accommodation.accomDes}</p>
         </div>
     </div>
 
-    <!-- ✅ 날짜 선택 -->
     <div class="date-selector">
         <label for="dateRange">🗓️ 숙박 날짜 선택:</label>
         <input type="text" id="dateRange" placeholder="체크인 ~ 체크아웃" style="padding: 8px; width: 250px;" />
     </div>
 
-    <!-- 객실 목록 -->
     <div class="room-list">
         <h2>객실 정보</h2>
         <c:forEach var="room" items="${roomList}">
@@ -54,15 +49,12 @@
                     <h3>${room.roomName}</h3>
                     <p>기준 인원: ${room.standardPerson}명 / 객실 수: ${room.roomCount}개 / 크기: ${room.roomScale}㎡</p>
                     <p>체크인: ${room.checkIn} / 체크아웃: ${room.checkOut}</p>
-                    <p>
-                       <p class="price-result" id="priceResult-${room.accommRoomId}"></p>
-                    </p>
-					<!-- ✅ 예약 버튼 -->
-					<button class="reserve-btn" 
-					        data-room-id="${room.accommRoomId}"
-					        style="margin-top: 10px; padding: 8px 16px; background-color: #2c3e50; color: white; border: none; border-radius: 5px; cursor: pointer;">
-					    예약하기
-					</button>
+                    <p class="price-result" id="priceResult-${room.accommRoomId}"></p>
+
+                    <button class="reserve-btn" data-room-id="${room.accommRoomId}" style="margin-top: 10px; padding: 8px 16px; background-color: #2c3e50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                        예약하기
+                    </button>
+
                     <div class="room-features">
                         <c:if test="${room.bathroom == 'Y'}"><span>🛁 욕실</span></c:if>
                         <c:if test="${room.bath == 'Y'}"><span>🛀 욕조</span></c:if>
@@ -75,7 +67,6 @@
                         <c:if test="${room.dryer == 'Y'}"><span>💨 드라이기</span></c:if>
                     </div>
                 </div>
-
                 <div class="room-image">
                     <img src="${empty room.roomImage ? '/resources/images/default-room.jpg' : room.roomImage}" alt="${room.roomName} 이미지" />
                 </div>
@@ -84,12 +75,38 @@
     </div>
 </div>
 
-<!-- ✅ 스크립트: 가격 계산 함수 및 초기 실행 -->
 <script>
-function fetchAvailableRooms(checkInDate, checkOutDate) {
-    const checkIn = checkInDate.toISOString().split("T")[0];
-    const checkOut = checkOutDate.toISOString().split("T")[0];
 
+const accommId = '<c:out value="${accommodation.accomId}" />';
+const roomIds = [
+    <c:forEach var="room" items="${roomList}" varStatus="status">
+        '<c:out value="${room.accommRoomId}" />'<c:if test="${!status.last}">,</c:if>
+    </c:forEach>
+];
+const today = new Date();
+const tomorrow = new Date();
+tomorrow.setDate(today.getDate() + 1);
+
+flatpickr("#dateRange", {
+    mode: "range",
+    dateFormat: "Y-m-d",
+    defaultDate: [today, tomorrow], // ✅ 기본 선택: 오늘 ~ 내일
+    minDate: today,                 // ✅ 오늘 이전은 선택 불가
+    onClose: function(selectedDates) {
+        if (selectedDates.length === 2) {
+            const checkIn = selectedDates[0].toISOString().split("T")[0];
+            const checkOut = selectedDates[1].toISOString().split("T")[0];
+            fetchRoomPrices(checkIn, checkOut);
+            fetchAvailableRooms(checkIn, checkOut);
+        }
+    }
+});
+
+// ✅ 최초 자동 호출
+fetchRoomPrices(today.toISOString().split("T")[0], tomorrow.toISOString().split("T")[0]);
+fetchAvailableRooms(today.toISOString().split("T")[0], tomorrow.toISOString().split("T")[0]);
+
+function fetchAvailableRooms(checkIn, checkOut) {
     fetch("/accommDetail/availableRooms", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -106,66 +123,53 @@ function fetchAvailableRooms(checkInDate, checkOutDate) {
             const roomId = card.querySelector(".reserve-btn").dataset.roomId;
             card.style.display = availableIds.has(roomId) ? "flex" : "none";
         });
-    })
-    .catch(err => {
-        console.error("예약 가능한 객실 조회 실패", err);
     });
 }
 
-
 function fetchRoomPrices(checkInDate, checkOutDate) {
-    const checkIn = checkInDate.toISOString().split("T")[0];
-    const checkOut = checkOutDate.toISOString().split("T")[0];
+    console.log("🧾 [fetchRoomPrices] 호출됨");
 
-    document.querySelectorAll(".price-result").forEach(el => el.innerText = "계산 중...");
+    const checkIn = checkInDate;
+    const checkOut = checkOutDate;
 
-    const roomIds = [
-        <c:forEach var="room" items="${roomList}" varStatus="status">
-            "${room.accommRoomId}"<c:if test="${!status.last}">,</c:if>
-        </c:forEach>
-    ];
+    console.log("👉 checkIn:", checkIn);
+    console.log("👉 checkOut:", checkOut);
 
     roomIds.forEach(roomId => {
+        const payload = {
+            roomId,
+            checkIn,
+            checkOut
+        };
+
+        console.log("📤 [요청] roomId:", roomId, "| payload:", payload);
+
         fetch("/accommDetail/calculatePrice", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ roomId, checkIn, checkOut })
+            body: JSON.stringify(payload)
         })
         .then(res => res.json())
         .then(data => {
             const target = document.getElementById("priceResult-" + roomId);
+            console.log("📥 [응답] roomId:", roomId, "| data:", data);
+
             if (data && typeof data.days !== 'undefined' && typeof data.totalPrice !== 'undefined') {
-                target.innerText = "총 " + data.days + "박 / 총액: ₩" + data.totalPrice.toLocaleString();
+                const resultStr = "총 " + data.days + "박 / 총액: ₩" + Number(data.totalPrice).toLocaleString();
+                target.innerText = resultStr;
+                console.log("✅ [DOM 반영 성공]", resultStr);
             } else {
                 target.innerText = "총액 계산 실패 (데이터 없음)";
+                console.warn("⚠️ [DOM 반영 실패] data 불완전");
             }
         })
-        .catch(() => {
+        .catch(err => {
             const target = document.getElementById("priceResult-" + roomId);
             target.innerText = "가격 계산 실패";
+            console.error("❌ [요청 실패]", err);
         });
     });
 }
-
-// ✅ flatpickr 초기화 및 초기 자동 호출
-const today = new Date();
-const tomorrow = new Date();
-tomorrow.setDate(today.getDate() + 1);
-const imgSrc = "${accommodation.firstImage}";
-console.log("이미지 URL:", imgSrc);
-flatpickr("#dateRange", {
-    mode: "range",
-    dateFormat: "Y-m-d",
-    defaultDate: [today, tomorrow],
-    onClose: function(selectedDates) {
-    	  console.log("📆 onClose 호출됨!");
-    	    console.log("선택된 날짜:", selectedDates);
-        if (selectedDates.length === 2) {
-            fetchRoomPrices(selectedDates[0], selectedDates[1]);
-            fetchAvailableRooms(selectedDates[0], selectedDates[1]); // ✅ 이 줄 추가!
-        }
-    }
-});
 
 document.querySelectorAll(".reserve-btn").forEach(button => {
     button.addEventListener("click", () => {
@@ -180,10 +184,9 @@ document.querySelectorAll(".reserve-btn").forEach(button => {
         const checkIn = dateRange[0].toISOString().split("T")[0];
         const checkOut = dateRange[1].toISOString().split("T")[0];
 
-        // POST 방식으로 서버에 데이터 전송
         const form = document.createElement("form");
         form.method = "POST";
-        form.action = "/accomm/reservation";  // 예약 확인 or 결제 페이지
+        form.action = "/accomm/reservation";
 
         const input1 = document.createElement("input");
         input1.name = "roomId";
@@ -205,11 +208,6 @@ document.querySelectorAll(".reserve-btn").forEach(button => {
         form.submit();
     });
 });
-
-
-// ✅ 최초 자동 계산
-fetchRoomPrices(today, tomorrow);
 </script>
-
 </body>
 </html>

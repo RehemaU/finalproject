@@ -23,6 +23,8 @@
 		<result column="USER_OUT" property="userOut" />
 		<result column="USER_REGDATE" property="userRegdate" />
 		<result column="USER_PROFILE" property="userProfile" />
+		<result column="REG_TYPE" property="regType" />
+		<result column="UNIQUE_ID" property="uniqueId" />
 	</resultMap>
 
 	<!-- 
@@ -62,7 +64,10 @@
             USER_EMAIL,
             USER_OUT,
             USER_REGDATE,
-            USER_PROFILE
+            USER_PROFILE,
+            REG_TYPE,
+            UNIQUE_ID
+            
 		) VALUES (
             #{userId},
             #{userPassword},
@@ -74,7 +79,10 @@
             #{userEmail},
             'N',
             SYSDATE,
-            #{userProfile})
+            #{userProfile},
+            #{regType},
+            #{uniqueId}
+            )
 	 </insert>
 	 
 	 
@@ -104,6 +112,14 @@
 		WHERE
 		        USER_ID = #{value}
 	 </update>
+
+	 <select id="selectUniqueId" parameterType="String" resultMap="userResultMap">
+	 	SELECT USER_ID,
+	 	 	   NVL(UNIQUE_ID,'') UNIQUE_ID,
+	 	 	   NVL(REG_TYPE,'') REG_TYPE
+	    FROM T_USER
+	 	WHERE UNIQUE_ID = #{value}
+	 </select>
 </mapper>
 
 

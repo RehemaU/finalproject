@@ -24,14 +24,13 @@ import java.util.UUID;
 public class KakaoPayController {
 
     private static final Logger logger = LoggerFactory.getLogger(KakaoPayController.class);
-    private static final String ORDER_STATUS_COMPLETE = "1";
 
     @Autowired private KakaoPayService kakaoPayService;
     @Autowired private AccommodationRoomService accommodationRoomService;
     @Autowired private AccommodationRoomPriceService accommodationRoomPriceService;
     @Autowired private UserCouponService couponService;
     @Autowired private OrderService orderService;
-    
+    @Autowired private RefundService refundService;
 
     @Value("#{env['kakaopay.tid.session.name']}")
     private String KAKAOPAY_TID_SESSION_NAME;
@@ -104,13 +103,37 @@ public class KakaoPayController {
                 res.put("message", "카카오페이 결제 준비 실패");
                 return res;
             }
+            // 주문 및 상세 저장
+            Order order = new Order();
+            order.setOrderId(orderId);
+            order.setUserId(userId);
+            order.setOrderDate(Date.valueOf(LocalDate.now()));
+            order.setOrderTotalAmount(finalPrice);
+            order.setOrderStatus("W");
+            order.setOrderCouponId(userCouponId);
+            order.setOrderTid(kakaoRes.getTid());
+            
+            OrderDetail detail = new OrderDetail();
+            detail.setOrderDetailsId(UUID.randomUUID().toString());
+            detail.setOrderId(orderId);
+            detail.setAccommRoomId(roomId);
+            detail.setOrderDetailsCheckinDate(Date.valueOf(checkIn));
+            detail.setOrderDetailsCheckoutDate(Date.valueOf(checkOut));
+            detail.setOrderDetailsRoomEachPrice(finalPrice);
+            detail.setOrderDetailsPeopleCount(2); // 인원 수 추후 반영
+            detail.setOrderDetailsPaymentMethod("KAKAOPAY");
+            detail.setOrderDetailsCount(1);
+
+            boolean orderCheck = orderService.insertOrder(order, detail, checkIn, checkOut);
+            if(!orderCheck) {
+            	res.put("status", -3);
+                res.put("message", "예약할 수 없는 객실입니다.");
+                return res;
+            }
 
             // 세션 저장
-            session.setAttribute("order_roomId", roomId);
-            session.setAttribute("order_checkIn", checkIn);
-            session.setAttribute("order_checkOut", checkOut);
-            session.setAttribute("order_userCouponId", userCouponId);
-            session.setAttribute("order_totalPrice", finalPrice);
+            session.setAttribute("order", order);
+            session.setAttribute("orderDetail", detail);
             session.setAttribute(KAKAOPAY_TID_SESSION_NAME, kakaoRes.getTid());
             session.setAttribute(KAKAOPAY_ORDERID_SESSION_NAME, orderId);
 
@@ -139,12 +162,8 @@ public class KakaoPayController {
         String tid = (String) session.getAttribute(KAKAOPAY_TID_SESSION_NAME);
         String orderId = (String) session.getAttribute(KAKAOPAY_ORDERID_SESSION_NAME);
 
-        String roomId = (String) session.getAttribute("order_roomId");
-        String checkIn = (String) session.getAttribute("order_checkIn");
-        String checkOut = (String) session.getAttribute("order_checkOut");
-        String userCouponId = (String) session.getAttribute("order_userCouponId");
-        int finalPrice = (int) session.getAttribute("order_totalPrice");
-
+        
+        
         if (StringUtil.isEmpty(pg_token) || StringUtil.isEmpty(tid)) {
             model.addAttribute("code", -1);
             model.addAttribute("msg", "결제 승인 정보 누락");
@@ -164,40 +183,12 @@ public class KakaoPayController {
             return "/order/fail";
         }
 
-        // 주문 및 상세 저장
-        Order order = new Order();
-        order.setOrderId(orderId);
-        order.setUserId(userId);
-        order.setOrderDate(Date.valueOf(LocalDate.now()));
-        order.setOrderTotalAmount(finalPrice);
-        order.setOrderStatus(ORDER_STATUS_COMPLETE);
-        order.setOrderCouponId(userCouponId);
-        order.setOrderTid(tid);
-        
-        OrderDetail detail = new OrderDetail();
-        detail.setOrderDetailsId(UUID.randomUUID().toString());
-        detail.setOrderId(orderId);
-        detail.setAccommRoomId(roomId);
-        detail.setOrderDetailsCheckinDate(Date.valueOf(checkIn));
-        detail.setOrderDetailsCheckoutDate(Date.valueOf(checkOut));
-        detail.setOrderDetailsRoomEachPrice(finalPrice);
-        detail.setOrderDetailsPeopleCount(2); // 인원 수 추후 반영
-        detail.setOrderDetailsPaymentMethod("KAKAOPAY");
-        detail.setOrderDetailsCount(1);
 
-        orderService.insertOrder(order, detail, checkIn, checkOut);
-
-        session.setAttribute("complete_order", order);
-        session.setAttribute("complete_detail", detail);
-
+        Order order = (Order) session.getAttribute("order");
+        OrderDetail detail = (OrderDetail) session.getAttribute("orderDetail");
         // 세션 정리
         session.removeAttribute(KAKAOPAY_TID_SESSION_NAME);
         session.removeAttribute(KAKAOPAY_ORDERID_SESSION_NAME);
-        session.removeAttribute("order_roomId");
-        session.removeAttribute("order_checkIn");
-        session.removeAttribute("order_checkOut");
-        session.removeAttribute("order_userCouponId");
-        session.removeAttribute("order_totalPrice");
 
         model.addAttribute("order", order);
         model.addAttribute("detail", detail);
@@ -206,59 +197,124 @@ public class KakaoPayController {
         model.addAttribute("msg", "결제가 완료되었습니다.");
         model.addAttribute("orderId", orderId);
         
-        
+        orderService.orderSuccess(orderId);
         
         return "/order/kakaoSuccessPopup";
     }
 
     @GetMapping("/fail")
-    public String kakaoPayFail(Model model) {
+    public String kakaoPayFail(HttpServletRequest request, Model model) {
+    	HttpSession session = request.getSession(false);
         model.addAttribute("code", -1);
         model.addAttribute("msg", "결제에 실패했습니다.");
+        String orderId = (String) session.getAttribute(KAKAOPAY_ORDERID_SESSION_NAME);
+        orderService.orderFail(orderId);
         return "/order/fail";
     }
 
     @GetMapping("/cancel")
-    public String kakaoPayCancel(Model model) {
+    public String kakaoPayCancel(HttpServletRequest request, Model model) {
+    	HttpSession session = request.getSession(false);
         model.addAttribute("code", -2);
         model.addAttribute("msg", "결제가 취소되었습니다.");
+        String orderId = (String) session.getAttribute(KAKAOPAY_ORDERID_SESSION_NAME);
+        orderService.orderFail(orderId);
         return "/order/fail";
     }
     
     @GetMapping("/complete")
     public String paymentCompletePage(HttpSession session, Model model) {
-        Order order = (Order) session.getAttribute("complete_order");
-        OrderDetail detail = (OrderDetail) session.getAttribute("complete_detail");
-        Coupon coupon = couponService.selectCoupon(order.getOrderCouponId());
+        Order order = (Order) session.getAttribute("order");
+        OrderDetail detail = (OrderDetail) session.getAttribute("orderDetail");
+
         if (order == null || detail == null) {
             return "redirect:/"; // 또는 오류 처리
         }
-        int discountAmount = calculateDiscount(order.getOrderTotalAmount(), coupon);
-        int originAmount = order.getOrderTotalAmount() + discountAmount;
-        
+
+        Coupon coupon = null;
+        int discountAmount = 0;
+        int originAmount = order.getOrderTotalAmount();
+
+        String couponId = order.getOrderCouponId();
+        if (couponId != null && !couponId.isEmpty()) {
+            coupon = couponService.selectCoupon(couponId);
+            if (coupon != null) {
+                discountAmount = couponService.calculateDiscount(order.getOrderTotalAmount(), coupon);
+                originAmount += discountAmount;
+            }
+        }
+
         model.addAttribute("coupon", coupon);
         model.addAttribute("originAmount", originAmount);
         model.addAttribute("discountAmount", discountAmount);
         model.addAttribute("order", order);
         model.addAttribute("detail", detail);
-        
+
         // 사용 후 세션 제거
-        session.removeAttribute("complete_order");
-        session.removeAttribute("complete_detail");
+        session.removeAttribute("order");
+        session.removeAttribute("detail");
 
-        return "/order/complete";  // 결제 완료 정보 보여줄 JSP
+        return "/order/complete";
     }
+
     
-    // 할인금액 역추적용 메서드
-    public int calculateDiscount(int originalAmount, Coupon coupon) {
-        if (coupon == null) return 0;
+    
+    @PostMapping("/cancel/refund")
+    @ResponseBody
+    public Map<String, Object> kakaoPayRefund(@RequestBody Map<String, String> param, HttpSession session) {
+        Map<String, Object> res = new HashMap<>();
 
-        if ("AMOUNT".equalsIgnoreCase(coupon.getCouponType())) {
-            return coupon.getCouponAmount();
-        } else if ("PERCENT".equalsIgnoreCase(coupon.getCouponType())) {
-            int discount = (int) Math.floor(originalAmount * (coupon.getCouponAmount() / 100.0));
-            return Math.min(discount, coupon.getCouponMaxAmount()); // 최대할인 적용
+        try {
+            String userId = (String) session.getAttribute("userId");
+            String orderId = param.get("orderId");
+
+            if (StringUtil.isEmpty(userId) || StringUtil.isEmpty(orderId)) {
+                res.put("status", -9);
+                res.put("message", "세션 또는 파라미터가 유효하지 않습니다.");
+                return res;
+            }
+
+            // 주문 정보 조회
+            Order order = orderService.selectOrderById(orderId);
+            if (order == null || !userId.equals(order.getUserId())) {
+                res.put("status", -1);
+                res.put("message", "해당 주문이 존재하지 않거나 접근 권한이 없습니다.");
+                return res;
+            }
+
+            // 환불 요청 
+            String tid = order.getOrderTid();
+            Refund refund = new Refund();
+            refund.setOrderId(orderId);
+            refund.setUserId(userId);
+            refundService.inserRefund(refund);
+            // refund의 현재 상태 : requested인 상태로 생성, 환불 금액은 전체로 설정, ID는 시퀀스로 추가
+            int refundAmount = order.getOrderTotalAmount();
+            boolean success = kakaoPayService.cancel(tid, refundAmount);
+
+            if (success) {
+            	orderService.refundSuccess(refund);
+
+                res.put("status", 0);
+                res.put("message", "환불이 정상 처리되었습니다.");
+            } else {
+            	orderService.refundFail(refund);
+                res.put("status", -2);
+                res.put("message", "카카오페이 환불 처리에 실패했습니다.");
+            }
+
+        } catch (Exception e) {
+        	
+            logger.error("[KakaoPayController] kakaoPayRefund error", e);
+            res.put("status", -99);
+            res.put("message", "환불 처리 중 오류 발생");
         }
-        return 0;
+
+        return res;
     }
+
+    
+    
+    
+ 
 }
