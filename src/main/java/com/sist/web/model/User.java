@@ -17,6 +17,8 @@ public class User implements Serializable
 	private String userOut;	        //탈퇴 여부 (Y/N)
 	private String userRegdate;	    //가입일자
 	private String userProfile;	    //프로필 사진 경로
+	private String regType;			//회원가입타입 (K:카카오, G:구글, H:일반회원)
+	private String uniqueId;		//고유 아이디(카카오, 구글)
 	
 	public User()
 	{
@@ -31,6 +33,8 @@ public class User implements Serializable
 		userOut="";	        
 		userRegdate="";	    
 		userProfile="";	
+		regType="";
+		uniqueId="";
 	}
 
 	public String getUserId() {
@@ -120,6 +124,20 @@ public class User implements Serializable
 	public void setUserProfile(String userProfile) {
 		this.userProfile = userProfile;
 	}
-	
-	
+
+	public String getRegType() {
+		return regType;
+	}
+
+	public void setRegType(String regType) {
+		this.regType = regType;
+	}
+
+	public String getUniqueId() {
+		return uniqueId;
+	}
+
+	public void setUniqueId(String uniqueId) {
+		this.uniqueId = uniqueId;
+	}
 }

@@ -2,7 +2,7 @@
 <html>
 <head><title>카카오 사용자 정보</title></head>
 <body>
-    <h2>카카오 로그인 성공!</h2>
+    <h2>구글 로그인 성공!</h2>
     <p>닉네임: ${userName}</p>
     
     <!--<c:if test="${not empty sessionScope.kakao_access_token}">
