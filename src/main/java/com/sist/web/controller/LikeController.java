@@ -77,12 +77,30 @@ public class LikeController {
     @ResponseBody
     public List<String> getLikedTourSpotIds(HttpSession session) {
         String userId = (String) session.getAttribute("userId");
+
+        System.out.println("유저아이디 세션확인" + userId);
+        
+
         if (userId == null) return Collections.emptyList();
+
+
+        List<Like> likes = likeService.getUserLikes(userId);
+        System.out.println("조회된 Like 객체 수: " + (likes != null ? likes.size() : "null"));
+        for (Like like : likes) {
+            System.out.println("like: " + like);
+            System.out.println("  spotId: " + like.getSpotId());
+        }
+
 
         return likeService.getUserLikes(userId).stream()
                 .filter(Objects::nonNull)
+
                 .map(Like::getSpotId)
+
+                .filter(Objects::nonNull) // ✅ spotId가 null인지 체크 // 관광지 찜만 필터
+
                 .filter(Objects::nonNull)
+
                 .collect(Collectors.toList());
     }
 

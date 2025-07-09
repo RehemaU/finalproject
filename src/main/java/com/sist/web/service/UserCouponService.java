@@ -53,4 +53,17 @@ public class UserCouponService {
     public boolean useCoupon(String userCouponId) {
         return userCouponDao.updateUserCouponUse(userCouponId) > 0;
     }
+    
+    // (쿠폰 금액, (본)쿠폰과 매칭해서 가져오기)
+    public int calculateDiscount(int originalAmount, Coupon coupon) {
+        if (coupon == null) return 0;
+
+        if ("AMOUNT".equalsIgnoreCase(coupon.getCouponType())) {
+            return coupon.getCouponAmount();
+        } else if ("PERCENT".equalsIgnoreCase(coupon.getCouponType())) {
+            int discount = (int) Math.floor(originalAmount * (coupon.getCouponAmount() / 100.0));
+            return Math.min(discount, coupon.getCouponMaxAmount()); // 최대할인 적용
+        }
+        return 0;
+    }
 }

@@ -530,9 +530,9 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 	    if (body == null || body.get("access_token") == null) {
 	        throw new RuntimeException("Access Token 요청 실패 (응답 없음 또는 access_token 누락)");
 	    }
-
+	    
 	    String accessToken = (String) body.get("access_token");
-
+	    
 	    // 세션에 저장 (추후 사용자 정보 조회에도 사용)
 	    session.setAttribute("kakao_access_token", accessToken);
 
@@ -564,8 +564,8 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 		ResponseEntity<Map> response = restTemplate.exchange(userInfoUrl, HttpMethod.GET, entity, Map.class);
 		
 		Map<String, Object> body = response.getBody();
-		
-		
+
+		System.out.println("카카오 응답 전체: " + body);
 
 		//3.사용자 정보 파싱
 		if(body != null)

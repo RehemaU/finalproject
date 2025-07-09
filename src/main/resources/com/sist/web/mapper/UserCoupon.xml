@@ -101,6 +101,13 @@
         WHERE USER_COUPON_ID = #{userCouponId}
     </update>
     
+    <!-- 쿠폰 환불 처리 -->
+    <update id="updateUserCouponRefund" parameterType="string">
+        UPDATE T_USER_COUPON
+        SET USER_COUPON_USE = 'N'
+        WHERE USER_COUPON_ID = #{userCouponId}
+    </update>
+    
 	<select id="selectUserCouponById" parameterType="String" resultMap="userCouponResultMap">
     SELECT 
         uc.USER_COUPON_ID,
