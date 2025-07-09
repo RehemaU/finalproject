@@ -286,7 +286,15 @@ function fetchLikedTourIds() {
   fetch('/like/spotIds')
     .then(r => r.json())
     .then(arr => {
-      likedTourIds = (Array.isArray(arr) ? arr : []).map(item => typeof item === 'object' ? norm(item.spotId || item.SPOT_ID) : norm(item));
+      console.log('[찜 리스트 원본]', arr);  // ← 원본 응답 찍기
+		
+      likedTourIds = (Array.isArray(arr) ? arr : [])
+        .map(item => typeof item === 'object'
+              ? norm(item.spotId || item.SPOT_ID)
+              : norm(item));
+
+      console.log('[찜 리스트 정규화된 ID]', likedTourIds); // ← 실제 비교에 쓰이는 배열 확인
+
       updateHeartButtons();
     })
     .catch(e => console.error('찜목록 오류', e));
@@ -297,10 +305,15 @@ function updateHeartButtons() {
     const sid = norm(btn.dataset.spotId);
     const icon = btn.querySelector('.heart-icon');
     if (!icon) return;
+    
+    console.log('updateHeartButtons() 실행됨');
+    console.log('찜 ID 목록:', likedTourIds);
+    
     if (set.has(sid)) { btn.classList.add('liked'); icon.textContent = '♥'; }
     else { btn.classList.remove('liked'); icon.textContent = '♡'; }
   });
 }
+
 function toggleLike(spotId, btn) {
   if (btn.disabled) return;
   btn.disabled = true;

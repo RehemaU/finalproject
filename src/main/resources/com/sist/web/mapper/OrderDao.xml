@@ -94,5 +94,36 @@
         FROM T_ORDER_DETAILS
         WHERE ORDER_ID = #{orderId}
     </select>
-
+	
+	<select id = "getRefundSeq" resultType = "String">
+	SELECT 'R' || T_REFUND_SEQ.NEXTVAL FROM DUAL
+	</select>
+	
+	<update id = "updateOrderStatus" parameterType = "Map">
+		UPDATE T_ORDER
+		SET ORDER_STATUS = #{orderStatus}
+		WHERE ORDER_ID = #{orderId}
+	</update>
+	<update id = "updateOrderRefund" parameterType = "Map">
+		UPDATE T_ORDER
+		SET REFUND_ID  = #{refundId}, ORDER_STATUS = 'R'
+		WHERE ORDER_ID =  #{orderId}		
+	</update>
+	
+	<select id="selectExpiredOrderIds" resultType="string" parameterType="map">
+	    SELECT ORDER_ID
+	    FROM T_ORDER
+	    WHERE ORDER_STATUS = #{status}
+	      AND <![CDATA[ ORDER_DATE < SYSDATE - (1/24) ]]>
+	</select>
+	
+	<delete id="deleteOrderDetails">
+	    DELETE FROM T_ORDER_DETAILS
+	    WHERE ORDER_ID = #{orderId}
+	</delete>
+	
+	<delete id="deleteOrder">
+	    DELETE FROM T_ORDER
+	    WHERE ORDER_ID = #{orderId}
+	</delete>
 </mapper>

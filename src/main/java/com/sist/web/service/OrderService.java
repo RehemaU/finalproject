@@ -2,6 +2,7 @@ package com.sist.web.service;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -12,14 +13,19 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sist.web.dao.AccommodationRoomDao;
 import com.sist.web.dao.CouponDao;
 import com.sist.web.dao.OrderDao;
+import com.sist.web.dao.RefundDao;
 import com.sist.web.dao.UserCouponDao;
 import com.sist.web.model.Order;
 import com.sist.web.model.OrderDetail;
+import com.sist.web.model.Refund;
 import com.sist.web.model.UserCoupon;
 
 @Service
 public class OrderService {
-
+	
+	@Autowired
+	private RefundDao refundDao;
+	
     @Autowired
     private OrderDao orderDao;
     
@@ -41,10 +47,10 @@ public class OrderService {
         order.setOrderId(orderId);
         order.setUserId(userId);
         order.setOrderTotalAmount(totalAmount);
-        order.setOrderStatus("1"); // 예: 1 = 결제완료
+        order.setOrderStatus("W"); // 예: W = 결제대기
         order.setOrderDate(java.sql.Date.valueOf(LocalDate.now()));
         order.setOrderCouponId(couponId); // null 허용
-
+        
         orderDao.insertOrder(order);
 
         // 👉 상세 주문 정보 생성
@@ -110,5 +116,62 @@ public class OrderService {
 
         return Math.max(basePrice - discount, 0);
     }
+    
+    public Order selectOrderById(String orderId) {
+    	return orderDao.selectOrderById(orderId);
+    }
+    
+    @Transactional
+    public void refundSuccess(Refund refund) {
+    	Map<String, Object> param = new HashMap<>();
+    	param.put("refundId", refund.getRefundId());
+    	param.put("orderId", refund.getOrderId());
+    	orderDao.updateOrderRefund(param);
+    	Order order = orderDao.selectOrderById(refund.getOrderId());
+    	param.clear();
+    	param.put("refundResult", "SUCCESS");
+    	param.put("refundId", refund.getRefundId());
+    	userCouponDao.updateUserCouponRefund(order.getOrderCouponId());
+    	refundDao.updateRefundResult(param);
+    	
+    }
+    
+    @Transactional
+    public void refundFail(Refund refund) {
+    	Map<String, Object> param = new HashMap<>();
+    	param.put("refundResult", "FAILED");
+    	param.put("refundId", refund.getRefundId());
+    	refundDao.updateRefundResult(param);
+    }
+    
+    @Transactional
+    public void orderSuccess(String orderId) {
+    	Map<String, Object> param = new HashMap<>();
+    	param.put("orderId", orderId);
+    	param.put("orderStatus", "S");
+    	orderDao.updateOrderStatus(param);
+    }
+    
+    @Transactional
+    public void orderFail(String orderId) {
+    	Map<String, Object> param = new HashMap<>();
+    	param.put("orderId", orderId);
+    	param.put("orderStatus", "F");
+    	orderDao.updateOrderStatus(param);
+    }
+    
+    public void deleteExpiredOrders() {
+        Map<String, Object> param = new HashMap<>();
+        param.put("status", "S"); // 결제 안 된 상태
 
+        List<String> expiredOrderIds = orderDao.selectExpiredOrderIds(param);
+        
+        for (String orderId : expiredOrderIds) {
+            // 하위 테이블 먼저 삭제 (외래키 cascade 없어도 안전하게 처리)
+            orderDao.deleteOrderDetailsByOrderId(orderId);
+
+            // 본 주문 삭제
+            orderDao.deleteOrderById(orderId);
+        }
+    }
 }
