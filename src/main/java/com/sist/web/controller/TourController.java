@@ -49,11 +49,19 @@ public class TourController {
 
     
     @GetMapping("/tour/list")
-    public String listPage(Model model) {
+    public String listPage(@RequestParam(value = "regionId", required = false) String regionId,
+                           Model model, HttpSession session) {
+
         List<Sigungu> sigunguList = sigunguService.getAllSigungus();
-        List<Region> regionList = regionService.getAllRegions();
+        List<Region>  regionList  = regionService.getAllRegions();
+
         model.addAttribute("sigunguList", sigunguList);
-        model.addAttribute("regionList", regionList);
+        model.addAttribute("regionList",  regionList);
+
+        // 프론트에서 초기 regionId 를 사용하도록 전달
+        if (regionId != null && !regionId.isEmpty()) {
+            model.addAttribute("selectedRegionId", regionId);
+        }
         return "/tour/list";
     }
     
