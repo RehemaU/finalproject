@@ -23,4 +23,9 @@ public interface UserDao
 	
 	//회원 비밀번호변경
 	public int userPasswordChange(User user);
+	
+	//회원탈퇴
+	public int userWithdrawal(String userId);
+	//고유ID조회
+	public User selectUniqueId(String uniqueId);
 }

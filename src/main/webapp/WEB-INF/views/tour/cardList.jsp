@@ -84,7 +84,7 @@
 }
 </style>
 
-<!-- 카드 HTML -->
+<!-- 카드 HTML --><!-- 관광지 카드 리스트 -->
 <div class="card-grid">
   <c:forEach var="item" items="${results}">
     <div class="card">

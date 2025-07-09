@@ -98,6 +98,40 @@ public class UserService {
 		
 		return count;
 	}
+	
+
+	public int userWithdrawal(String userId)
+	{
+		int count = 0;
+		
+		try
+		{
+			count = userDao.userWithdrawal(userId);
+		}
+		catch(Exception e)
+		{
+			logger.error("[UserService]userWithdrawal Exception", e);
+		}
+		
+		return count;
+	}
+	
+	//고유ID조회
+	public User selectUniqueId(String uniqueId)
+	{
+		//int count = 0;
+		
+		User user = null;
+		try
+		{
+			user = userDao.selectUniqueId(uniqueId);
+		}
+		catch(Exception e)
+		{
+			logger.error("[UserService]selectUniqueId Exception", e);
+		}
+		return user;
+	}
 }
 
 

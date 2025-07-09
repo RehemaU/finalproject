@@ -18,6 +18,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class AccommodationService {
@@ -224,4 +225,18 @@ public class AccommodationService {
     public int insertAccommodationForm(Accommodation accommodation) {
         return accommodationDao.insertAccommodationForm(accommodation);
     }
+    @Autowired
+    private LikeService likeService; // 이미 주입되어 있을 수도 있음
+
+    public List<Accommodation> findBySigunguList(List<Sigungu> sigunguList, String userId) {
+        List<Accommodation> list = accommodationDao.searchBySigungu(sigunguList);
+        
+        if (userId == null || userId.trim().isEmpty()) return list;
+
+        Set<String> likedIds = likeService.getLikedSpotIdSet(userId);
+        list.forEach(ac -> ac.setLiked(likedIds.contains(ac.getAccomId())));
+        return list;
+    }
+
+    
    }

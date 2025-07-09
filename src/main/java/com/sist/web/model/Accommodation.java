@@ -50,6 +50,16 @@ public class Accommodation {
 
     private int accomAvg;
 
+    private boolean liked;
+
+    public boolean isLiked() {
+        return liked;
+    }
+
+    public void setLiked(boolean liked) {
+        this.liked = liked;
+    }
+    
 	public String getAccomId() {
 		return accomId;
 	}

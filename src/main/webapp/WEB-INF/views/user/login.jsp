@@ -123,6 +123,10 @@
     	    			+ "&scope=profile_nickname"
     	    			+ "&prompt=login";
       }); 
+      
+      $("#btngoogle").on("click", function(){
+    	  location.href = "https://accounts.google.com/o/oauth2/v2/auth?client_id=292826362473-d70q9e2i8kaiksg49ij9vfhhupbv61fq.apps.googleusercontent.com&redirect_uri=http://finalproject.sist.co.kr:8088/user/googleLogin&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=select_account";
+      }); 
    });
    
    function fn_loginCheck()
@@ -162,7 +166,7 @@
                if(code == 0) location.href = "/";
                else {
                   if(code == -1) alert("비밀번호가 올바르지 않습니다.");
-                  else if(code == -99) alert("정지된 사용자 입니다.");
+                  else if(code == -99) alert("탈퇴한 사용자 입니다.");
                   else if(code == 404) alert("아이디와 일치하는 사용자 정보가 없습니다");
                   else if(code == 400) alert("파라미터 값이 올바르지 않습니다.");
                   else alert("오류가 발생하였습니다.(1)");
@@ -193,6 +197,8 @@
         <button type="button" id="btnReg" class="btn">회원가입</button>
         <!--카카오로그인 -->
         <button type="button" id="btnkakao" class="btn">카카오로그인</button>
+        <!--구글로그인 -->
+        <button type="button" id="btngoogle" class="btn">구글로그인</button>
       </form>
     </div>
   </div>

@@ -31,6 +31,8 @@ public class Editor implements Serializable {
 	
 	private String thumbnail;
 	
+	private String planStatus;
+	
 	public Editor()
 	{
 	    planId = "";
@@ -57,6 +59,8 @@ public class Editor implements Serializable {
 	    userImgEx = "";
 	    
 	    thumbnail = "";
+	    
+	    planStatus = "";
 	}
 
 	public String gettCalanderListId() {
