@@ -131,6 +131,6 @@ public class AccommodationRoomService {
         param.put("accommId", accommId);
         param.put("checkIn", checkIn);
         param.put("checkOut", checkOut);
-        return accommodationRoomDao.getAvailableRoomsByDate(param);
+        return accommodationRoomDao.getAvailableRoomsByDate(param); 
     }
 }
