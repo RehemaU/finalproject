@@ -14,11 +14,7 @@
     <result property="tourImage" column="TOUR_IMAGE"/>
     <result property="tourAdd" column="TOUR_ADD"/>
 </resultMap>
-<resultMap id="likeBasicResultMap" type="com.sist.web.model.Like">
-  <id property="likeId" column="LIKE_ID"/>
-  <result property="userId" column="USER_ID"/>
-  <result property="spotId" column="SPOT_ID"/>
-</resultMap>
+
 <resultMap id="likeAccommResultMap" type="com.sist.web.model.Like">
   <id property="likeId" column="LIKE_ID"/>
   <result property="userId" column="USER_ID"/>
