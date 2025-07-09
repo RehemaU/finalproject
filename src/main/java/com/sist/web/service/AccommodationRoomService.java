@@ -133,5 +133,6 @@ public class AccommodationRoomService {
         param.put("checkOut", checkOut);
         System.out.println(">>> param map: " + param);
         return accommodationRoomDao.getAvailableRoomsByDate(param);
+
     }
 }
