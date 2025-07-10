@@ -63,15 +63,15 @@ public class Editor implements Serializable {
 	    planStatus = "";
 	}
 
+	//getter-setter
 	public String gettCalanderListId() {
 		return tCalanderListId;
 	}
-
+	
 	public void settCalanderListId(String tCalanderListId) {
 		this.tCalanderListId = tCalanderListId;
 	}
 
-	//getter-setter
 	public String getPlanId() {
 		return planId;
 	}
@@ -224,4 +224,12 @@ public class Editor implements Serializable {
 		this.thumbnail = thumbnail;
 	}
 	
+	public String getPlanStatus() {
+		return planStatus;
+	}
+	
+	public void setPlanStatus(String planStatus) {
+		this.planStatus = planStatus;
+	}
+
 }

@@ -238,6 +238,42 @@ public class EditorService {
 		 
 		 return list;
 	}
+	
+	//탈퇴시게시글비공개
+	public int editorStatus(String userId)
+	{
+		int count = 0;
+		
+		 try
+		 {
+			 count = editorDao.editorStatus(userId);
+		 }
+		 catch(Exception e)
+		 {
+			 logger.error("[EditorService]editorStatus Exception", e);
+		 }
+		 
+		 return count;
+	}
+	
+	//게시글 신고수 증가
+	public int editorReport(int planId)
+	{
+		int count = 0;
+		
+		 try
+		 {
+			 count = editorDao.editorReport(planId);
+		 }
+		 catch(Exception e)
+		 {
+			 logger.error("[EditorService]editorReport Exception", e);
+		 }
+		 
+		 return count;
+	}
+	
+	//게시글 베스트 리뷰
 	public List<Editor> getBestReviews() {
 	    List<Editor> list = null;
 	    try {

@@ -11,7 +11,8 @@
 	       <result column="PLAN_COUNT" property="planCount" />
 	       <result column="PLAN_REPORT" property="planReport" />
 	       <result column="PLAN_RECOMMEND" property="planRecommend" />
-	       <result column="T_CALANDER_LIST_ID" property="tCalanderListId"/>
+	       <result column="T_CALANDER_LIST_ID" property="tCalanderListId" />
+	       <result column="PLAN_STATUS" property="planStatus" />
 	  </resultMap>
 	  
 	  <!-- 게시글 등록 -->
@@ -34,7 +35,8 @@
 		0,
 		0,
 		0,
-		#{tCalanderListId})
+		#{tCalanderListId},
+		Y)
 
 	  </insert>
 	  
@@ -45,7 +47,7 @@
 		    FROM T_PLAN A
 		    JOIN T_USER B
 		      ON A.USER_ID = B.USER_ID
-		      
+		   WHERE PLAN_STATUS = 'Y'
 		  <where>
 		  	<if test='searchType != null and searchType != "" and searchValue != null and searchValue !=""'>
 		  	<choose>
@@ -81,6 +83,7 @@
 		  FROM T_PLAN A
 		  JOIN T_USER B
 		    ON A.USER_ID = B.USER_ID
+		 WHERE A.PLAN_STATUS = 'Y'
 		
 		  <!-- searchType 1: 이름으로 검색 -->
 		  <!-- searchType 2: 제목으로 검색 -->
@@ -141,6 +144,7 @@
 			    ON A.USER_ID = B.USER_ID
 			WHERE
 			A.PLAN_ID = #{value}
+			AND A.PLAN_STATUS = 'Y'
 		</select>
 	  
 		<!-- 게시물 수정 -->
@@ -219,23 +223,41 @@
 			    USER_ID = #{value}
 			ORDER BY PLAN_REGDATE DESC
 	  </select>
-<select id="getBestReviews" resultMap="editorResultMap">
-  SELECT
-    PLAN_ID,
-    USER_ID,
-    PLAN_TITLE,
-    PLAN_CONTENT,
-    PLAN_REGDATE,
-    PLAN_COUNT,
-    PLAN_REPORT,
-    PLAN_RECOMMEND,
-    T_CALANDER_LIST_ID
-  FROM (
-    SELECT *
-    FROM T_PLAN
-    ORDER BY PLAN_RECOMMEND DESC, PLAN_COUNT DESC
-  )
-    WHERE ROWNUM BETWEEN 1 AND 3
-</select>
+	  
+	  	<!-- 게시글 베스트 리뷰 -->
+		<select id="getBestReviews" resultMap="editorResultMap">
+		  SELECT
+		    PLAN_ID,
+		    USER_ID,
+		    PLAN_TITLE,
+		    PLAN_CONTENT,
+		    PLAN_REGDATE,
+		    PLAN_COUNT,
+		    PLAN_REPORT,
+		    PLAN_RECOMMEND,
+		    T_CALANDER_LIST_ID
+		  FROM (
+		    SELECT *
+		    FROM T_PLAN
+		    ORDER BY PLAN_RECOMMEND DESC, PLAN_COUNT DESC
+		  )
+		    WHERE ROWNUM BETWEEN 1 AND 3
+		</select>
+	  
+	  <!-- 게시글 상태값 추가 -->
+	  <update id="editorStatus" parameterType="String">
+		UPDATE T_PLAN
+		SET
+		    PLAN_STATUS = 'N'
+		WHERE
+		        USER_ID = #{value}
+	  </update>
+	  
+	  <!-- 게시글 신고수 증가 -->
+	  <update id="editorReport" parameterType="int">
+		UPDATE T_PLAN
+		SET PLAN_REPORT = PLAN_REPORT + 1
+		WHERE PLAN_ID = #{value}
+	  </update>
 	  
 </mapper>
