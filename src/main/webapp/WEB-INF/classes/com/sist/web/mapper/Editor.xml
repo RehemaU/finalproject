@@ -224,4 +224,20 @@
 			ORDER BY PLAN_REGDATE DESC
 	  </select>
 	  
+	  <!-- 게시글 상태값 추가 -->
+	  <update id="editorStatus" parameterType="String">
+		UPDATE T_PLAN
+		SET
+		    PLAN_STATUS = 'N'
+		WHERE
+		        USER_ID = #{value}
+	  </update>
+	  
+	  <!-- 게시글 신고수 증가 -->
+	  <update id="editorReport" parameterType="int">
+		UPDATE T_PLAN
+		SET PLAN_REPORT = PLAN_REPORT + 1
+		WHERE PLAN_ID = #{value}
+	  </update>
+	  
 </mapper>

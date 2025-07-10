@@ -137,7 +137,7 @@
 
   <div class="container py-5">
 
-    <div class="card shadow-sm">
+    <div class="card shadow-sm" style="width:100%; max-width:1200px; margin:0 auto;">
       <div class="card-body">
 
         <!-- ▣ 제목 + 수정·삭제 버튼 (우측 정렬) -->
@@ -365,7 +365,29 @@ document.getElementById('deleteBtn').addEventListener('click', async () => {
 		    <span id="likeCount">${editor.planRecommend}</span>
 		  </button>
 		</p>
-        
+		
+<!-- 신고 버튼 (planId는 서버에서 전달된 값이라고 가정) -->
+<div class="d-flex justify-content-end mb-2">
+  <button class="btn btn-outline-secondary btn-sm px-3 rounded-pill"
+          onclick="openReportPopup(${editor.planId})">
+    <i class="fas fa-flag"></i> 신고
+  </button>
+</div>
+
+<script>
+const loginUserId = "<%= session.getAttribute("userId") != null ? session.getAttribute("userId") : "" %>";
+
+function openReportPopup(planId) {
+  if (!loginUserId || loginUserId === "") {
+    alert("로그인이 필요합니다.");
+    return;
+  }
+
+  const url = '/editor/reportPopup?planId=' + planId;
+  window.open(url, 'reportPopup', 'width=500,height=400,scrollbars=yes');
+}
+</script>
+
         <hr class="my-4"/>
         
         <p class="text-muted mb-4">
