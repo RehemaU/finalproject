@@ -135,18 +135,16 @@ public class AccommController
 
 
 	    try {
-	        session.setAttribute("SELLER_ID", "test3");  // 🔥 테스트용: 등록되는지 확인
-
 	        // 1. 로그인한 사용자 ID 세팅 (판매자 ID)
-	        String sellerId = (String) session.getAttribute("SELLER_ID");
-	        if (sellerId == null) {
+	    	String sellerId = (String) session.getAttribute("sellerId");	        
+	    	if (sellerId == null) {
 	            model.addAttribute("msg", "로그인이 필요합니다.");
 	            return "/user/login"; // 로그인 페이지로
 	        }
 	        accom.setSellerId(sellerId);
 
 	        // 2. 상태 기본값
-	        accom.setAccomStatus("Y");
+	        accom.setAccomStatus("N");
 
 	     // 3. 이미지 저장 처리
 	        if (firstImageFile != null && !firstImageFile.isEmpty()) {
