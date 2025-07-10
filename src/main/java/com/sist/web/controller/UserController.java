@@ -23,6 +23,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -290,7 +292,7 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 	@RequestMapping(value="/user/userUpdateForm", method=RequestMethod.GET)
 	public String userUpdateForm(ModelMap model, HttpServletRequest request, HttpServletResponse response)
 	{
-		//쿠키를 가져옴
+
 		String userId = (String) request.getSession().getAttribute("userId");
 
 		String cookieUserId = CookieUtil.getHexValue(request, AUTH_USER_NAME);
@@ -597,26 +599,16 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 			{
 				
 				Map<String, String> userMap = new HashMap<>();
-				userMap.put("userName", userName);
-				session.setAttribute("user", userMap);		
+				session.setAttribute("userId", user.getUserId());
 				model.addAttribute("userName", userName);
-				return "/user/kakaoUserInfo";
+				return "redirect:/";
 			}
 
 		}
 		
-		return "/user/kakaoUserInfo";
+		return "redirect:/";
 	}
 	
-	@RequestMapping(value = "/user/kakaoLogout", method = RequestMethod.GET)
-	public String kakaoLogout(HttpSession session) 
-	{
-	    // 세션에 저장된 로그인 정보 삭제
-	    session.invalidate(); 
-
-	    // 로그아웃 후 이동할 페이지로 리디렉트 (예: 로그인 페이지 또는 메인페이지)
-	    return "redirect:/user/login";
-	}
 	
 	//회원탈퇴
 	@PostMapping("/user/userWithdrawal")
@@ -740,6 +732,7 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 		 return "redirect:/user/googleUserInfo";
 	}
 	
+
 	@RequestMapping(value = "/user/googleUserInfo", method = RequestMethod.GET)
 	public String googleUserInfo(HttpServletRequest request, HttpSession session, Model model, RedirectAttributes redirectAttributes)
 	{
@@ -794,28 +787,17 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 		        userMap.put("email", email);
 
 		        // 세션에 저장
-		        session.setAttribute("user", userMap);
+		        session.setAttribute("userId", user.getUserId());
 
 		        // 모델에 전달
 		        model.addAttribute("userName", userName);
 		        model.addAttribute("email", email);
 		        
-		        return "/user/googleUserInfo";
+		        return "redirect:/";
 			}
 	        
 	    }
 	    
-		return "/user/googleUserInfo"; // JSP 경로
-	}
-	
-	
-	@RequestMapping(value = "/user/googleLogout", method = RequestMethod.GET)
-	public String googleLogout(HttpSession session) 
-	{
-	    // 세션에 저장된 로그인 정보 삭제
-	    session.invalidate(); 
-
-	    // 로그아웃 후 이동할 페이지로 리디렉트 (예: 로그인 페이지 또는 메인페이지)
-	    return "redirect:/user/login";
+		return "redirect:/";
 	}
 }
