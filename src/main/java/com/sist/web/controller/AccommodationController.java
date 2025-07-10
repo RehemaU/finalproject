@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 @Controller("AcommodationController")
 public class AccommodationController {
@@ -81,19 +82,38 @@ public class AccommodationController {
         return accommodationService.getAllAccommodations(); // DB에서 전체 숙소 조회
     }
 
-    
     @GetMapping("/accomm/list")
-    public String listPage(Model model) {
+    public String listPage(@RequestParam(value = "regionId", required = false) String regionId,  // ✅ 수정
+                           Model model, HttpSession session) {
+
         List<Sigungu> sigunguList = sigunguService.getAllSigungus();
         List<Region> regionList = regionService.getAllRegions();
         model.addAttribute("sigunguList", sigunguList);
         model.addAttribute("regionList", regionList);
+        model.addAttribute("regionId", regionId);  // ✅ model에도 regionId로
+
+        // 숙소 필터링
+        if (regionId != null && !regionId.isEmpty()) {
+            List<Sigungu> selectedSigunguList = sigunguList.stream()
+                    .filter(s -> s.getRegionId().equals(regionId))  // ✅ 변수명 반영
+                    .collect(Collectors.toList());
+
+            String userId = (String) session.getAttribute("userId");
+            List<Accommodation> results = accommodationService.findBySigunguList(selectedSigunguList, userId);
+            model.addAttribute("results", results);
+            model.addAttribute("filtering", true);
+            System.out.println("초기 로딩 regionId: " + regionId + " → 숙소 개수: " + results.size());  // ✅ 로그도 수정
+        }
+
         return "/accomm/list";
     }
-    
+
     @PostMapping("/accomm/filterList")
-    public String filterList(@RequestBody List<Sigungu> sigunguList, Model model) {
-    	 List<Accommodation> results = accommodationService.findBySigunguList(sigunguList);
+    public String filterList(@RequestBody List<Sigungu> sigunguList,
+            HttpSession session, Model model) {
+        String userId = (String) session.getAttribute("userId");  // ✅ 이 줄만 추가
+ 
+    	List<Accommodation> results = accommodationService.findBySigunguList(sigunguList);
     	    model.addAttribute("results", results);
     	    System.out.println("받은 조건 개수: " + sigunguList.size());
     	    for (Sigungu s : sigunguList) {
@@ -119,13 +139,16 @@ public class AccommodationController {
     @PostMapping("/accommDetail/calculatePrice")
     @ResponseBody
     public RoomPriceResult calculateRoomPrice(@RequestBody RoomPriceRequest req) {
+        System.out.println(">> checkIn: " + req.getCheckIn());  // 👈 확인
+        System.out.println(">> checkOut: " + req.getCheckOut());
         return accommodationRoomPriceService.calculateTotalPrice(req.getRoomId(), req.getCheckIn(), req.getCheckOut());
     }
     
     @PostMapping("/accommDetail/availableRooms")
     @ResponseBody
     public List<AccommodationRoom> getAvailableRooms(@RequestBody RoomAvailabilityRequest req) {
-        return accommodationRoomService.getAvailableRoomsByDate(
+    	
+    	return accommodationRoomService.getAvailableRoomsByDate(
             req.getAccommId(),
             req.getCheckIn(),
             req.getCheckOut()

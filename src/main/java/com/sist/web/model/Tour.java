@@ -34,7 +34,10 @@ public class Tour {
     
     @JsonProperty("firstimage")
     private String tourImage;
-    
+    private boolean liked;          // 💗 추가
+
+    public boolean isLiked() { return liked; }
+    public void setLiked(boolean liked) { this.liked = liked; }
     public String getTourImage() {
 		return tourImage;
 	}

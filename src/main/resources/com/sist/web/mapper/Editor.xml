@@ -224,6 +224,26 @@
 			ORDER BY PLAN_REGDATE DESC
 	  </select>
 	  
+	  	<!-- 게시글 베스트 리뷰 -->
+		<select id="getBestReviews" resultMap="editorResultMap">
+		  SELECT
+		    PLAN_ID,
+		    USER_ID,
+		    PLAN_TITLE,
+		    PLAN_CONTENT,
+		    PLAN_REGDATE,
+		    PLAN_COUNT,
+		    PLAN_REPORT,
+		    PLAN_RECOMMEND,
+		    T_CALANDER_LIST_ID
+		  FROM (
+		    SELECT *
+		    FROM T_PLAN
+		    ORDER BY PLAN_RECOMMEND DESC, PLAN_COUNT DESC
+		  )
+		    WHERE ROWNUM BETWEEN 1 AND 3
+		</select>
+	  
 	  <!-- 게시글 상태값 추가 -->
 	  <update id="editorStatus" parameterType="String">
 		UPDATE T_PLAN

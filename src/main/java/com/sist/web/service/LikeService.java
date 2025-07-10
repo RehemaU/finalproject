@@ -1,7 +1,11 @@
 package com.sist.web.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,7 +60,9 @@ public class LikeService {
                 return true;
             }
         }
-
+        public void deleteLike(String userId, String spotId) {
+            likeDao.deleteLike(userId, spotId);
+        }
         
         public boolean isAccommLiked(String userId, String spotId) {
             return likeDao.isAccommLiked(userId, spotId);
@@ -69,5 +75,14 @@ public class LikeService {
         public List<Like> getAccommLikesByUser(String userId) {
             return likeDao.findAccommLikeListByUser(userId);
         }
+        public Set<String> getLikedSpotIdSet(String userId) {
+            List<Like> likes = likeDao.findByUserId(userId);
+            if (likes == null) return Collections.emptySet();
 
+            return likes.stream()
+                        .filter(Objects::nonNull)
+                        .map(Like::getSpotId)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toSet());
+        }
     }

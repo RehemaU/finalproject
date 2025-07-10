@@ -242,4 +242,53 @@ public class KakaoPayService {
 		
 		return kakaoPayApproveResponse;
 	}
+	
+	// 카카오페이 결제 취소 (환불 요청)
+	public boolean cancel(String tid, int cancelAmount) {
+	    StringBuilder log = new StringBuilder();
+
+	    log.append("\n==================================================");
+	    log.append("\n==[KakaoPayService] cancel");
+	    log.append("\n==================================================");
+
+	    boolean result = false;
+
+	    if (!StringUtil.isEmpty(tid) && cancelAmount > 0) {
+	        log.append("\n[tid] " + tid);
+	        log.append("\n[cancelAmount] " + cancelAmount);
+
+	        Map<String, Object> parameters = new HashMap<>();
+	        parameters.put("cid", KAKAOPAY_CLIENT_ID);
+	        parameters.put("tid", tid);
+	        parameters.put("cancel_amount", cancelAmount);
+	        parameters.put("cancel_tax_free_amount", 0); // 비과세 금액 없을 경우 0
+
+	        HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(parameters, kakaoPayHeaders);
+	        RestTemplate restTemplate = new RestTemplate();
+
+	        try {
+	            ResponseEntity<String> responseEntity = restTemplate.postForEntity(
+	                "https://open-api.kakaopay.com/online/v1/payment/cancel", // 최신 cancel URL
+	                requestEntity,
+	                String.class
+	            );
+
+	            log.append("\ncancel statusCode : " + responseEntity.getStatusCode());
+	            log.append("\ncancel body : \n" + responseEntity.getBody());
+
+	            result = responseEntity.getStatusCode().is2xxSuccessful();
+	        } catch (Exception e) {
+	            log.append("\ncancel exception: " + e.getMessage());
+	            logger.error("카카오페이 환불 중 예외 발생", e);
+	        }
+	    } else {
+	        log.append("\ncancel 요청값 누락됨 (tid 또는 cancelAmount)");
+	    }
+
+	    log.append("\n==================================================");
+	    logger.info(log.toString());
+
+	    return result;
+	}
+
 }

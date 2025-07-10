@@ -272,4 +272,16 @@ public class EditorService {
 		 
 		 return count;
 	}
+	
+	//게시글 베스트 리뷰
+	public List<Editor> getBestReviews() {
+	    List<Editor> list = null;
+	    try {
+	        list = editorDao.getBestReviews(); // DAO에서 새로 만들기
+	    } catch (Exception e) {
+	        logger.error("[EditorService] getBestReviews Exception", e);
+	    }
+	    return list;
+	}
+
 }

@@ -36,4 +36,7 @@ public interface EditorDao {
 	public int editorStatus(String userId);
 	//게시글신고증가
 	public int editorReport(int planId);
+	//게시글베스트리뷰
+	public List<Editor> getBestReviews();
+
 }

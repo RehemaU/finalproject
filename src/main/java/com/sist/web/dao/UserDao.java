@@ -26,4 +26,7 @@ public interface UserDao
 	
 	//회원탈퇴
 	public int userWithdrawal(String userId);
+	//고유ID조회
+	public User selectUniqueId(String uniqueId);
+
 }
