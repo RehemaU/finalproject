@@ -28,6 +28,7 @@ public interface UserCouponDao {
     // 쿠폰 사용 처리
     public int updateUserCouponUse(String userCouponId);
     
+    public int updateUserCouponRefund(String userCouponId);
     // 기본 쿠폰 쿼리 조인해서 조회
     public List<UserCoupon> selectUserCouponsByUserId(String userId);
     

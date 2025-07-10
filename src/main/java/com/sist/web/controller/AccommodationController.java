@@ -123,13 +123,16 @@ public class AccommodationController {
     @PostMapping("/accommDetail/calculatePrice")
     @ResponseBody
     public RoomPriceResult calculateRoomPrice(@RequestBody RoomPriceRequest req) {
+        System.out.println(">> checkIn: " + req.getCheckIn());  // 👈 확인
+        System.out.println(">> checkOut: " + req.getCheckOut());
         return accommodationRoomPriceService.calculateTotalPrice(req.getRoomId(), req.getCheckIn(), req.getCheckOut());
     }
     
     @PostMapping("/accommDetail/availableRooms")
     @ResponseBody
     public List<AccommodationRoom> getAvailableRooms(@RequestBody RoomAvailabilityRequest req) {
-        return accommodationRoomService.getAvailableRoomsByDate(
+    	
+    	return accommodationRoomService.getAvailableRoomsByDate(
             req.getAccommId(),
             req.getCheckIn(),
             req.getCheckOut()
