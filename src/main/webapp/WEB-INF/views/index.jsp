@@ -93,6 +93,8 @@
     <button class="close-btn" onclick="closeModal()">×</button>
     <div id="modalImage" class="region-thumb" style="margin-bottom: 24px;"></div>
     <h3 id="modalTitle"></h3>
+    <p id="modalDesc" style="margin-top: 12px; font-size: 15px; color: #555;"></p>
+    
     <div class="btn-wrap">
       <button id="hotelBtn" class="modal-btn">숙소 보기</button>
       <button id="tourBtn" class="modal-btn">관광지 보기</button>
@@ -450,6 +452,14 @@
 </style>
 
 <script>
+const regionDescriptions = {
+		  "서울": "한국의 수도이자 정치, 경제, 문화의 중심지로 다양한 관광명소가 있습니다.",
+		  "부산": "해운대, 광안리 등 유명한 해변과 맛집이 가득한 한국 제2의 도시입니다.",
+		  "제주": "자연경관이 아름답고 힐링 여행지로 사랑받는 섬입니다.",
+		  "강원": "자연이 살아있는 청정지역으로 계절별 액티비티가 풍부합니다.",
+		  "전주": "한옥마을과 전통 한식으로 유명한 전통문화 도시입니다."
+		  // 필요시 더 추가 가능
+		};
   const modal      = document.getElementById('regionModal');
   const modalTitle = document.getElementById('modalTitle');
   const modalImage = document.getElementById('modalImage');
@@ -515,6 +525,8 @@
     }
 
     modalTitle.textContent = regionName;
+    const desc = regionDescriptions[regionName] || "이 지역에 대한 설명이 아직 등록되지 않았습니다.";
+    document.getElementById('modalDesc').innerText = desc;
     const imgUrl = "/resources/region/" + safeRegionId + ".jpg";
     console.log("🖼️ 이미지 URL 설정:", imgUrl);
     console.log("🔍 URL 구성 요소 확인:");

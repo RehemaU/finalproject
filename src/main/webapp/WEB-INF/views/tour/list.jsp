@@ -330,7 +330,6 @@ function fetchLikedTourIds() {
     .catch(e => console.error('찜목록 오류', e));
 }
 function updateHeartButtons() {
-<<<<<<< HEAD
   const set = new Set(likedTourIds);
   document.querySelectorAll('.heart-btn').forEach(btn => {
     const sid = norm(btn.dataset.spotId);
@@ -344,28 +343,6 @@ function updateHeartButtons() {
     else { btn.classList.remove('liked'); icon.textContent = '♡'; }
   });
 }
-
-=======
-	  const set = new Set(likedTourIds);
-
-	  document.querySelectorAll('.heart-btn').forEach(btn => {
-	    const sid = norm(btn.dataset.spotId);
-	    const icon = btn.querySelector('.heart-icon');
-
-	    console.log('하트 버튼:', btn, ' | spotId:', sid);
-
-	    if (!icon) return;
-
-	    if (set.has(sid)) {
-	      btn.classList.add('liked');
-	      icon.textContent = '♥';
-	    } else {
-	      btn.classList.remove('liked');
-	      icon.textContent = '♡';
-	    }
-	  });
-	}
->>>>>>> refs/heads/master
 function toggleLike(spotId, btn) {
   if (btn.disabled) return;
   btn.disabled = true;
