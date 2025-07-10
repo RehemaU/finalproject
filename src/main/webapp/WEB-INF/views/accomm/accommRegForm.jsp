@@ -86,7 +86,12 @@
       <label>대표 이미지</label>
       <input type="file" name="firstImageFile">
     </div>
-
+    
+	<div class="form-group">
+	  <label>숙소 설명</label>
+	  <textarea name="accomDes" rows="5" style="padding:12px; border:1px solid #ccc; border-radius:8px;"></textarea>
+	</div>
+	
     <button type="submit">숙소 등록</button>
   </form>
 </div>
