@@ -115,7 +115,11 @@ body {
     <h3>숙소 지역 필터</h3>
     <ul>
       <c:forEach var="r" items="${regionList}">
-        <li onclick="selectRegion('${r.regionId}', this)">${r.regionName}</li>
+        <li data-region-id="${r.regionId}"
+    onclick="selectRegion('${r.regionId}', this)">
+  ${r.regionName}
+</li>
+
       </c:forEach>
     </ul>
   </div>
@@ -140,11 +144,18 @@ let selectedRegionId = '';
 const conditions = [];
 
 function selectRegion(regionId, element) {
-  selectedRegionId = regionId;
-  document.querySelectorAll('.category-sidebar li').forEach(li => li.classList.remove('active'));
-  element.classList.add('active');
-  renderSigunguNav();
-}
+	  selectedRegionId = regionId;
+	  document.querySelectorAll('.category-sidebar li').forEach(li => li.classList.remove('active'));
+	  element.classList.add('active');
+
+	  // ✅ 조건 배열 초기화 후 region만 조건으로 추가
+	  conditions.length = 0; // 기존 조건 제거
+	  conditions.push({ regionId: selectedRegionId, sigunguId: '', label: element.textContent });
+
+	  renderConditionList();
+	  renderSigunguNav();
+	  fetchFilteredList(); // ✅ 지역만 선택한 상태로 조회
+	}
 
 function renderSigunguNav() {
     const container = document.getElementById('sigunguNav');
@@ -171,11 +182,20 @@ function renderSigunguNav() {
   }
 
 function addCondition(regionId, sigunguId, label) {
-  if (conditions.some(c => c.regionId === regionId && c.sigunguId === sigunguId)) return;
-  conditions.push({ regionId, sigunguId, label });
-  renderConditionList();
-  fetchFilteredList();
-}
+	  // ✅ 시군구 조건이면 기존 지역-only 조건 제거
+	  const idx = conditions.findIndex(c => c.regionId === regionId && c.sigunguId === '');
+	  if (idx !== -1) {
+	    conditions.splice(idx, 1);
+	  }
+
+	  // 이미 해당 조건이 존재하면 추가 안 함
+	  if (conditions.some(c => c.regionId === regionId && c.sigunguId === sigunguId)) return;
+
+	  conditions.push({ regionId, sigunguId, label });
+	  renderConditionList();
+	  fetchFilteredList();
+	}
+
 
 function renderConditionList() {
   const container = document.getElementById('conditionList');
@@ -258,8 +278,38 @@ function toggleAccommLike(spotId, btn) {
   .finally(() => { btn.disabled = false; });
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-  fetchFilteredList();
-  fetchLikedAccommIds();
-});
+window.addEventListener('DOMContentLoaded', function () {
+	  /* 1) URL ?regionId= 파라미터 추출 */
+	  var params   = new URLSearchParams(location.search);
+	  var regionId = params.get('regionId');   // 예) /accomm/list?regionId=11
+
+	  if (regionId) {
+	    console.log('[INIT] regionId from URL =', regionId);
+
+	    /* 2) 좌측 메뉴에서 같은 regionId 를 가진 li 찾기 */
+	    var li = document.querySelector(
+	      '.category-sidebar li[data-region-id="' + regionId + '"]'
+	    );
+
+	    if (li) {
+	      /* ⓐ 실제 메뉴가 있으면 selectRegion 호출 */
+	      selectRegion(regionId, li);
+	      li.scrollIntoView({ block: 'center' });
+	    } else {
+	      /* ⓑ 메뉴가 없어도 최소 조건으로 조회 */
+	      selectedRegionId = regionId;
+	      conditions.push({ regionId: regionId, sigunguId: '', label: '지역' });
+	      renderConditionList();
+	      renderSigunguNav();
+	      fetchFilteredList();
+	    }
+	  } else {
+	    /* regionId 없이 직접 접속하면 전체 조회 */
+	    fetchFilteredList();
+	  }
+
+	  /* 3) 찜(좋아요) 동기화 */
+	  fetchLikedAccommIds();
+	});
+
 </script>

@@ -191,7 +191,10 @@ a {
     <h3>지역 필터</h3>
     <ul>
       <c:forEach var="r" items="${regionList}">
-        <li onclick="selectRegion('${r.regionId}', this)">${r.regionName}</li>
+        <li data-region-id="${r.regionId}"
+    onclick="selectRegion('${r.regionId}', this)">
+  ${r.regionName}
+</li>
       </c:forEach>
     </ul>
   </div>
@@ -220,13 +223,20 @@ let selectedRegionId = '';
 const conditions = [];
 
 function selectRegion(regionId, element) {
-  selectedRegionId = regionId;
-  document.querySelectorAll('.category-sidebar li').forEach(li => li.classList.remove('active'));
-  element.classList.add('active');
+	  selectedRegionId = regionId;
 
-  renderSigunguNav();
-}
+	  // 사이드바 UI 반영
+	  document.querySelectorAll('.category-sidebar li').forEach(li => li.classList.remove('active'));
+	  element.classList.add('active');
 
+	  // ✅ 기존 조건 초기화 후 '지역만' 조건 추가
+	  conditions.length = 0;
+	  conditions.push({ regionId, sigunguId: '', label: element.textContent });
+
+	  renderConditionList();
+	  renderSigunguNav();
+	  fetchFilteredList(); // 지역만 조건으로 조회
+	}
 function renderSigunguNav() {
     const container = document.getElementById('sigunguNav');
     container.innerHTML = '';
@@ -252,11 +262,19 @@ function renderSigunguNav() {
   }
 
 function addCondition(regionId, sigunguId, label) {
-  if (conditions.some(c => c.regionId === regionId && c.sigunguId === sigunguId)) return;
-  conditions.push({ regionId, sigunguId, label });
-  renderConditionList();
-  fetchFilteredList();
-}
+	  // ✅ 지역-only 조건 제거 (같은 지역의 시군구를 누르면)
+	  const idx = conditions.findIndex(c => c.regionId === regionId && c.sigunguId === '');
+	  if (idx !== -1) {
+	    conditions.splice(idx, 1);
+	  }
+
+	  // ✅ 이미 같은 조건이 있으면 추가하지 않음
+	  if (conditions.some(c => c.regionId === regionId && c.sigunguId === sigunguId)) return;
+
+	  conditions.push({ regionId, sigunguId, label });
+	  renderConditionList();
+	  fetchFilteredList();
+	}
 
 function renderConditionList() {
   const container = document.getElementById('conditionList');
@@ -373,8 +391,38 @@ function toggleLike(spotId, btn) {
   .catch(e => { console.error(e); icon.textContent = prev; })
   .finally(() => { btn.disabled = false; });
 }
-window.addEventListener('DOMContentLoaded', () => {
-	  fetchFilteredList();   // 전체 관광지 리스트
-	  fetchLikedTourIds();   // 찜 상태 동기화
+window.addEventListener('DOMContentLoaded', function () {
+	  // 1) URL 쿼리에서 regionId 추출
+	  var params    = new URLSearchParams(location.search);
+	  var regionId  = params.get('regionId');   // 예) /tour/list?regionId=11
+
+	  if (regionId) {
+	    console.log('[INIT] regionId from URL =', regionId);
+
+	    // 2) 좌측 사이드바에서 동일 regionId li 찾기
+	    var li = document.querySelector(
+	      '.category-sidebar li[data-region-id="' + regionId + '"]'
+	    );
+
+	    if (li) {
+	      // ⓐ 정상적으로 메뉴가 있으면 해당 지역 선택
+	      selectRegion(regionId, li);
+	      li.scrollIntoView({ block: 'center' });
+	    } else {
+	      // ⓑ 메뉴에 없더라도 최소 조건으로 조회
+	      selectedRegionId = regionId;
+	      conditions.push({ regionId: regionId, sigunguId: '', label: '지역' });
+	      renderConditionList();
+	      renderSigunguNav();
+	      fetchFilteredList();
+	    }
+	  } else {
+	    // regionId 파라미터가 없으면 전체 리스트
+	    fetchFilteredList();
+	  }
+
+	  // 3) 찜 상태 동기화
+	  fetchLikedTourIds();
 	});
+
 </script>
