@@ -1,7 +1,9 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="ko">
   <%@ include file="/WEB-INF/views/include/head.jsp" %>   <%-- 공통 head --%>
+
+  <title>MYTRIP – Walkthrough · Explore · Stay · Plan · Share</title>
 
 <body>
   <%@ include file="/WEB-INF/views/include/navigation.jsp" %> <%-- 공통 Header/Nav --%>

@@ -58,6 +58,17 @@
     color: #e57373;
   }
 </style>
+
+<!-- 페이지 맨 위로 -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+	  const topButton = document.getElementById("topButton");
+	  topButton.addEventListener("click", function() {
+	    window.scrollTo({ top: 0, behavior: "smooth" });
+	  });
+	});
+</script>
+
 <!-- 스케줄스타일 -->
   <style>
   h2{font-family:'Inter',sans-serif;font-size:28px;font-weight:700;letter-spacing:-.02em}
@@ -133,6 +144,15 @@
         onclick="location.href='/editor/planlist'"
         aria-label="메뉴">
   <i class="fa-solid fa-bars fa-lg"></i>
+</button>
+
+<!-- TOP 버튼 -->
+<button type="button"
+        class="fab-circle"
+        id="topButton"
+        style="right:24px; bottom:24px; left:auto;"
+        aria-label="맨 위로">
+  <i class="fa-solid fa-arrow-up fa-lg"></i>
 </button>
 
   <div class="container py-5">
