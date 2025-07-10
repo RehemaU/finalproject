@@ -32,7 +32,11 @@ public interface EditorDao {
 	public int editorPlanId(Editor editor);
 	//내후기조회
 	public List<Editor> editorMyplan(String userId);
-	
+	//탈퇴시게시글비공개
+	public int editorStatus(String userId);
+	//게시글신고증가
+	public int editorReport(int planId);
+	//게시글베스트리뷰
 	public List<Editor> getBestReviews();
 
 }

@@ -1,85 +1,95 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="ko">
-<%@ include file="/WEB-INF/views/include/head.jsp" %> <%-- 공통 head --%>
+  <%@ include file="/WEB-INF/views/include/head.jsp" %>   <%-- 공통 head --%>
 
-<body class="page">
-<%@ include file="/WEB-INF/views/include/navigation.jsp" %> <%-- 공통 GNB --%>
-<section class="hero-slider">
-  <div class="hero-slide" style="background-image: url('/resources/images/main9.jpg');">
-    <div class="hero-content">
-      <p class="hero-subtitle">숙소 할인 · 혜택</p>
-      <h1 class="hero-title">지금 바로<br>마이트립에서 숙소 예약하세요</h1>
-      <p class="hero-desc">MYTRIP 회원 전용, 최대 <strong>20% 할인 쿠폰</strong> 지금 즉시 지급!</p>
-      <a href="/event/eventList" class="hero-btn">할인 쿠폰 받기</a>
-    </div>
-  </div>
-    <div class="hero-slide" style="background-image: url('/resources/images/main5.jpg');">
-    <div class="hero-content">
-      <p class="hero-subtitle">여행 후기</p>
-      <h1 class="hero-title">나의 일정을 공유해요</h1>
-      <p class="hero-desc">최대 15% 쿠폰 증정</p>
-      <a href="/editor/planmenu" class="hero-btn">공유된 계획 보기</a>
-    </div>
-  </div>
-  <div class="hero-slide" style="background-image: url('/resources/images/main11.jpg');">
-    <div class="hero-content">
-      <p class="hero-subtitle">여행 계획</p>
-      <h1 class="hero-title">나만의 여행 일정,<br>MYTRIP으로 간편해졌어요</h1>
-      <p class="hero-desc">여행을 한눈에, 그리고 한 번에!</p>
-      <a href="/schedule/addList" class="hero-btn">계획 만들러가기</a>
-    </div>
-  </div>
-  <div class="hero-slide" style="background-image: url('/resources/images/main4.jpg');">
-    <div class="hero-content">
-      <p class="hero-subtitle">여행 계획</p>
-      <h1 class="hero-title">나만의 여행 일정,<br>MYTRIP으로 간편해졌어요</h1>
-      <p class="hero-desc">여행을 한눈에, 그리고 한 번에!</p>
-      <a href="/schedule/addList" class="hero-btn">계획 만들러가기</a>
-    </div>
-  </div>
+  <title>MYTRIP – Walkthrough · Explore · Stay · Plan · Share</title>
 
+<body>
+  <%@ include file="/WEB-INF/views/include/navigation.jsp" %> <%-- 공통 Header/Nav --%>
+  <main class="wrap">
+    <!-- ========== INTRO GRID ========== -->
+    <section class="grid">
+      <div class="hero"><h2></h2></div>
 
+      <article class="card">
+        <div class="card-img"></div>
+        <div class="card-body">
+          <h3>여행 계획을 세우기 좋은 요즘</h3>
+          <p>지역별 추천 스팟과 숙소를 한눈에 확인해보세요.</p>
+        </div>
+      </article>
+<nav class="navbar navbar-expand-sm bg-secondary navbar-dark mb-3"> 
+	<ul class="navbar-nav"> 
+	    <!-- ✅ 쿠폰 발급 테스트용 메뉴 추가 -->
+	    <li class="nav-item">
+	      <a class="nav-link" href="/event/coupontest">쿠폰 발급</a> 
+	    </li>
+  </ul> 
+</nav>
 
-  <!-- 슬라이드 화살표 -->
-  <button class="hero-prev">&#10094;</button>
-  <button class="hero-next">&#10095;</button>
-</section>
-
-
-
-<main id="main" class="wrap">
-  <!-- ───────── BEST REVIEW (TOP3) ───────── -->
-  <section id="best-review" class="section">
-    <h3 class="section-title">BEST · REVIEW</h3>
-    <div class="review-grid">
-<c:forEach var="r" items="${bestReviewList}" varStatus="i">
-  <a href="/editor/planview?planId=${r.planId}" class="review-card-link">
-    <article class="review-card">
-      <img src="/resources/images/default-thumbnail.jpg" alt="review${i.index}" />
-      <div class="review-body">
-        <h4>${r.planTitle}</h4>
-        <span class="user">by ${r.userId}</span>
+      <div class="stack">
+        <article class="card">
+          <div class="card-img"></div>
+          <div class="card-body">
+            <h3>마이페이지에서 내 여행기록 확인</h3>
+            <p>내가 찜한 장소, 예약 내역, 후기를 쉽게 관리해보세요.</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="card-img"></div>
+          <div class="card-body">
+            <h3>여행의 추억을 공유해보세요</h3>
+            <p>작성한 일정을 바탕으로 후기를 남기고 다른 사람과 공유해요.</p>
+          </div>
+        </article>
       </div>
-    </article>
-  </a>
-</c:forEach>
+    </section>
+
+<div class="container">
+
+    <!-- ========== HOT TOUR ========== -->
+    <h3 class="section-title">HOT · TOUR</h3>
+    <div class="mix-grid">
+      <a class="tile large">
+        <div class="bg" style="background-image:url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1000&q=80')"></div>
+        <div class="info"><h4>에메랄드 해변</h4><span>GUAM</span></div>
+      </a>
+      <a class="tile">
+        <div class="bg" style="background-image:url('https://images.unsplash.com/photo-1569931725250-b937da0bfb0c?auto=format&fit=crop&w=800&q=80')"></div>
+        <div class="info"><h4>몽마르트 언덕</h4><span>PARIS</span></div>
+      </a>
+      <a class="tile">
+        <div class="bg" style="background-image:url('https://images.unsplash.com/photo-1486025402772-bc179c8dfdaf?auto=format&fit=crop&w=800&q=80')"></div>
+        <div class="info"><h4>카우아이 협곡</h4><span>HAWAII</span></div>
+      </a>
+      <a class="tile">
+        <div class="bg" style="background-image:url('https://images.unsplash.com/photo-1519822477402-7847d08eccee?auto=format&fit=crop&w=800&q=80')"></div>
+        <div class="info"><h4>사파리 사막</h4><span>DUBAI</span></div>
+      </a>
     </div>
-  </section>
-  <!-- ───────── REGION CARD LIST (17) ───────── -->
-  <section id="region" class="section">
-    <h3 class="section-title">CITY</h3>
-    <div class="region-grid">
-    <c:forEach var="r" items="${regionList}">
-  <c:set var="regionId" value="${r.regionId}" />
-  <c:set var="regionName" value="${r.regionName}" />
-  <article class="region-card"
-           data-region-id="${regionId}"
-           data-region-name="${regionName}">
-    <div class="region-thumb"
-         style="background-image:url('/resources/region/${regionId}.jpg')">
-      <div class="region-label">${regionName}</div>
+
+    <!-- ========== HOT HOTEL ========== -->
+    <h3 class="section-title">HOT · HOTEL</h3>
+    <div class="mix-grid">
+      <a class="tile large">
+        <div class="bg" style="background-image:url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=80')"></div>
+        <div class="info"><h4>라구나 리조트</h4><span>$180 /night</span></div>
+      </a>
+      <a class="tile">
+        <div class="bg" style="background-image:url('https://images.unsplash.com/photo-1590490357155-3054ef779c92?auto=format&fit=crop&w=800&q=80')"></div>
+        <div class="info"><h4>오션 빌라</h4><span>$240 /night</span></div>
+      </a>
+      <a class="tile">
+        <div class="bg" style="background-image:url('https://images.unsplash.com/photo-1542317830-f5200e80b0fa?auto=format&fit=crop&w=800&q=80')"></div>
+        <div class="info"><h4>포레스트 롯지</h4><span>$150 /night</span></div>
+      </a>
+      <a class="tile">
+        <div class="bg" style="background-image:url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80')"></div>
+        <div class="info"><h4>아틀라스 호텔</h4><span>$210 /night</span></div>
+      </a>
     </div>
+<<<<<<< HEAD
   </article>
 </c:forEach>
 
@@ -618,5 +628,8 @@ const regionDescriptions = {
 
 
 </script>
+=======
+  </main>
+>>>>>>> refs/remotes/origin/master
 </body>
 </html>

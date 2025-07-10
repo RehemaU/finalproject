@@ -37,6 +37,7 @@ import com.sist.common.model.FileData;
 import com.sist.common.util.StringUtil;
 import com.sist.web.model.Response;
 import com.sist.web.model.User;
+import com.sist.web.service.EditorService;
 import com.sist.web.service.UserService;
 import com.sist.web.util.CookieUtil;
 import com.sist.web.util.HttpUtil;
@@ -53,7 +54,9 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 	private String UPLOAD_SAVE_DIR;
 	
 	@Autowired
-	private	 UserService userService;
+	private UserService userService;
+	@Autowired
+	private EditorService editorService;
 	
 	@Value("#{env['auth.user.name']}")
 	private String AUTH_USER_NAME;
@@ -626,8 +629,10 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 	        int success = userService.userWithdrawal(userId);  // 실제 서비스 로직
 
 	        if (success > 0) {
+	        	int count = editorService.editorStatus(userId);
 	            result.put("code", 0);
-	            result.put("message", "회원 탈퇴 완료");
+	            result.put("message", "회원 탈퇴 완료 & 게시글 비공개 처리 수: "+count);
+	            
 	        } else {
 	            result.put("code", 500);
 	            result.put("message", "회원 탈퇴 실패");

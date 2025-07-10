@@ -26,6 +26,7 @@
 		   AND PLAN_ID = #{planId}
 	  </delete>
 	  
+	  <!-- 유저가 좋아요 한 게시글 조회 -->
 	  <select id="recommendList" parameterType="String" resultType="int">
 		  SELECT
 			    PLAN_ID
