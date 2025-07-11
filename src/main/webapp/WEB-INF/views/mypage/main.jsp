@@ -52,7 +52,7 @@
       <li><a href="/mypage/recommendlist">좋아요 누른 게시글</a></li>
       <li><a href="/like/list">찜한 장소</a></li>
       <li><a href="/mypage/cart">장바구니</a></li>
-      <li><a href="/mypage/order">결제 내역</a></li>
+      <li><a href="/mypage/orderlist">결제 내역</a></li>
       <li><a href="/mypage/cancel">취소 내역</a></li>
     </ul>
   </div>

@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
     /* ---------- 공통 변수 & 리셋 ---------- */
@@ -30,10 +31,13 @@
     /* ---------- HEADER & NAV ---------- */
     header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);}
     .util-bar{height:64px}
-    .logo{
-      display:flex;align-items:center;gap:10px;
-      font-family:'Montserrat',sans-serif;font-size:28px;font-weight:700;letter-spacing:1.5px;
-    }
+.logo {
+  font-family: 'Outfit', sans-serif;
+  font-size: 26px;
+  font-weight: 400;
+  letter-spacing: 2px;
+  margin-right: auto;
+}
     .util-icons{gap:28px;font-size:13px;text-transform:uppercase;}
     .search{width:26px;height:26px;border:2px solid var(--fg);border-radius:50%;position:relative;cursor:pointer;}
     .search:after{content:'';position:absolute;width:12px;height:2px;background:var(--fg);right:-4px;bottom:4px;transform:rotate(45deg);}

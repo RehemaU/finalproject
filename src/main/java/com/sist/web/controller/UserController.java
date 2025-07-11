@@ -649,7 +649,7 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 
 	
 	
-	 
+
 	
 	//구글로그인
 	//로그인 페이지
@@ -658,6 +658,7 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 	{
 		
 		// 이부분 커밋 문제로 돌렸음. 클라이언트id랑 시크릿id
+		
          String redirectUri = "http://finalproject.sist.co.kr:8088/user/googleLogin";
 		 String tokenUrl = "https://oauth2.googleapis.com/token";
 		 

@@ -97,5 +97,10 @@
             #{accomLat}, #{accomLon}, #{firstImage}, #{firstImage2}, #{accomAvg}
         )
     </insert>
+    <select id="findBySellerId" parameterType="string" resultMap="accomResultMap">
+    SELECT * FROM T_ACCOMM
+    WHERE SELLER_ID = #{sellerId}
+    ORDER BY ACCOMM_ID DESC
+</select>
     
 </mapper>

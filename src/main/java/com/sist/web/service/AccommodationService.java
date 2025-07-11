@@ -238,5 +238,7 @@ public class AccommodationService {
         return list;
     }
 
-    
+    public List<Accommodation> findBySellerId(String sellerId) {
+        return accommodationDao.findBySellerId(sellerId);
+    }
    }
