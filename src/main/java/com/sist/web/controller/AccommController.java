@@ -181,6 +181,7 @@ public class AccommController
 	    }
 	}
 
+
 	  @GetMapping("/seller/accommList")
 	    public String sellerAccommList(HttpSession session, Model model) {
 	    	String sellerId = (String) session.getAttribute("sellerId");	        
@@ -211,6 +212,8 @@ public class AccommController
 		
 		return "redirect:/accomm/list";
 	}
+
+
 
 
 }
