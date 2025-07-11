@@ -43,5 +43,8 @@
         SET REFUND_RESULT = #{refundResult}
         WHERE REFUND_ID = #{refundId}
     </update>
-
+	
+	<select id="getRefundSeq" resultType="String">
+	  SELECT 'RF_' || TO_CHAR(refund_seq.NEXTVAL, 'FM000000') FROM DUAL
+	</select>
 </mapper>
