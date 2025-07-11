@@ -176,6 +176,17 @@ public class AccommController
 	        return "/error";
 	    }
 	}
-	
+	  @GetMapping("/seller/accommList")
+	    public String sellerAccommList(HttpSession session, Model model) {
+	    	String sellerId = (String) session.getAttribute("sellerId");	        
+	        
+	        if (sellerId == null) {
+	            return "redirect:/user/login";  // 로그인 안된 경우
+	        }
+
+	        List<Accommodation> accommList = accommodationService.findBySellerId(sellerId);
+	        model.addAttribute("accommList", accommList);
+	        return "/seller/accommList"; // → /WEB-INF/views/seller/accommList.jsp
+	    }
 
 }

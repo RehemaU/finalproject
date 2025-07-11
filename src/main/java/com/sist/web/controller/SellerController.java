@@ -1,5 +1,7 @@
 package com.sist.web.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -9,12 +11,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sist.common.util.StringUtil;
+import com.sist.web.model.Editor;
+import com.sist.web.model.Region;
 import com.sist.web.model.Response;
 import com.sist.web.model.Seller;
 import com.sist.web.service.SellerService;
@@ -34,6 +40,12 @@ public class SellerController
 	private String AUTH_SELLER_NAME; 
 	
 	
+	@RequestMapping(value = "/seller/sellerMain", method=RequestMethod.GET)
+	public String sellerMain(HttpServletRequest request, HttpServletResponse response, Model model)
+	{
+
+		return "/seller/sellerMain";
+	}
 	
 	//판매자 로그인페이지
 	@RequestMapping(value = "/seller/login", method=RequestMethod.GET)

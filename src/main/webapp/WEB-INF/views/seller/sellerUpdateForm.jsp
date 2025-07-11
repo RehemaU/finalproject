@@ -304,7 +304,7 @@
   	</script>
 </head>
 <body>
-<%@ include file="/WEB-INF/views/include/navigation.jsp" %>
+<%@ include file="/WEB-INF/views/include/sellerNavigation.jsp" %>
   <div class="signup-container">
     <h2>판매자수정</h2>
     <form id="sellerUpdateForm"  method="post">

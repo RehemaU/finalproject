@@ -12,5 +12,6 @@ public interface AccommodationDao {
     List<Accommodation> searchBySigungu(List<Sigungu> list);
     Accommodation selectAccommodation(String accommId);
     int insertAccommodationForm(Accommodation accommodation);
+    List<Accommodation> findBySellerId(String sellerId);
 
 }

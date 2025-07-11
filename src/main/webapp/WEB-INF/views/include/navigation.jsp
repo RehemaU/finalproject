@@ -5,7 +5,7 @@
 <header>
   <!-- 상단 유틸바 -->
   <div class="util-bar wrap flex between center">
-    <a href="/" class="logo">logo</a>
+    <a href="/" class="logo">MY TRIP</a>
     <div class="util-icons flex center">
       <a class="icon" href="/mypage/main">MY PAGE</a>
       <a class="icon" href="/like/list">MY LIKE</a>
