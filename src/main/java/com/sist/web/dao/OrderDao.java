@@ -30,4 +30,16 @@ public interface OrderDao {
     List<String> selectExpiredOrderIds(Map<String, Object> param);
     void deleteOrderById(String orderId);
     void deleteOrderDetailsByOrderId(String orderId);
+    
+    // 유저 주문내역
+    public List<Order> userOrderlist(String userId);
+    
+    // 유저 주문상세
+    public OrderDetail userOrderDetails(String orderId);
+    
+    // 체크인 날짜 하루 전인지
+    public int userOrderCheckin(String orderId);
+    
+    // 체크아웃 날짜 한달 내인지
+    public int userOrderCheckout(String orderId);
 }
