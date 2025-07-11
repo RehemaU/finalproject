@@ -196,11 +196,11 @@ public class AccommController
 	    }
 
 	
-	@RequestMapping(value = "/accomm/accommRoomRegForm", method = RequestMethod.GET)
+	@RequestMapping(value = "/seller/accommRoomRegForm", method = RequestMethod.GET)
 	public String sellerInfo(HttpServletRequest request, HttpServletResponse response)
 	{
 		// 추가해야할 것 > accommId을 전 화면에서(리스트 혹은 상세에서) 가져와서 넘겨주기
-		return "/accomm/accommRoomRegForm";
+		return "/seller/accommRoomRegForm";
 	}
 	
 	@RequestMapping(value = "/accomm/accommRoomRegProc", method = RequestMethod.POST)
@@ -210,7 +210,7 @@ public class AccommController
 		accommodationRoomService.saveAccommodationRoom(room);
 		
 		
-		return "redirect:/accomm/list";
+		return "redirect:/seller/accommlist";
 	}
 
 

@@ -84,10 +84,10 @@
       <div class="card">
         <h3>숙소 목록</h3>
         <p>등록된 숙소들을 확인하고 수정/삭제할 수 있습니다.</p>
-        <a href="/accomm/list">목록 보기</a>
+        <a href="/seller/accommlist">목록 보기</a>
       </div>
 
-      <div class="card">
+      <div class="card">	
         <h3>객실 등록</h3>
         <p>숙소에 객실을 추가하고 가격, 수량 등을 설정하세요.</p>
         <a href="/seller/room/add">객실 등록</a>
