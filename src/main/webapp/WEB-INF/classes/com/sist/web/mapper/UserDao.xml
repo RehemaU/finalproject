@@ -113,6 +113,7 @@
 		        USER_ID = #{value}
 	 </update>
 
+
 	 <select id="selectUniqueId" parameterType="String" resultMap="userResultMap">
 	 	SELECT USER_ID,
 	 	 	   NVL(UNIQUE_ID,'') UNIQUE_ID,

@@ -261,12 +261,11 @@ public class KakaoPayController {
     
     @PostMapping("/cancel/refund")
     @ResponseBody
-    public Map<String, Object> kakaoPayRefund(@RequestBody Map<String, String> param, HttpSession session) {
+    public Map<String, Object> kakaoPayRefund(@RequestParam("orderId") String orderId, HttpSession session) {
         Map<String, Object> res = new HashMap<>();
 
         try {
             String userId = (String) session.getAttribute("userId");
-            String orderId = param.get("orderId");
 
             if (StringUtil.isEmpty(userId) || StringUtil.isEmpty(orderId)) {
                 res.put("status", -9);
@@ -280,6 +279,11 @@ public class KakaoPayController {
                 res.put("status", -1);
                 res.put("message", "해당 주문이 존재하지 않거나 접근 권한이 없습니다.");
                 return res;
+            }
+            
+            if(!order.getUserId().equals(userId)) {
+            	res.put("status", -2);
+                res.put("message", "주문자의 ID까 아닙니다.");
             }
 
             // 환불 요청 

@@ -1,7 +1,12 @@
 package com.sist.web.controller;
 
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,6 +24,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -567,9 +578,8 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 		
 		//2.요청전송
 		ResponseEntity<Map> response = restTemplate.exchange(userInfoUrl, HttpMethod.GET, entity, Map.class);
-		
-		Map<String, Object> body = response.getBody();
 
+		Map<String, Object> body = response.getBody();
 		System.out.println("카카오 응답 전체: " + body);
 
 		//3.사용자 정보 파싱
@@ -601,24 +611,19 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 			else
 			{
 				
-				Map<String, String> userMap = new HashMap<>();
-				session.setAttribute("userId", user.getUserId());
-				model.addAttribute("userName", userName);
-				return "redirect:/";
+			    session.setAttribute("userId", user.getUserId());
+			    return "redirect:/";
 			}
 
 		}
-		
 		return "redirect:/";
 	}
-	
-	
+
 	//회원탈퇴
 	@PostMapping("/user/userWithdrawal")
 	@ResponseBody
 	public Map<String, Object> userWithdrawal(@RequestParam String userId) {
 	    Map<String, Object> result = new HashMap<>();
-
 	    try {
 	        if (userId == null || userId.trim().isEmpty()) {
 	            result.put("code", 400);
@@ -646,10 +651,7 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 
 	    return result;
 	}
-
 	
-	
-	 
 	
 	//구글로그인
 	//로그인 페이지
@@ -658,6 +660,7 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 	{
 		
 		// 이부분 커밋 문제로 돌렸음. 클라이언트id랑 시크릿id
+		 
          String redirectUri = "http://finalproject.sist.co.kr:8088/user/googleLogin";
 		 String tokenUrl = "https://oauth2.googleapis.com/token";
 		 
@@ -690,7 +693,6 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 		 return "redirect:/user/googleUserInfo";
 	}
 	
-
 	@RequestMapping(value = "/user/googleUserInfo", method = RequestMethod.GET)
 	public String googleUserInfo(HttpServletRequest request, HttpSession session, Model model, RedirectAttributes redirectAttributes)
 	{
@@ -739,23 +741,136 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 			}
 			else
 			{
-				
-				Map<String, String> userMap = new HashMap<>();
-		        userMap.put("userName", userName);
-		        userMap.put("email", email);
-
 		        // 세션에 저장
 		        session.setAttribute("userId", user.getUserId());
-
-		        // 모델에 전달
-		        model.addAttribute("userName", userName);
-		        model.addAttribute("email", email);
-		        
 		        return "redirect:/";
 			}
 	        
 	    }
 	    
+		return "redirect:/";
+	}
+	
+	
+	@RequestMapping(value = "/user/naverAuth", method=RequestMethod.GET)
+	public void naverAuth(HttpSession session, HttpServletResponse response) throws IOException {
+		
+
+	    //클라이언트 ID 선언 추가
+	    String redirectUri  = "http://finalproject.sist.co.kr:8088/user/naverLogin";
+    
+	    
+	    String savedState = (String) session.getAttribute("naver_state");
+	    //state 생성 & 세션 저장
+	    String state = UUID.randomUUID().toString();
+	    session.setAttribute("naver_state", state);
+	    
+	    //네이버 인증 URL 생성
+	    String authUrl = "https://nid.naver.com/oauth2.0/authorize"
+	            			+ "?response_type=code"
+	            			//+ "&client_id="  + clientId
+	            			+ "&redirect_uri=" + URLEncoder.encode(redirectUri, StandardCharsets.UTF_8.name())
+	            			+ "&state=" + state
+	            			+ "&auth_type=reauthenticate"; 
+
+	    response.sendRedirect(authUrl);
+	}
+	
+	
+	
+	//네이버로그인
+	//로그인 페이지
+	@RequestMapping(value = "/user/naverLogin", method=RequestMethod.GET)
+	public String naverLogin(@RequestParam("code") String code, @RequestParam("state") String state,
+								HttpSession session, Model model) 
+	{
+		
+		 //클라이언트 ID와 보안키값 선언해야 함
+         
+         //state 검증
+         String savedState = (String) session.getAttribute("naver_state");
+         if (savedState == null || !savedState.equals(state)) {
+             throw new RuntimeException("state 불일치 – 재시도하세요");
+         }
+         
+         session.removeAttribute("naver_state");   // 사용 후 즉시 삭제
+         
+		 
+	     //토큰 요청
+         String tokenUrl = "https://nid.naver.com/oauth2.0/token"
+                 			+ "?grant_type=authorization_code"
+                 			+ "&code="          + code
+                 			+ "&state="         + state;
+		 
+		 
+		 RestTemplate restTemplate = new RestTemplate();
+		 
+		 
+		 ResponseEntity<Map> tokenResponse = restTemplate.getForEntity(tokenUrl, Map.class);
+
+	    if (!tokenResponse.getStatusCode().is2xxSuccessful()) {
+	        throw new RuntimeException("네이버 Access Token 요청 실패");
+	    }
+		
+	    //세션 저장
+	    session.setAttribute("naver_access_token", (String) tokenResponse.getBody().get("access_token"));
+	    session.setAttribute("naver_expire",     (String) tokenResponse.getBody().get("expires_in"));
+		return "redirect:/user/naverUserInfo";
+	}
+	
+	@RequestMapping(value = "/user/naverUserInfo", method = RequestMethod.GET)
+	public String naverUserInfo(HttpServletRequest request, HttpSession session, Model model, RedirectAttributes redirectAttributes) 
+	{
+		
+		String accessToken = (String) session.getAttribute("naver_access_token");
+		
+
+	    if (accessToken == null) {
+	        throw new RuntimeException("accessToken이 세션에 없습니다. 로그인부터 다시 진행하세요.");
+	    }
+	    
+	    // 1. 요청 준비
+	    String userInfoUrl = "https://openapi.naver.com/v1/nid/me";
+	    
+	    RestTemplate restTemplate = new RestTemplate();
+	    HttpHeaders headers = new HttpHeaders();
+	    headers.set("Authorization", "Bearer " + accessToken);
+
+	    HttpEntity<String> entity = new HttpEntity<>(headers);
+	    
+	    // 2. 요청 전송
+	    ResponseEntity<Map> response = restTemplate.exchange(userInfoUrl, HttpMethod.GET, entity, Map.class);
+
+	    Map<String, Object> body = response.getBody();
+	    Map<String, Object> responseMap = (Map<String, Object>) body.get("response");
+		
+	    // 3. 사용자 정보 파싱
+	    if (body != null) {
+	    	String uniqueIdStr = (String) responseMap.get("id");
+	
+			String uniqueId = uniqueIdStr;
+			User user = userService.selectUniqueId(uniqueId);
+			
+			String regType = HttpUtil.get(request, "regType");
+			
+			if (regType == null || regType.trim().isEmpty()) {
+		        regType = "R";
+		    }
+			
+			if(user == null)
+			{
+				redirectAttributes.addAttribute("regType", regType);
+				redirectAttributes.addFlashAttribute("uniqueId", uniqueId);
+				return "redirect:/user/userRegForm";
+			}
+			else
+			{
+				// 세션에 저장
+		        session.setAttribute("userId", user.getUserId());
+		        return "redirect:/";
+			}
+	        
+	    }
 		return "redirect:/";
 	}
 }
