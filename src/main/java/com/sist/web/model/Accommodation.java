@@ -6,6 +6,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Accommodation {
 
+	public Accommodation() {
+		
+		this.unifiedId = "";
+		
+	}
+	
     @JsonProperty("contentid")
     private String accomId;
 
@@ -47,8 +53,18 @@ public class Accommodation {
 
     @JsonProperty("firstimage2")
     private String firstImage2;
+    
+    private String unifiedId;
+    
+    public String getUnifiedId() {
+		return unifiedId;
+	}
 
-    private int accomAvg;
+	public void setUnifiedId(String unfiedId) {
+		this.unifiedId = unfiedId;
+	}
+
+	private int accomAvg;
 
 	public String getAccomId() {
 		return accomId;
