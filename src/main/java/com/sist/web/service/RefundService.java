@@ -18,7 +18,7 @@ public class RefundService {
 	
 
 	public void inserRefund(Refund refund) {
-		refund.setOrderId(refundDao.getRefundSeq());
+		refund.setRefundId(refundDao.getRefundSeq());
 		refundDao.insertRefund(refund);
 	}
 	

@@ -1,5 +1,8 @@
 package com.sist.web.dao;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Repository;
 
 import com.sist.web.model.Seller;
@@ -18,4 +21,7 @@ public interface SellerDao
 	
 	//판매자 비밀번호변경
 	public int sellerPasswordChange(Seller seller);
+	
+	
+
 }

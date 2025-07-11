@@ -80,57 +80,83 @@
 	<select id = "searchByAccommRoomId" parameterType = "String" resultMap = "accomRoomResultMap">
 		SELECT * FROM T_ACCOMM_ROOM WHERE ACCOMM_ROOM_ID = #{accommRoomId}
 	</select>
-	
 	<select id="getAvailableRoomsByDate" resultMap="accomRoomResultMap" parameterType="map">
-	  <![CDATA[
-	  SELECT r.*
-	  FROM T_ACCOMM_ROOM r
-	  WHERE r.ACCOMM_ID = #{accommId}
-	  AND r.ACCOMM_ROOM_ID NOT IN (
-	    SELECT booked.ACCOMM_ROOM_ID
-	    FROM (
-	      SELECT d.ACCOMM_ROOM_ID, d.ORDER_DETAILS_CHECKIN_DATE + LEVEL - 1 AS BOOKED_DATE
-	      FROM T_ORDER_DETAILS d
-	      WHERE d.ORDER_DETAILS_CHECKIN_DATE < TO_DATE(#{checkOut}, 'YYYY-MM-DD')
-	        AND d.ORDER_DETAILS_CHECKOUT_DATE > TO_DATE(#{checkIn}, 'YYYY-MM-DD')
-	      CONNECT BY LEVEL <= d.ORDER_DETAILS_CHECKOUT_DATE - d.ORDER_DETAILS_CHECKIN_DATE
-	        AND PRIOR d.ACCOMM_ROOM_ID = d.ACCOMM_ROOM_ID
-	        AND PRIOR dbms_random.value IS NOT NULL
-	    ) booked
-	    GROUP BY booked.ACCOMM_ROOM_ID, booked.BOOKED_DATE
-	    HAVING COUNT(*) >= (
-	      SELECT r2.ACCOMM_ROOM_COUNT
-	      FROM T_ACCOMM_ROOM r2
-	      WHERE r2.ACCOMM_ROOM_ID = booked.ACCOMM_ROOM_ID
-	    )
-	  )
-	  ]]>
-	</select>
+  <![CDATA[
+    SELECT r.*
+    FROM T_ACCOMM_ROOM r
+    WHERE r.ACCOMM_ID = #{accommId}
+      AND r.ACCOMM_ROOM_ID NOT IN (
+        SELECT booked.ACCOMM_ROOM_ID
+        FROM (
+          SELECT d.ACCOMM_ROOM_ID,
+                 d.ORDER_DETAILS_CHECKIN_DATE + LEVEL - 1 AS BOOKED_DATE
+          FROM T_ORDER_DETAILS d
+          WHERE d.ORDER_DETAILS_CHECKIN_DATE < TO_DATE(#{checkOut}, 'YYYY-MM-DD')
+            AND d.ORDER_DETAILS_CHECKOUT_DATE > TO_DATE(#{checkIn}, 'YYYY-MM-DD')
+          CONNECT BY LEVEL <= d.ORDER_DETAILS_CHECKOUT_DATE - d.ORDER_DETAILS_CHECKIN_DATE
+            AND PRIOR d.ACCOMM_ROOM_ID = d.ACCOMM_ROOM_ID
+            AND PRIOR dbms_random.value IS NOT NULL
+        ) booked
+        GROUP BY booked.ACCOMM_ROOM_ID, booked.BOOKED_DATE
+        HAVING COUNT(*) >= (
+          SELECT r2.ACCOMM_ROOM_COUNT
+          FROM T_ACCOMM_ROOM r2
+          WHERE r2.ACCOMM_ROOM_ID = booked.ACCOMM_ROOM_ID
+        )
+      )
+  ]]>
+</select>
+	
+<select id="selectRoomBookingStatus" resultType="map" parameterType="map">
+  <![CDATA[
+  SELECT
+    booked.ACCOMM_ROOM_ID,
+    booked.BOOKED_DATE,
+    SUM(booked.COUNT) AS RESERVED_COUNT,
+    MAX(booked.ROOM_COUNT) AS ROOM_COUNT
+  FROM (
+    SELECT
+      d.ACCOMM_ROOM_ID,
+      d.ORDER_DETAILS_CHECKIN_DATE + LEVEL - 1 AS BOOKED_DATE,
+      d.ORDER_DETAILS_COUNT AS COUNT,
+      r.ACCOMM_ROOM_COUNT AS ROOM_COUNT
+    FROM T_ORDER_DETAILS d
+    JOIN T_ACCOMM_ROOM r ON d.ACCOMM_ROOM_ID = r.ACCOMM_ROOM_ID
+    WHERE d.ORDER_DETAILS_CHECKIN_DATE < TO_DATE(#{checkOut}, 'YYYY-MM-DD')
+      AND d.ORDER_DETAILS_CHECKOUT_DATE > TO_DATE(#{checkIn}, 'YYYY-MM-DD')
+    CONNECT BY LEVEL <= d.ORDER_DETAILS_CHECKOUT_DATE - d.ORDER_DETAILS_CHECKIN_DATE
+      AND PRIOR d.ORDER_DETAILS_ID = d.ORDER_DETAILS_ID
+      AND PRIOR dbms_random.value IS NOT NULL
+  ) booked
+  GROUP BY booked.ACCOMM_ROOM_ID, booked.BOOKED_DATE
+  ORDER BY booked.ACCOMM_ROOM_ID, booked.BOOKED_DATE
+  ]]>
+</select>
 
-	<select id="isRoomOverbooked" parameterType="map" resultType="int">
-	  <![CDATA[
-	    SELECT COUNT(1)
-	    FROM (
-	      SELECT booked.BOOKED_DATE
-	      FROM (
-	        SELECT d.ACCOMM_ROOM_ID, d.ORDER_DETAILS_CHECKIN_DATE + LEVEL - 1 AS BOOKED_DATE
-	        FROM T_ORDER_DETAILS d
-	        WHERE d.ACCOMM_ROOM_ID = #{roomId}
-	          AND d.ORDER_DETAILS_CHECKIN_DATE < TO_DATE(#{checkOut}, 'YYYY-MM-DD')
-	          AND d.ORDER_DETAILS_CHECKOUT_DATE > TO_DATE(#{checkIn}, 'YYYY-MM-DD')
-	        CONNECT BY LEVEL <= d.ORDER_DETAILS_CHECKOUT_DATE - d.ORDER_DETAILS_CHECKIN_DATE
-	          AND PRIOR d.ACCOMM_ROOM_ID = d.ACCOMM_ROOM_ID
-	          AND PRIOR dbms_random.value IS NOT NULL
-	      ) booked
-	      GROUP BY booked.BOOKED_DATE
-	      HAVING COUNT(*) >= (
-	        SELECT ACCOMM_ROOM_COUNT
-	        FROM T_ACCOMM_ROOM
-	        WHERE ACCOMM_ROOM_ID = #{roomId}
-	      )
-	    )
-	  ]]>
-	</select>
+<select id="isRoomOverbooked" resultType="int" parameterType="map">
+  <![CDATA[
+    SELECT COUNT(1)
+    FROM (
+      SELECT booked.ACCOMM_ROOM_ID, booked.BOOKED_DATE, COUNT(*) AS BOOKED_CNT, r.ACCOMM_ROOM_COUNT
+      FROM (
+        SELECT DISTINCT d.ORDER_DETAILS_ID, d.ACCOMM_ROOM_ID, d.ORDER_DETAILS_CHECKIN_DATE + LEVEL - 1 AS BOOKED_DATE
+        FROM T_ORDER_DETAILS d
+        WHERE d.ACCOMM_ROOM_ID = #{roomId}
+          AND d.ORDER_DETAILS_CHECKIN_DATE < TO_DATE(#{checkOut}, 'YYYY-MM-DD')
+          AND d.ORDER_DETAILS_CHECKOUT_DATE > TO_DATE(#{checkIn}, 'YYYY-MM-DD')
+        CONNECT BY PRIOR d.ORDER_DETAILS_ID = d.ORDER_DETAILS_ID
+          AND PRIOR dbms_random.value IS NOT NULL
+          AND LEVEL <= d.ORDER_DETAILS_CHECKOUT_DATE - d.ORDER_DETAILS_CHECKIN_DATE
+      ) booked
+      JOIN T_ACCOMM_ROOM r ON r.ACCOMM_ROOM_ID = booked.ACCOMM_ROOM_ID
+      GROUP BY booked.ACCOMM_ROOM_ID, booked.BOOKED_DATE, r.ACCOMM_ROOM_COUNT
+      HAVING COUNT(*) >= r.ACCOMM_ROOM_COUNT
+    )
+  ]]>
+</select>
+
+
+
 	
 </mapper>
 	

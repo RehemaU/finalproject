@@ -2,7 +2,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <html>
+<%@ include file="/WEB-INF/views/include/head.jsp" %> <%-- 공통 head --%>
+<%@ include file="/WEB-INF/views/include/navigation_editor.jsp" %> <%-- 공통 GNB --%>
 <head>
+
     <title>${accommodation.accomName} - 상세정보</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -76,127 +79,117 @@
 </div>
 
 <script>
+function formatDateLocal(date) {
+    var yyyy = date.getFullYear();
+    var mm = date.getMonth() + 1;
+    var dd = date.getDate();
 
-const accommId = '<c:out value="${accommodation.accomId}" />';
-const roomIds = [
+    if (mm < 10) mm = "0" + mm;
+    if (dd < 10) dd = "0" + dd;
+
+    return yyyy + "-" + mm + "-" + dd;
+}
+
+var accommId = '<c:out value="${accommodation.accomId}" />';
+var roomIds = [
     <c:forEach var="room" items="${roomList}" varStatus="status">
-        '<c:out value="${room.accommRoomId}" />'<c:if test="${!status.last}">,</c:if>
+        '${room.accommRoomId}'<c:if test="${!status.last}">,</c:if>
     </c:forEach>
 ];
-const today = new Date();
-const tomorrow = new Date();
+
+var today = new Date();
+var tomorrow = new Date();
 tomorrow.setDate(today.getDate() + 1);
 
 flatpickr("#dateRange", {
     mode: "range",
     dateFormat: "Y-m-d",
-    defaultDate: [today, tomorrow], // ✅ 기본 선택: 오늘 ~ 내일
-    minDate: today,                 // ✅ 오늘 이전은 선택 불가
+    defaultDate: [today, tomorrow],
+    minDate: today,
     onClose: function(selectedDates) {
         if (selectedDates.length === 2) {
-            const checkIn = selectedDates[0].toISOString().split("T")[0];
-            const checkOut = selectedDates[1].toISOString().split("T")[0];
+            var checkIn = formatDateLocal(selectedDates[0]);
+            var checkOut = formatDateLocal(selectedDates[1]);
             fetchRoomPrices(checkIn, checkOut);
             fetchAvailableRooms(checkIn, checkOut);
         }
     }
 });
 
-// ✅ 최초 자동 호출
-fetchRoomPrices(today.toISOString().split("T")[0], tomorrow.toISOString().split("T")[0]);
-fetchAvailableRooms(today.toISOString().split("T")[0], tomorrow.toISOString().split("T")[0]);
+// 초기 실행
+fetchRoomPrices(formatDateLocal(today), formatDateLocal(tomorrow));
+fetchAvailableRooms(formatDateLocal(today), formatDateLocal(tomorrow));
 
 function fetchAvailableRooms(checkIn, checkOut) {
     fetch("/accommDetail/availableRooms", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            accommId: "${accommodation.accomId}",
-            checkIn,
-            checkOut
-        })
+        body: JSON.stringify({ accommId: accommId, checkIn: checkIn, checkOut: checkOut })
     })
-    .then(res => res.json())
-    .then(data => {
-        const availableIds = new Set(data.map(room => room.accommRoomId));
-        document.querySelectorAll(".room-card").forEach(card => {
-            const roomId = card.querySelector(".reserve-btn").dataset.roomId;
-            card.style.display = availableIds.has(roomId) ? "flex" : "none";
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        var availableIds = {};
+        data.forEach(function(room) {
+            availableIds[room.accommRoomId] = true;
+        });
+        document.querySelectorAll(".room-card").forEach(function(card) {
+            var roomId = card.querySelector(".reserve-btn").dataset.roomId;
+            card.style.display = availableIds[roomId] ? "flex" : "none";
         });
     });
 }
 
-function fetchRoomPrices(checkInDate, checkOutDate) {
-    console.log("🧾 [fetchRoomPrices] 호출됨");
-
-    const checkIn = checkInDate;
-    const checkOut = checkOutDate;
-
-    console.log("👉 checkIn:", checkIn);
-    console.log("👉 checkOut:", checkOut);
-
-    roomIds.forEach(roomId => {
-        const payload = {
-            roomId,
-            checkIn,
-            checkOut
-        };
-
-        console.log("📤 [요청] roomId:", roomId, "| payload:", payload);
-
+function fetchRoomPrices(checkIn, checkOut) {
+    roomIds.forEach(function(roomId) {
         fetch("/accommDetail/calculatePrice", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
+            body: JSON.stringify({ roomId: roomId, checkIn: checkIn, checkOut: checkOut })
         })
-        .then(res => res.json())
-        .then(data => {
-            const target = document.getElementById("priceResult-" + roomId);
-            console.log("📥 [응답] roomId:", roomId, "| data:", data);
-
-            if (data && typeof data.days !== 'undefined' && typeof data.totalPrice !== 'undefined') {
-                const resultStr = "총 " + data.days + "박 / 총액: ₩" + Number(data.totalPrice).toLocaleString();
-                target.innerText = resultStr;
-                console.log("✅ [DOM 반영 성공]", resultStr);
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            var target = document.getElementById("priceResult-" + roomId);
+            if (data && typeof data.days !== "undefined" && typeof data.totalPrice !== "undefined") {
+                target.innerText = "총 " + data.days + "박 / 총액: ₩" + Number(data.totalPrice).toLocaleString();
             } else {
                 target.innerText = "총액 계산 실패 (데이터 없음)";
-                console.warn("⚠️ [DOM 반영 실패] data 불완전");
             }
         })
-        .catch(err => {
-            const target = document.getElementById("priceResult-" + roomId);
+        .catch(function() {
+            var target = document.getElementById("priceResult-" + roomId);
             target.innerText = "가격 계산 실패";
-            console.error("❌ [요청 실패]", err);
         });
     });
 }
 
-document.querySelectorAll(".reserve-btn").forEach(button => {
-    button.addEventListener("click", () => {
-        const roomId = button.dataset.roomId;
-        const dateRange = document.getElementById("dateRange")._flatpickr.selectedDates;
-
-        if (dateRange.length !== 2) {
+document.querySelectorAll(".reserve-btn").forEach(function(button) {
+    button.addEventListener("click", function() {
+        var roomId = button.dataset.roomId;
+        var selectedDates = document.getElementById("dateRange")._flatpickr.selectedDates;
+        if (selectedDates.length !== 2) {
             alert("날짜를 선택해주세요.");
             return;
         }
 
-        const checkIn = dateRange[0].toISOString().split("T")[0];
-        const checkOut = dateRange[1].toISOString().split("T")[0];
+        var checkIn = formatDateLocal(selectedDates[0]);
+        var checkOut = formatDateLocal(selectedDates[1]);
 
-        const form = document.createElement("form");
+        var form = document.createElement("form");
         form.method = "POST";
         form.action = "/accomm/reservation";
 
-        const input1 = document.createElement("input");
+        var input1 = document.createElement("input");
+        input1.type = "hidden";
         input1.name = "roomId";
         input1.value = roomId;
 
-        const input2 = document.createElement("input");
+        var input2 = document.createElement("input");
+        input2.type = "hidden";
         input2.name = "checkIn";
         input2.value = checkIn;
 
-        const input3 = document.createElement("input");
+        var input3 = document.createElement("input");
+        input3.type = "hidden";
         input3.name = "checkOut";
         input3.value = checkOut;
 
@@ -209,5 +202,6 @@ document.querySelectorAll(".reserve-btn").forEach(button => {
     });
 });
 </script>
+
 </body>
 </html>
