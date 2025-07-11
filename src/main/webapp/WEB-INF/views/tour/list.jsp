@@ -2,7 +2,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ include file="/WEB-INF/views/include/head2.jsp" %>
-<%@ include file="/WEB-INF/views/include/navigation.jsp" %>
+<%@ include file="/WEB-INF/views/include/navigation_editor.jsp" %>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 body {
@@ -21,6 +21,8 @@ a {
   margin: 0 auto;
   display: flex;
   padding: 40px 20px;
+  padding-top: 260px; /* ✅ 상단 네비 높이만큼 여백 추가 */
+  
 }
 
 /* 좌측 네비게이션 */

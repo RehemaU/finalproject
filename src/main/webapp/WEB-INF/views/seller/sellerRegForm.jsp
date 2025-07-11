@@ -359,7 +359,7 @@
   	</script>
 </head>
 <body>
-<%@ include file="/WEB-INF/views/include/navigation.jsp" %>
+<%@ include file="/WEB-INF/views/include/sellerNavigation.jsp" %>
   <div class="signup-container">
     <h2>판매자등록</h2>
     <form id="sellerRegForm" method="post">

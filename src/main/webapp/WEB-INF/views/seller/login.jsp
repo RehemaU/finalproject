@@ -32,10 +32,10 @@
 
     .login-container {
       display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 80vh;
-      padding: 24px;
+  justify-content: flex-start; 
+  align-items: center;
+  height: calc(100vh - 60px); /* 네비 높이 감안 */
+  padding: 100px 600px;
     }
 
     .login-box {
@@ -149,7 +149,7 @@
 					
 					if(code == 0)
 					{
-						location.href = "/seller/sellerUpdateForm";
+						location.href = "/seller/sellerMain";
 					}
 					else
 					{
@@ -195,7 +195,7 @@
   </script>
 </head>
 <body>
- <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
+ <%@ include file="/WEB-INF/views/include/sellerNavigation.jsp" %>
 
   <div class="login-container">
     <div class="login-box">
