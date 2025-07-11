@@ -62,10 +62,17 @@ public class IndexController
 	public String index(HttpServletRequest request, HttpServletResponse response, Model model)
 	{
         List<Region> regionList = regionService.getAllRegions();
-
+        String thumbnail = "";
+        
         // 2. 베스트 후기 3개 조회
         List<Editor> bestReviewList = editorService.getBestReviews();
 
+        for(Editor editor : bestReviewList)
+        {
+            thumbnail = editorService.editorThumbnail(Integer.parseInt(editor.getPlanId()));
+            editor.setThumbnail(thumbnail);
+        }
+        
         // 3. 모델에 담기
         model.addAttribute("regionList", regionList);
         model.addAttribute("bestReviewList", bestReviewList);
