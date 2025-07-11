@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sist.web.dao.ReviewDao">
+	  <resultMap type="com.sist.web.model.Review" id="reviewResultMap">
+	  	   <id column="ACCOMM_REVIEW_ID" property="accommReviewId" />
+	       <result column="USER_ID" property="userId" />
+		   <result column="ACCOMM_ID" property="accommId" />
+		   <result column="ACCOMM_REVIEW_CONTENT" property="accommReviewContent" />
+		   <result column="ACCOMM_REVIEW_RATING" property="accommReviewRating" />
+		   <result column="ACCOMM_REVIEW_PARENT" property="accommReviewParent" />
+	  </resultMap>
+	  
+	  <insert id="reviewInsert" parameterType="com.sist.web.model.Review">
+		INSERT INTO T_ACCOMM_REVIEW (
+		    ACCOMM_REVIEW_ID,
+		    USER_ID,
+		    ACCOMM_ID,
+		    ACCOMM_REVIEW_CONTENT,
+		    ACCOMM_REVIEW_RATING,
+		    ACCOMM_REVIEW_PARENT
+		) VALUES ( REVIEW_SEQ.NEXTVAL,
+		           #{userId},
+		           #{accommId},
+		           #{accommReviewContent},
+		           #{accommReviewRating},
+		           NULL )
+	  </insert>
+	  
+</mapper>

@@ -139,6 +139,14 @@
   }
 </script>
 
+<!-- 리뷰 -->
+<script>
+function openReviewPopup(accommId) {
+	const url = '/mypage/reviewPopup?accommId=' + accommId;
+	window.open(url, 'reviewPopup', 'width=500,height=500');
+}
+</script>
+
   </div>
 </div>
 </div>
