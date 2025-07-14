@@ -141,7 +141,14 @@
 
 <!-- 리뷰 -->
 <script>
+const loginUserId = "<%= session.getAttribute("userId") != null ? session.getAttribute("userId") : "" %>";
+
 function openReviewPopup(accommId) {
+	if (!loginUserId || loginUserId === "") 
+	{
+	   alert("로그인이 필요합니다.");
+	   return;
+	}
 	const url = '/mypage/reviewPopup?accommId=' + accommId;
 	window.open(url, 'reviewPopup', 'width=500,height=500');
 }
