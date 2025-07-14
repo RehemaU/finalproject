@@ -1,11 +1,16 @@
 package com.sist.web.service;
 
+import java.sql.Date;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +27,7 @@ import com.sist.web.model.UserCoupon;
 
 @Service
 public class OrderService {
+	private static Logger logger = LoggerFactory.getLogger(EditorService.class);
 	
 	@Autowired
 	private RefundDao refundDao;
@@ -173,5 +179,101 @@ public class OrderService {
             // 본 주문 삭제
             orderDao.deleteOrderById(orderId);
         }
+    }
+    
+    // 유저 주문내역
+    public List<Order> userOrderlist(String userId)
+    {
+    	List<Order> order = null;
+    	
+    	try
+    	{
+    		order = orderDao.userOrderlist(userId);
+    	}
+    	catch(Exception e)
+    	{
+    		logger.error("[OrderService] userOrderlist : ", e);
+    	}
+    	
+    	return order;
+    }
+    
+    //유저 주문상세
+    public OrderDetail userOrderDetails(String orderId)
+    {
+    	OrderDetail orderdetail = null;
+    	
+    	try
+    	{
+    		orderdetail = orderDao.userOrderDetails(orderId);
+    	}
+    	catch(Exception e)
+    	{
+    		logger.error("[OrderService] userOrderDetails : ", e);
+    	}
+    	
+    	return orderdetail;
+    }
+    
+    // 체크인 날짜 하루 전인지
+    public int userOrderCheckin(String orderId)
+    {
+    	int count = 0;
+    	
+    	try
+    	{
+    		count = orderDao.userOrderCheckin(orderId);
+    	}
+    	catch(Exception e)
+    	{
+    		logger.error("[OrderService] userOrderCheckin : ", e);
+    	}
+    	
+    	return count;
+    }
+    
+    // 체크아웃 날짜 한달 내인지
+    public int userOrderCheckout(String orderId)
+    {
+    	int count = 0;
+    	
+    	try
+    	{
+    		count = orderDao.userOrderCheckout(orderId);
+    	}
+    	catch(Exception e)
+    	{
+    		logger.error("[OrderService] userOrderCheckout : ", e);
+    	}
+    	
+    	return count;
+    }
+    
+    public int calculateRefundAmount(Order order) {
+        // 오늘 날짜
+        LocalDate today = LocalDate.now();
+        OrderDetail orderDetail = orderDao.userOrderDetails(order.getOrderId());
+        // 체크인 날짜 (OrderDetail에서 가져오거나 order.getCheckInDate() 등으로)
+        LocalDate checkInDate = orderDetail.getOrderDetailsCheckinDate().toInstant()
+														                .atZone(ZoneId.systemDefault())
+														                .toLocalDate(); // LocalDate여야 함
+
+        // 남은 일수 계산
+        long daysUntilCheckIn = ChronoUnit.DAYS.between(today, checkInDate);
+
+        int totalAmount = order.getOrderTotalAmount();
+
+        int refundAmount;
+        if (daysUntilCheckIn >= 3) {
+            refundAmount = totalAmount;
+        } else if (daysUntilCheckIn == 2) {
+            refundAmount = (int) (totalAmount * 0.8);
+        } else if (daysUntilCheckIn == 1) {
+            refundAmount = (int) (totalAmount * 0.5);
+        } else {
+            refundAmount = 0; // 체크인 당일이거나 지난 경우
+        }
+
+        return refundAmount;
     }
 }

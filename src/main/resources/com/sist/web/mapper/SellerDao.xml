@@ -66,4 +66,8 @@
 		  SET SELLER_PASSWORD = #{sellerPassword}
 		WHERE SELLER_ID = #{sellerId}
   </update>
+  
+  
+
+  
 </mapper>

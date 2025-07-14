@@ -22,9 +22,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sist.web.model.Accommodation;
+import com.sist.web.model.AccommodationRoom;
 import com.sist.web.model.Region;
 import com.sist.web.model.Response;
 import com.sist.web.model.Sigungu;
+import com.sist.web.service.AccommodationRoomService;
 import com.sist.web.service.AccommodationService;
 import com.sist.web.service.RegionService;
 import com.sist.web.service.SigunguService;
@@ -50,6 +52,8 @@ public class AccommController
 	@Autowired
 	private AccommodationService accommodationService;
 	
+	@Autowired
+	private AccommodationRoomService accommodationRoomService;
 	
 	@GetMapping("/accomm/accommRegForm")
 	public String accommRegForm(Model model) {
@@ -176,6 +180,8 @@ public class AccommController
 	        return "/error";
 	    }
 	}
+
+
 	  @GetMapping("/seller/accommList")
 	    public String sellerAccommList(HttpSession session, Model model) {
 	    	String sellerId = (String) session.getAttribute("sellerId");	        
@@ -188,5 +194,24 @@ public class AccommController
 	        model.addAttribute("accommList", accommList);
 	        return "/seller/accommList"; // → /WEB-INF/views/seller/accommList.jsp
 	    }
+
+	
+	@RequestMapping(value = "/accomm/accommRoomRegForm", method = RequestMethod.GET)
+	public String sellerInfo(HttpServletRequest request, HttpServletResponse response)
+	{
+		// 추가해야할 것 > accommId을 전 화면에서(리스트 혹은 상세에서) 가져와서 넘겨주기
+		return "/accomm/accommRoomRegForm";
+	}
+	
+	@RequestMapping(value = "/accomm/accommRoomRegProc", method = RequestMethod.POST)
+	public String roomRegProc(AccommodationRoom room, HttpServletRequest request, HttpSession session) {
+		String sellerId = (String)session.getAttribute("SELLER_ID");
+		// 검증 로직, accommId는 현재 존재하므로 그곳의 sellerId와 같은지 다시 한번 검증해서 추가하도록 해야함.
+		accommodationRoomService.saveAccommodationRoom(room);
+		
+		
+		return "redirect:/accomm/list";
+	}
+
 
 }

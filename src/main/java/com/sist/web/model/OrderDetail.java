@@ -1,7 +1,7 @@
 package com.sist.web.model;
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.util.Date;
 
 public class OrderDetail implements Serializable {
 
@@ -17,6 +17,9 @@ public class OrderDetail implements Serializable {
     private Date orderDetailsCheckinDate;        // 체크인 날짜
     private Date orderDetailsCheckoutDate;       // 체크아웃 날짜
 
+    private AccommodationRoom accommRoom; //결제 상세 조회를 위한 객체 선언
+    private Accommodation accomm;         //결제 상세 조회를 위한 객체 선언
+    
     public OrderDetail() {
         this.orderDetailsId = "";
         this.accommRoomId = "";
@@ -27,9 +30,12 @@ public class OrderDetail implements Serializable {
         this.orderDetailsCount = 1;
         this.orderDetailsCheckinDate = new Date(System.currentTimeMillis());
         this.orderDetailsCheckoutDate = new Date(System.currentTimeMillis());
+        
+        this.accommRoom = new AccommodationRoom();
+        this.accomm = new Accommodation();
     }
 
-    // --- Getter / Setter ---
+	// --- Getter / Setter ---
     public String getOrderDetailsId() {
         return orderDetailsId;
     }
@@ -100,5 +106,22 @@ public class OrderDetail implements Serializable {
 
     public void setOrderDetailsCheckoutDate(Date orderDetailsCheckoutDate) {
         this.orderDetailsCheckoutDate = orderDetailsCheckoutDate;
+    }
+    
+    //조인을 위한 객체 getter-setter
+    public AccommodationRoom getAccommRoom() {
+    	return accommRoom;
+    }
+    
+    public void setAccommRoom(AccommodationRoom accommRoom) {
+    	this.accommRoom = accommRoom;
+    }
+    
+    public Accommodation getAccomm() {
+    	return accomm;
+    }
+    
+    public void setAccomm(Accommodation accomm) {
+    	this.accomm = accomm;
     }
 }

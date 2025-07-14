@@ -331,6 +331,7 @@ function fetchLikedTourIds() {
     })
     .catch(e => console.error('찜목록 오류', e));
 }
+
 function updateHeartButtons() {
   const set = new Set(likedTourIds);
   document.querySelectorAll('.heart-btn').forEach(btn => {
@@ -345,6 +346,7 @@ function updateHeartButtons() {
     else { btn.classList.remove('liked'); icon.textContent = '♡'; }
   });
 }
+
 function toggleLike(spotId, btn) {
   if (btn.disabled) return;
   btn.disabled = true;
