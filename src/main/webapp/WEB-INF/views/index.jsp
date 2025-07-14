@@ -59,7 +59,7 @@
     ${r.thumbnail}    
       <div class="review-body">
         <h4>${r.planTitle}</h4>
-        <span class="user">by ${r.userId}</span>
+        <span class="user">by ${r.userName}</span>
       </div>
     </article>
   </a>

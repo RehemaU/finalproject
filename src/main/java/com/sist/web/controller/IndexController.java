@@ -23,9 +23,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import com.sist.web.service.EditorService;
 import com.sist.web.service.RegionService;
-
+import com.sist.web.service.UserService;
 import com.sist.web.model.Editor;
 import com.sist.web.model.Region;
+import com.sist.web.model.User;
 import com.sist.web.util.CookieUtil;
 
 /**
@@ -55,14 +56,18 @@ public class IndexController
 	 */
     @Autowired
     private RegionService regionService;
-
+    @Autowired
+    private UserService userService;
     @Autowired
     private EditorService editorService;
+    
 	@RequestMapping(value = "/index", method=RequestMethod.GET)
 	public String index(HttpServletRequest request, HttpServletResponse response, Model model)
 	{
         List<Region> regionList = regionService.getAllRegions();
         String thumbnail = "";
+        User user = new User();
+        String userName = "";
         
         // 2. 베스트 후기 3개 조회
         List<Editor> bestReviewList = editorService.getBestReviews();
@@ -71,6 +76,9 @@ public class IndexController
         {
             thumbnail = editorService.editorThumbnail(Integer.parseInt(editor.getPlanId()));
             editor.setThumbnail(thumbnail);
+            user = userService.userSelect(editor.getUserId());
+            userName = user.getUserName();
+            editor.setUserName(userName);
         }
         
         // 3. 모델에 담기

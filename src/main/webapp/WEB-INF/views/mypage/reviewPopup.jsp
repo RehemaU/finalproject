@@ -3,6 +3,7 @@
 
 <%
 	String accommId = request.getParameter("accommId");
+	String orderId = request.getParameter("orderId");
 	String userId = (String) session.getAttribute("userId");
 %>
 
@@ -88,7 +89,9 @@
   <form id="reviewForm">
     
     <input type="hidden" name="accommId" value="<%= accommId %>">
+    <input type="hidden" name="orderId" value="<%= orderId %>">
     <input type="hidden" name="userId" value="<%= userId %>">
+    
     
     <!-- 별점 입력 -->
     <div class="star-rating">
