@@ -149,7 +149,6 @@ function openReviewPopup(accommId) {
 	   alert("로그인이 필요합니다.");
 	   return;
 	}
-  
 	const url = '/mypage/reviewPopup?accommId=' + accommId;
 	window.open(url, 'reviewPopup', 'width=500,height=500');
 }

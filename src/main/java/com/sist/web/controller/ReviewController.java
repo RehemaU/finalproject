@@ -57,20 +57,13 @@ public class ReviewController {
 			review.setAccommReviewRating(rating);
 			review.setAccommReviewContent(content);
 			
-			if(reviewService.reviewCount(review)>0)
+			if(reviewService.reviewInsert(review)>0)
 			{
-				ajaxResponse.setResponse(-10, "review already exists");
+				ajaxResponse.setResponse(0, "review insert success");
 			}
 			else
 			{
-				if(reviewService.reviewInsert(review)>0)
-				{
-					ajaxResponse.setResponse(0, "review insert success");
-				}
-				else
-				{
-					ajaxResponse.setResponse(-1, "review insert fail");
-				}
+				ajaxResponse.setResponse(-1, "review insert fail");
 			}
 		}
 		catch(Exception e)

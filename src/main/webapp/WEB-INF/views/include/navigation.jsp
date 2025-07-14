@@ -2,6 +2,7 @@
 <%@ include file="/WEB-INF/views/include/taglib.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!-- navigation.jsp : 공통 Header / GNB -->
+
 <header>
   <!-- 상단 유틸바 -->
   <div class="util-bar wrap flex between center">

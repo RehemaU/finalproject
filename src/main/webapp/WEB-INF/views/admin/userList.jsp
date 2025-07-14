@@ -97,16 +97,22 @@
             <c:otherwise>정상</c:otherwise>
           </c:choose>
         </td>
-        <td class="user-button">
-          <c:choose>
-            <c:when test="${user.userOut == 'N'}">
-              <button type="button" class="ban-btn" onclick="toggleUserOut('${user.userId}', 'Y')">탈퇴 처리</button>
-            </c:when>
-            <c:when test="${user.userOut == 'Y'}">
-              <button type="button" class="unban-btn" onclick="toggleUserOut('${user.userId}', 'N')">복구</button>
-            </c:when>
-          </c:choose>
-        </td>
+<td class="user-button">
+  <c:choose>
+    <c:when test="${user.userOut == 'N'}">
+      <button type="button"
+              class="ban-btn toggle-user-btn"
+              data-userid="${user.userId}"
+              data-status="Y">탈퇴 처리</button>
+    </c:when>
+    <c:when test="${user.userOut == 'Y'}">
+      <button type="button"
+              class="unban-btn toggle-user-btn"
+              data-userid="${user.userId}"
+              data-status="N">복구</button>
+    </c:when>
+  </c:choose>
+</td>
       </tr>
     </c:forEach>
     

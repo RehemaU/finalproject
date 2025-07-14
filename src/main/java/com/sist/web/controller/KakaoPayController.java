@@ -273,7 +273,7 @@ public class KakaoPayController {
                 return res;
             }
 
-            // 주문 정보 조회
+
             Order order = orderService.selectOrderById(orderId);
             if (order == null || !userId.equals(order.getUserId())) {
                 res.put("status", -1);
@@ -286,14 +286,14 @@ public class KakaoPayController {
                 res.put("message", "주문자의 ID까 아닙니다.");
             }
 
-            // 환불 요청 
             String tid = order.getOrderTid();
             Refund refund = new Refund();
             refund.setOrderId(orderId);
             refund.setUserId(userId);
             refundService.inserRefund(refund);
             // refund의 현재 상태 : requested인 상태로 생성, 환불 금액은 전체로 설정, ID는 시퀀스로 추가
-            int refundAmount = order.getOrderTotalAmount();
+            // 금액에 대한 로직 추가
+            int refundAmount = orderService.calculateRefundAmount(order);
             boolean success = kakaoPayService.cancel(tid, refundAmount);
 
             if (success) {

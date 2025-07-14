@@ -57,7 +57,6 @@
   <a href="/editor/planview?planId=${r.planId}" class="review-card-link">
     <article class="review-card">
     ${r.thumbnail}    
-      <img src="/resources/images/default-thumbnail.jpg" alt="review${i.index}" />
       <div class="review-body">
         <h4>${r.planTitle}</h4>
         <span class="user">by ${r.userId}</span>
