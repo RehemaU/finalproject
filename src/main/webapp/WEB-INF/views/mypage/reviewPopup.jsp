@@ -122,6 +122,9 @@ function submitReview(event) {
 	    if(data.code === 0) {
 	      alert("리뷰 등록 완료!");
 	      window.close(); // 팝업 닫기
+	    } else if(data.code === -10) {
+	    	alert("리뷰가 이미 존재합니다.");
+	    	window.close();
 	    } else {
 	      alert("리뷰 등록 실패: " + data.message);
 	    }

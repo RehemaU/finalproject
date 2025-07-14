@@ -16,7 +16,7 @@ public class ReviewService {
 	@Autowired
 	private ReviewDao reviewDao;
 	
-	
+	//리뷰 등록
 	public int reviewInsert(Review review)
 	{
 		int count = 0;
@@ -32,4 +32,22 @@ public class ReviewService {
 		
 		return count;
 	}
+	
+	//리뷰 있나 조회
+	public int reviewCount(Review review)
+	{
+		int count = 0;
+		
+		try
+		{
+			count = reviewDao.reviewCount(review);
+		}
+		catch(Exception e)
+		{
+			logger.error("[ReviewService]reviewCount Exception", e);
+		}
+		
+		return count;
+	}
+
 }

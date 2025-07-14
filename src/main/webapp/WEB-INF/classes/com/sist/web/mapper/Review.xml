@@ -7,7 +7,6 @@
 		   <result column="ACCOMM_ID" property="accommId" />
 		   <result column="ACCOMM_REVIEW_CONTENT" property="accommReviewContent" />
 		   <result column="ACCOMM_REVIEW_RATING" property="accommReviewRating" />
-		   <result column="ACCOMM_REVIEW_PARENT" property="accommReviewParent" />
 	  </resultMap>
 	  
 	  <insert id="reviewInsert" parameterType="com.sist.web.model.Review">
@@ -16,14 +15,23 @@
 		    USER_ID,
 		    ACCOMM_ID,
 		    ACCOMM_REVIEW_CONTENT,
-		    ACCOMM_REVIEW_RATING,
-		    ACCOMM_REVIEW_PARENT
+		    ACCOMM_REVIEW_RATING
 		) VALUES ( REVIEW_SEQ.NEXTVAL,
 		           #{userId},
 		           #{accommId},
 		           #{accommReviewContent},
-		           #{accommReviewRating},
-		           NULL )
+		           #{accommReviewRating})
 	  </insert>
+	  
+	  <select id="reviewCount" parameterType="com.sist.web.model.Review" resultType="int">
+		SELECT
+		    COUNT(*)
+		FROM
+		    T_ACCOMM_REVIEW
+		WHERE
+		    USER_ID = #{userId}
+		AND
+		    ACCOMM_ID = #{accommId}
+	  </select>
 	  
 </mapper>

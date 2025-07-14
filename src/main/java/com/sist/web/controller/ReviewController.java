@@ -30,7 +30,7 @@ public class ReviewController {
 	{
 		String accommId = request.getParameter("accommId");
 	    model.addAttribute("accommId", accommId);
-		
+	    
 	    return "/mypage/reviewPopup";
 	}
 	
