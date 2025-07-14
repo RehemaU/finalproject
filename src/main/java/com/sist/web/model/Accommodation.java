@@ -56,7 +56,26 @@ public class Accommodation {
     
     private String unifiedId;
     
-    public String getUnifiedId() {
+    private double rating;
+    private int accommCount;
+    
+    public int getAccommCount() {
+		return accommCount;
+	}
+
+	public void setAccommCount(int accommCount) {
+		this.accommCount = accommCount;
+	}
+
+	public double getRating() {
+		return rating;
+	}
+
+	public void setRating(double rating) {
+		this.rating = rating;
+	}
+
+	public String getUnifiedId() {
 		return unifiedId;
 	}
 

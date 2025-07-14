@@ -111,7 +111,7 @@
         <button type="button" class="custom-btn" onclick="openRefund('${orderDetail.orderId}')">환불 신청</button>
       </c:if>
       <c:if test="${isReview}">
-        <button type="button" class="custom-btn" onclick="openReviewPopup('${orderDetail.accomm.accomId}')">리뷰 작성</button>
+        <button type="button" class="custom-btn" onclick="openReviewPopup('${orderDetail.accomm.accomId}', '${orderDetail.orderId}')">리뷰 작성</button>
       </c:if>
       <a href="/mypage/orderlist" class="custom-btn"
          style="text-decoration: none; color: white; background-color: black;">
@@ -143,13 +143,13 @@
 <script>
 const loginUserId = "<%= session.getAttribute("userId") != null ? session.getAttribute("userId") : "" %>";
 
-function openReviewPopup(accommId) {
+function openReviewPopup(accommId, orderId) {
 	if (!loginUserId || loginUserId === "") 
 	{
 	   alert("로그인이 필요합니다.");
 	   return;
 	}
-	const url = '/mypage/reviewPopup?accommId=' + accommId;
+	const url = '/mypage/reviewPopup?accommId=' + accommId + '&orderId=' + orderId
 	window.open(url, 'reviewPopup', 'width=500,height=500');
 }
 </script>
