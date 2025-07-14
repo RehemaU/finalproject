@@ -18,7 +18,9 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -114,7 +116,22 @@ public class TourService {
 
 
     public List<Tour> findBySigunguList(List<Sigungu> sigunguList, String userId) {
-        List<Tour> list = tourDao.searchBySigungu(sigunguList);
+    	int page = 1;
+    	int pageSize = 20;
+    	Map<String, Object> param2 = new HashMap<>();
+    	param2.put("list", sigunguList);
+    	
+    	int totalCount = tourDao.getTourCount(param2);
+    	
+    	int start = (page - 1) * pageSize; // 0
+    	int end = page * pageSize;         // 20
+    	
+    	Map<String, Object> param = new HashMap<>();
+    	param.put("start", start);
+    	param.put("end", end);
+    	param.put("list", sigunguList);
+
+    	List<Tour> list = tourDao.searchBySigungu(param);
 
         // 로그인 안 한 경우 그대로 반환
         if (userId == null || userId.trim().isEmpty()) return list;
