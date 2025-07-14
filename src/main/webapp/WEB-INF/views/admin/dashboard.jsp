@@ -160,7 +160,7 @@ $(function () {
             success: function (res) {
                 if (res.code === 0) {
                     alert("승인 완료");
-                    const keyword = $("#accommSearchInput").val();
+                    const keyword = $("#accommSearchInput_acc").val();
                     const status = $(".filter-btn.active").data("status") || '';
                     const page = $(".accomm-page-link.active").data("page") || 1;
                     loadContent(`/admin/accommList?keyword=${keyword}&status=${status}&page=${page}`);
@@ -172,16 +172,18 @@ $(function () {
     });
 
     // ✅ 숙소 검색
-    $(document).on("click", "#accommSearchBtn", function () {
-        const keyword = $("#accommSearchInput").val();
-        loadContent(`/admin/accommList?keyword=${keyword}`);
-    });
+    $(document).on("click", "#accommSearchBtn_acc", function () {
+    const keyword = $("#accommSearchInput_acc").val().trim();
+    console.log("🔍 숙소 검색 keyword =", keyword);
+    const url = "/admin/accommList?keyword=" + encodeURIComponent(keyword);
+    loadContent(url);
+});
 
 
  // ✅ 숙소 페이징 (유저와 똑같은 구조로)
     $(document).on("click", ".accomm-page-link", function () {
         const page = $(this).data("page");
-        const keyword = $("#accommSearchInput").val();
+        const keyword = $("#accommSearchInput_acc").val();
         const status = $(".filter-btn.active").data("status") || '';
         $.ajax({
             url: "/admin/accommList",
@@ -196,7 +198,7 @@ $(function () {
 });
 
 $(document).on("click", "#filterPendingBtn", function () {
-    const keyword = $("#accommSearchInput").val();
+    const keyword = $("#accommSearchInput_acc").val();
     const status = "N";
     const url = "/admin/accommList?page=1&keyword=" + encodeURIComponent(keyword) + "&status=" + status;
 
@@ -205,7 +207,7 @@ $(document).on("click", "#filterPendingBtn", function () {
 
 // "전체 숙소 보기" 버튼
 $(document).on("click", "#filterAllBtn", function () {
-    const keyword = $("#accommSearchInput").val();
+    const keyword = $("#accommSearchInput_acc").val();
     const url = "/admin/accommList?page=1&keyword=" + encodeURIComponent(keyword);
     loadContent(url);
 });

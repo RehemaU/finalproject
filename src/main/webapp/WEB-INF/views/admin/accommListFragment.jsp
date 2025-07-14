@@ -1,7 +1,8 @@
+<!--
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<!-- ✅ html/head/body 없이 이 안에 내용만 남깁니다 -->
+<!-- ✅ html/head/body 없이 이 안에 내용만 남깁니다 
 
 <div style="margin-bottom: 15px;">
     <input type="text" id="accommSearchInput" placeholder="판매자 ID 검색" style="padding: 5px;">
@@ -68,3 +69,5 @@
         </c:if>
     </div>
 </div>
+
+  -->
