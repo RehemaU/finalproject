@@ -196,16 +196,17 @@ public class AccommController
 	    }
 
 	
-	@RequestMapping(value = "/accomm/accommRoomRegForm", method = RequestMethod.GET)
-	public String sellerInfo(HttpServletRequest request, HttpServletResponse response)
-	{
-		// 추가해야할 것 > accommId을 전 화면에서(리스트 혹은 상세에서) 가져와서 넘겨주기
-		return "/accomm/accommRoomRegForm";
-	}
-	
+	  @RequestMapping(value = "/accomm/accommRoomRegForm", method = RequestMethod.GET)
+	  public String sellerInfo(HttpServletRequest request, Model model)
+	  {
+	      String accommId = request.getParameter("accommId");  // 숙소 ID 받기
+	      model.addAttribute("accommId", accommId);            // 뷰에서 사용할 수 있도록 모델에 담기
+	      return "/accomm/accommRoomRegForm";
+	  }
+
 	@RequestMapping(value = "/accomm/accommRoomRegProc", method = RequestMethod.POST)
 	public String roomRegProc(AccommodationRoom room, HttpServletRequest request, HttpSession session) {
-		String sellerId = (String)session.getAttribute("SELLER_ID");
+    	String sellerId = (String) session.getAttribute("sellerId");	        
 		// 검증 로직, accommId는 현재 존재하므로 그곳의 sellerId와 같은지 다시 한번 검증해서 추가하도록 해야함.
 		accommodationRoomService.saveAccommodationRoom(room);
 		
