@@ -70,4 +70,34 @@ public class AdminService {
  	public List<User> searchUsersById(String keyword) {
  	    return adminDao.searchUsersById(keyword);
  	}
+ 	
+ 	public List<User> getUsersWithPaging(Map<String, Object> param) {
+ 	    return adminDao.getUsersWithPaging(param);
+ 	}
+ 	
+ 	public int getUserCount(Map<String, Object> param) {
+ 	    return adminDao.getUserCount(param);
+ 	}
+
+ 	
+    public List<Seller> getSellerList(Map<String, Object> param) {
+        return adminDao.getSellerList(param);
+    }
+    public int getSellerCount(Map<String, Object> param) {
+        return adminDao.getSellerCount(param);
+    }
+    
+    public List<Map<String, Object>> getAccommList(Map<String, Object> param) {
+        return adminDao.getAccommList(param);
+    }
+    
+    public int getAccommCount(Map<String, Object> param) {
+        return adminDao.getAccommCount(param);
+    }
+    
+    public boolean approveAccomm(String accommId) {
+        return adminDao.approveAccomm(accommId) > 0;
+    }
+    
+    
 }

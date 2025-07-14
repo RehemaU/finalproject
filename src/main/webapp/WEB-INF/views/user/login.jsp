@@ -125,14 +125,11 @@
       $("#btngoogle").on("click", function(){
     	  location.href = "https://accounts.google.com/o/oauth2/v2/auth?client_id=292826362473-d70q9e2i8kaiksg49ij9vfhhupbv61fq.apps.googleusercontent.com&redirect_uri=http://finalproject.sist.co.kr:8088/user/googleLogin&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=select_account";
       }); 
-<<<<<<< HEAD
-=======
       
       $("#btnnaver").on("click", function(){
     	  location.href = "/user/naverAuth";
       }); 
       
->>>>>>> refs/heads/devSss2
    });
    
    function fn_loginCheck()
@@ -205,12 +202,8 @@
         <button type="button" id="btnkakao" class="btn">카카오로그인</button>
         <!--구글로그인 -->
         <button type="button" id="btngoogle" class="btn">구글로그인</button>
-<<<<<<< HEAD
-=======
-        
         <!--네이버로그인 -->
         <button type="button" id="btnnaver" class="btn">네이버로그인</button>
->>>>>>> refs/heads/devSss2
       </form>
     </div>
   </div>
