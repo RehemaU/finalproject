@@ -654,6 +654,7 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 
 	
 	
+
 	//구글로그인
 	//로그인 페이지
 	@RequestMapping(value = "/user/googleLogin", method=RequestMethod.GET)
@@ -661,6 +662,7 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 	{
 		
 		// 이부분 커밋 문제로 돌렸음. 클라이언트id랑 시크릿id
+
 
          String redirectUri = "http://finalproject.sist.co.kr:8088/user/googleLogin";
 		 String tokenUrl = "https://oauth2.googleapis.com/token";
@@ -758,6 +760,7 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 		
 
 	    //클라이언트 ID 선언 추가
+		String clientId     = "lkNsq2Vywv4DNarVaHOI"; 
 	    String redirectUri  = "http://finalproject.sist.co.kr:8088/user/naverLogin";
     
 	    
@@ -768,11 +771,11 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 	    
 	    //네이버 인증 URL 생성
 	    String authUrl = "https://nid.naver.com/oauth2.0/authorize"
-	            			+ "?response_type=code"
-	            			//+ "&client_id="  + clientId
-	            			+ "&redirect_uri=" + URLEncoder.encode(redirectUri, StandardCharsets.UTF_8.name())
-	            			+ "&state=" + state
-	            			+ "&auth_type=reauthenticate"; 
+                + "?response_type=code"
+                + "&client_id="  + clientId
+                + "&redirect_uri=" + URLEncoder.encode(redirectUri, StandardCharsets.UTF_8.name())
+                + "&state=" + state
+                + "&auth_type=reauthenticate"; 
 
 	    response.sendRedirect(authUrl);
 	}
@@ -787,7 +790,8 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 	{
 		
 		 //클라이언트 ID와 보안키값 선언해야 함
-         
+		 String clientId = "lkNsq2Vywv4DNarVaHOI";
+		 String clientSecret = "HEw1NA98WG";
          //state 검증
          String savedState = (String) session.getAttribute("naver_state");
          if (savedState == null || !savedState.equals(state)) {
@@ -799,9 +803,11 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 		 
 	     //토큰 요청
          String tokenUrl = "https://nid.naver.com/oauth2.0/token"
-                 			+ "?grant_type=authorization_code"
-                 			+ "&code="          + code
-                 			+ "&state="         + state;
+                 + "?grant_type=authorization_code"
+                 + "&client_id="     + clientId
+                 + "&client_secret=" + clientSecret
+                 + "&code="          + code
+                 + "&state="         + state;
 		 
 		 
 		 RestTemplate restTemplate = new RestTemplate();

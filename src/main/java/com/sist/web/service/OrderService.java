@@ -2,6 +2,8 @@ package com.sist.web.service;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -245,5 +247,33 @@ public class OrderService {
     	}
     	
     	return count;
+    }
+    
+    public int calculateRefundAmount(Order order) {
+        // 오늘 날짜
+        LocalDate today = LocalDate.now();
+        OrderDetail orderDetail = orderDao.userOrderDetails(order.getOrderId());
+        // 체크인 날짜 (OrderDetail에서 가져오거나 order.getCheckInDate() 등으로)
+        LocalDate checkInDate = orderDetail.getOrderDetailsCheckinDate().toInstant()
+														                .atZone(ZoneId.systemDefault())
+														                .toLocalDate(); // LocalDate여야 함
+
+        // 남은 일수 계산
+        long daysUntilCheckIn = ChronoUnit.DAYS.between(today, checkInDate);
+
+        int totalAmount = order.getOrderTotalAmount();
+
+        int refundAmount;
+        if (daysUntilCheckIn >= 3) {
+            refundAmount = totalAmount;
+        } else if (daysUntilCheckIn == 2) {
+            refundAmount = (int) (totalAmount * 0.8);
+        } else if (daysUntilCheckIn == 1) {
+            refundAmount = (int) (totalAmount * 0.5);
+        } else {
+            refundAmount = 0; // 체크인 당일이거나 지난 경우
+        }
+
+        return refundAmount;
     }
 }
