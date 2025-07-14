@@ -237,6 +237,8 @@ function updateSigunguOptions(){
 
 <!-- ▸ JS : 검색·추가(기존 addDetail 코드 그대로) -->
 <script>
+const selectedDates = <%= new com.google.gson.Gson().toJson(session.getAttribute("selectedDates")) %> || [];
+
 document.addEventListener('DOMContentLoaded',()=>{
   let currentDayNo=1,currentType='accom',currentPage=1,itemsPerPage=6,
       map,accomList=[],tourList=[];
@@ -351,54 +353,59 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   // Spot 추가 함수 (수동 추가 지원)
   function addSpot(loc){
-    if (!loc || !loc.name) {
-      return;
-    }
-    
-    if (!currentDayNo) {
-      return;
-    }
-    
-    const pos=new kakao.maps.LatLng(loc.lat,loc.lon);
-    map.setCenter(pos);
-    new kakao.maps.Marker({map,position:pos,title:loc.name});
+	  if (!loc || !loc.name) return;
+	  if (!currentDayNo) return;
 
-    const card=document.createElement('div');card.className='entry';
-    
-    var dayNoValue = currentDayNo;
-    var spotIdValue = loc.id;
-    var displayText = '[Day ' + dayNoValue + '] ' + loc.name;
-    
-    var html = '';
-    html += '<button type="button" class="del-btn" onclick="this.parentElement.remove()">🗑</button>';
-    html += '<input type="hidden" name="calanderIds" value="">'; /* 새로 추가된 항목: ID 없음 */
-    html += '<input type="hidden" name="dayNos" value="' + dayNoValue + '">';
-    html += '<input type="hidden" name="spotIds" value="' + spotIdValue + '">';
-    
-    // 수동 추가 여부를 명확히 구분
-    if (loc.isManual) {
-      html += '<input type="hidden" name="isManual" value="true">';
-      html += '<input type="hidden" name="manualNames" value="' + escapeHtml(loc.name) + '">';
-      html += '<input type="hidden" name="manualAddresses" value="' + escapeHtml(loc.address) + '">';
-      html += '<input type="hidden" name="manualLats" value="' + loc.lat + '">';
-      html += '<input type="hidden" name="manualLons" value="' + loc.lon + '">';
-      displayText += ' (직접 입력: ' + loc.address + ')';
-    } else {
-      html += '<input type="hidden" name="isManual" value="false">';
-      // 일반 장소의 경우 빈 값으로 자리만 채움
-      html += '<input type="hidden" name="manualNames" value="">';
-      html += '<input type="hidden" name="manualAddresses" value="">';
-      html += '<input type="hidden" name="manualLats" value="">';
-      html += '<input type="hidden" name="manualLons" value="">';
-    }
-    
-    html += '<strong>' + escapeHtml(displayText) + '</strong>';
-    html += '시작 <input type="datetime-local" name="startTimes" required>';
-    html += '종료 <input type="datetime-local" name="endTimes" required>';
-    
-    card.innerHTML = html;
-    document.getElementById('selectedBox').appendChild(card);
-  }
+	  const pos = new kakao.maps.LatLng(loc.lat, loc.lon);
+	  map.setCenter(pos);
+	  new kakao.maps.Marker({ map, position: pos, title: loc.name });
+
+	  const card = document.createElement('div');
+	  card.className = 'entry';
+
+	  const dayNoValue = currentDayNo;
+	  const spotIdValue = loc.id;
+	  let displayText = '[Day ' + dayNoValue + '] ' + loc.name;
+
+	  let html = '';
+	  html += '<button type="button" class="del-btn" onclick="this.parentElement.remove()">🗑</button>';
+	  html += '<input type="hidden" name="calanderIds" value="">';
+	  html += '<input type="hidden" name="dayNos" value="' + dayNoValue + '">';
+	  html += '<input type="hidden" name="spotIds" value="' + spotIdValue + '">';
+
+	  if (loc.isManual) {
+	    html += '<input type="hidden" name="isManual" value="true">';
+	    html += '<input type="hidden" name="manualNames" value="' + escapeHtml(loc.name) + '">';
+	    html += '<input type="hidden" name="manualAddresses" value="' + escapeHtml(loc.address) + '">';
+	    html += '<input type="hidden" name="manualLats" value="' + loc.lat + '">';
+	    html += '<input type="hidden" name="manualLons" value="' + loc.lon + '">';
+	    displayText += ' (직접 입력: ' + loc.address + ')';
+	  } else {
+	    html += '<input type="hidden" name="isManual" value="false">';
+	    html += '<input type="hidden" name="manualNames" value="">';
+	    html += '<input type="hidden" name="manualAddresses" value="">';
+	    html += '<input type="hidden" name="manualLats" value="">';
+	    html += '<input type="hidden" name="manualLons" value="">';
+	  }
+
+	  html += '<strong>' + escapeHtml(displayText) + '</strong>';
+
+	  // ✅ 날짜 고정 & 현재 이전 시간 막기
+	  let dateStr = selectedDates[dayNoValue - 1]; // ex: '2025-07-14'
+	  const now = new Date();
+	  let minTime = now.toISOString().slice(0, 16); // 기본 min
+
+	  let defaultTime = dateStr ? dateStr + 'T09:00' : '';
+	  if (dateStr && new Date(dateStr) > now) {
+	    minTime = dateStr + 'T00:00';
+	  }
+
+	  html += '시작 <input type="datetime-local" name="startTimes" required value="' + defaultTime + '" min="' + minTime + '">';
+	  html += '종료 <input type="datetime-local" name="endTimes" required value="' + defaultTime + '" min="' + minTime + '">';
+
+	  card.innerHTML = html;
+	  document.getElementById('selectedBox').appendChild(card);
+	}
 
   /* 수동 주소 추가 버튼 이벤트 */
   document.getElementById('addByAddressBtn').onclick = function() {
