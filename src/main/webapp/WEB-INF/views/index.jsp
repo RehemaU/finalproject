@@ -56,12 +56,19 @@
 <c:forEach var="r" items="${bestReviewList}" varStatus="i">
   <a href="/editor/planview?planId=${r.planId}" class="review-card-link">
     <article class="review-card">
-    ${r.thumbnail}    
-      <div class="review-body">
-        <h4>${r.planTitle}</h4>
-        <span class="user">by ${r.userId}</span>
-      </div>
-    </article>
+  <c:choose>
+    <c:when test="${not empty r.thumbnail}">
+     ${r.thumbnail} 
+    </c:when>
+    <c:otherwise>
+      <div class="review-thumb no-thumb">No Image</div>
+    </c:otherwise>
+  </c:choose>
+  <div class="review-body">
+    <h4>${r.planTitle}</h4>
+    <span class="user">by ${r.userId}</span>
+  </div>
+</article>
   </a>
 </c:forEach>
     </div>
@@ -147,6 +154,23 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
+}
+.review-thumb {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background-size: cover;
+  background-position: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.review-thumb.no-thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+  color: #999;
+  font-size: 15px;
+  font-weight: 500;
 }
 
 .hero-banner::after {

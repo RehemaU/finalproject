@@ -205,7 +205,7 @@ public class AccommController
 	
 	@RequestMapping(value = "/accomm/accommRoomRegProc", method = RequestMethod.POST)
 	public String roomRegProc(AccommodationRoom room, HttpServletRequest request, HttpSession session) {
-		String sellerId = (String)session.getAttribute("SELLER_ID");
+    	String sellerId = (String) session.getAttribute("sellerId");	        
 		// 검증 로직, accommId는 현재 존재하므로 그곳의 sellerId와 같은지 다시 한번 검증해서 추가하도록 해야함.
 		accommodationRoomService.saveAccommodationRoom(room);
 		
