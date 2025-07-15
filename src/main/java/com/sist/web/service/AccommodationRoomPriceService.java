@@ -2,6 +2,7 @@ package com.sist.web.service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,45 +42,45 @@ public class AccommodationRoomPriceService {
 		AccommodationRoomPrice roomPrice = accommodationRoomPriceDao.selectAccommodationRoomPrice(param);
 		return roomPrice;
 	}
-	 public RoomPriceResult calculateTotalPrice(String roomId, String checkInStr, String checkOutStr) {
-	        LocalDate checkIn = LocalDate.parse(checkInStr);
-	        LocalDate checkOut = LocalDate.parse(checkOutStr);
-	        int days = 0;
-	        long totalPrice = 0;
+	public RoomPriceResult calculateTotalPrice(String roomId, String checkInStr, String checkOutStr) {
+        LocalDate checkIn = LocalDate.parse(checkInStr);
+        LocalDate checkOut = LocalDate.parse(checkOutStr);
+        int days = 0;
+        long totalPrice = 0;
 
-	        LocalDate current = checkIn;
-	        while (current.isBefore(checkOut)) {
-	            days++;
+        LocalDate current = checkIn;
+        while (current.isBefore(checkOut)) {
+            days++;
 
-	            Map<String, Object> param = new HashMap<>();
-	            param.put("roomId", roomId);
-	            param.put("targetDate", current.toString());
+            Map<String, Object> param = new HashMap<>();
+            param.put("roomId", roomId);
+            param.put("targetDate", current.toString());
 
-	            // ✅ 너가 만든 AccommodationRoomPrice 사용
-	            AccommodationRoomPrice priceData = accommodationRoomPriceDao.selectAccommodationRoomPrice(param);
-	            long dailyPrice = 0;
 
-	            if (priceData != null) {
-	                DayOfWeek day = current.getDayOfWeek();
-	                switch (day) {
-	                    case FRIDAY:
-	                        dailyPrice = priceData.getAccommRoomPriceFriday();
-	                        break;
-	                    case SATURDAY:
-	                        dailyPrice = priceData.getAccommRoomPriceSaturday();
-	                        break;
-	                    case SUNDAY:
-	                        dailyPrice = priceData.getAccommRoomPriceSunday();
-	                        break;
-	                    default:
-	                        dailyPrice = priceData.getAccommRoomPriceWeekday();
-	                        break;
-	                }
-	            } else {
-	                // 가격 정책이 없을 경우 기본 standardPrice 사용
-	                int standardPrice =10;
-	                dailyPrice = standardPrice;
-	            }
+            AccommodationRoomPrice priceData = accommodationRoomPriceDao.selectAccommodationRoomPrice(param);
+            long dailyPrice = 0;
+
+            if (priceData != null) {
+                DayOfWeek day = current.getDayOfWeek();
+                switch (day) {
+                    case FRIDAY:
+                        dailyPrice = priceData.getAccommRoomPriceFriday();
+                        break;
+                    case SATURDAY:
+                        dailyPrice = priceData.getAccommRoomPriceSaturday();
+                        break;
+                    case SUNDAY:
+                        dailyPrice = priceData.getAccommRoomPriceSunday();
+                        break;
+                    default:
+                        dailyPrice = priceData.getAccommRoomPriceWeekday();
+                        break;
+                }
+            } else {
+                // 가격 정책이 없을 경우 기본 standardPrice 사용
+                int standardPrice =10;
+                dailyPrice = standardPrice;
+            }
 
 	            totalPrice += dailyPrice;
 	            current = current.plusDays(1);
@@ -90,4 +91,29 @@ public class AccommodationRoomPriceService {
 	        result.setTotalPrice(totalPrice);
 	        return result;
 	    }
+	public List<AccommodationRoomPrice> getAccommodationRoomPrice(String roomId){
+		
+		return accommodationRoomPriceDao.selectByAccommRoomId(roomId);
+		
+	}
+	
+	public boolean isPriceDateOverlap(String roomId, Date startDate, Date endDate) {
+	    Map<String, Object> param = new HashMap<>();
+	    param.put("roomId", roomId);
+	    param.put("startDate", startDate);
+	    param.put("endDate", endDate);
+
+	    int count = accommodationRoomPriceDao.checkDateOverlap(param);
+	    return count > 0;
+	}
+	
+	public int insertRoomPrice(AccommodationRoomPrice price) {
+		accommodationRoomPriceDao.insertAccommodationRoomPrice(price);
+		return 0;
+	}
+	
+	public void deleteRoomPrice(String priceId) {
+		accommodationRoomPriceDao.deleteRoomPrice(priceId);
+	}
+	 
 }
