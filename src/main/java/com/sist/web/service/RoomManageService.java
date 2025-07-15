@@ -26,4 +26,7 @@ public class RoomManageService {
 	    public AccommodationRoom getRoom(String roomId) {
 	        return roomManageDao.findByRoomId(roomId);
 	    }
+	    public void deleteRoom(String roomId) {
+	        roomManageDao.deleteRoomById(roomId);
+	    }
 }

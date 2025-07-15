@@ -137,4 +137,21 @@ public class RoomManageController {
 
 	        return "/seller/roomList";
 	    }
+	    @RequestMapping(value = "/seller/roomDelete", method = RequestMethod.GET)
+	    public String deleteRoom(@RequestParam("roomId") String roomId,
+	                             @RequestParam("accommId") String accommId,
+	                             HttpSession session, Model model) {
+	        String sellerId = (String) session.getAttribute("sellerId");
+	        if (sellerId == null) {
+	            return "redirect:/user/login";
+	        }
+
+	        try {
+	            roomManageService.deleteRoom(roomId);
+	            return "redirect:/seller/roomList?accommId=" + accommId;
+	        } catch (Exception e) {
+	            model.addAttribute("msg", "객실 삭제 중 오류 발생: " + e.getMessage());
+	            return "/error";
+	        }
+	    }
 }

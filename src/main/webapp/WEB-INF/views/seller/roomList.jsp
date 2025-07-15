@@ -49,6 +49,11 @@
     height: 70px;
     object-fit: cover;
     border-radius: 4px;
+    background-color: #e0e0e0;
+    background-image: url('/resources/images/no-image-bg.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
   }
   .small-text {
     font-size: 13px;
@@ -93,23 +98,11 @@
     font-size: 11px;
     color: #495057;
   }
-  .room-img {
-  width: 100px;
-  height: 70px;
-  object-fit: cover;
-  border-radius: 4px;
-
-  background-color: #e0e0e0; /* 배경 색상 */
-  background-image: url('/resources/images/no-image-bg.svg'); /* 대체 이미지 */
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-}
 </style>
 
 <main class="wrap">
   <h2>객실 관리</h2>
-  
+
   <!-- 객실 목록이 있는 경우 -->
   <c:if test="${not empty roomList}">
     <table>
@@ -122,7 +115,8 @@
         <col style="width: 100px;">     <!-- 체크인 -->
         <col style="width: 100px;">     <!-- 체크아웃 -->
         <col style="width: 120px;">     <!-- 기본요금 -->
-        <col style="width: 120px;">      <!-- 옵션 -->
+        <col style="width: 160px;">     <!-- 편의시설 -->
+        <col style="width: 80px;">      <!-- 삭제 버튼 -->
       </colgroup>
       <thead>
         <tr>
@@ -135,6 +129,7 @@
           <th>체크아웃</th>
           <th>기본요금</th>
           <th>편의시설</th>
+          <th>객실삭제</th>
         </tr>
       </thead>
       <tbody>
@@ -142,14 +137,13 @@
           <tr>
             <td>
               <c:choose>
-  <c:when test="${not empty room.roomImage}">
-    <img src="${room.roomImage}" class="room-img" />
-  </c:when>
-  <c:otherwise>
-    <img src="" class="room-img" />
-  </c:otherwise>
-</c:choose>
-
+                <c:when test="${not empty room.roomImage}">
+                  <img src="${room.roomImage}" class="room-img" />
+                </c:when>
+                <c:otherwise>
+                  <img src="" class="room-img" />
+                </c:otherwise>
+              </c:choose>
             </td>
             <td>${room.roomName}</td>
             <td>${room.roomScale}</td>
@@ -180,12 +174,17 @@
                 <c:if test="${room.dryer eq 'Y'}"><span class="amenity-tag">드라이기</span></c:if>
               </div>
             </td>
+            <td>
+              <a href="/seller/roomDelete?roomId=${room.accommRoomId}&accommId=${accommId}"
+                 class="btn"
+                 onclick="return confirm('정말 삭제하시겠습니까?');">삭제</a>
+            </td>
           </tr>
         </c:forEach>
       </tbody>
     </table>
   </c:if>
-  
+
   <!-- 객실 목록이 없는 경우 -->
   <c:if test="${empty roomList}">
     <div class="no-data">
@@ -193,10 +192,10 @@
       <p>첫 번째 객실을 등록해보세요!</p>
     </div>
   </c:if>
-  
+
   <!-- 객실 추가 버튼 -->
   <div>
     <a href="/accomm/accommRoomRegForm?accommId=${accommId}" class="btn btn-add">+ 객실 추가</a>
   </div>
-  
+
 </main>
