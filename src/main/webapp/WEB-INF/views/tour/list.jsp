@@ -292,25 +292,30 @@ function renderConditionList() {
   });
 }
 
-function fetchFilteredList() {
-  const resultContainer = document.getElementById('results');
-  resultContainer.innerHTML = '로딩 중...';
+function fetchFilteredList(page = 1) {
+	  currentPage = page;
 
-  fetch('/tour/filterList', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(conditions)
-  })
-  .then(r => r.text())
-  .then(html => {
-    resultContainer.innerHTML = html;
-    fetchLikedTourIds();
-  })
-  .catch(e => {
-    console.error(e);
-    resultContainer.innerHTML = '불러오기 실패';
-  });
-}
+	  const resultContainer = document.getElementById('results');
+	  resultContainer.innerHTML = '로딩 중...';
+
+	  fetch('/tour/filterList', {
+	    method: 'POST',
+	    headers: { 'Content-Type': 'application/json' },
+	    body: JSON.stringify({
+	      page: currentPage,
+	      sigunguList: conditions
+	    })
+	  })
+	  .then(r => r.text())
+	  .then(html => {
+	    resultContainer.innerHTML = html;
+	    fetchLikedTourIds();
+	  })
+	  .catch(e => {
+	    console.error(e);
+	    resultContainer.innerHTML = '불러오기 실패';
+	  });
+	}
 
 function norm(id) { return String(id ?? '').trim().toUpperCase(); }
 let likedTourIds = [];

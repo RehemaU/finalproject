@@ -115,13 +115,9 @@ public class TourService {
     }
 
 
-    public List<Tour> findBySigunguList(List<Sigungu> sigunguList, String userId) {
-    	int page = 1;
+    public List<Tour> findBySigunguList(List<Sigungu> sigunguList, String userId, int page) {
     	int pageSize = 20;
-    	Map<String, Object> param2 = new HashMap<>();
-    	param2.put("list", sigunguList);
-    	
-    	int totalCount = tourDao.getTourCount(param2);
+
     	
     	int start = (page - 1) * pageSize; // 0
     	int end = page * pageSize;         // 20
@@ -140,6 +136,12 @@ public class TourService {
 
         list.forEach(t -> t.setLiked(likedIds.contains(t.getTourId())));
         return list;
+    }
+    
+    public int getTourCount(List<Sigungu> sigunguList) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("list", sigunguList);
+        return tourDao.getTourCount(param);
     }
 
 }

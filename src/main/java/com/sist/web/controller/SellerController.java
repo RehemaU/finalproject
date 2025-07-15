@@ -16,6 +16,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sist.common.util.StringUtil;
@@ -378,6 +379,12 @@ public class SellerController
 		logger.debug("DB 비밀번호: >>>>>>>>>>><<<<<<<<<<<<<<<<" + seller.getSellerPassword());
 		return seller.getSellerPassword().equals(currentPassword);
 	
+	}
+	
+	@RequestMapping(value="/seller/roomPriceUpdateForm")
+	public String roomPriceUpdateForm(@RequestParam("accomId") String accomId, Model model) {
+		
+		return "/seller/roomPriceUpdateForm";
 	}
 
 }
