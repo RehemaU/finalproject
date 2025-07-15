@@ -84,11 +84,8 @@
       <div class="card">
         <h3>숙소 목록</h3>
         <p>등록된 숙소들을 확인하고 수정/삭제할 수 있습니다.</p>
-<<<<<<< HEAD
-        <a href="/seller/accommlist">목록 보기</a>
-=======
+
         <a href="/seller/accommList">목록 보기</a>
->>>>>>> refs/heads/master
       </div>
 
       <div class="card">	
