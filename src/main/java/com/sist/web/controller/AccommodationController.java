@@ -121,11 +121,8 @@ public class AccommodationController {
     	List<Accommodation> results = accommodationService.findBySigunguList(sigunguList);
     	for(Accommodation accomm : results)
     	{
-    		double rating = 0;
     		int accommCount = 0;
-    		rating = reviewService.reviewRatingAvg(accomm.getAccomId());
     		accommCount = reviewService.reviewAccommCount(accomm.getAccomId());
-    		accomm.setRating(rating);
     		accomm.setAccommCount(accommCount);
     	}
     	    model.addAttribute("results", results);

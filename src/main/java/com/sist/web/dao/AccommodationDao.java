@@ -14,4 +14,5 @@ public interface AccommodationDao {
     int insertAccommodationForm(Accommodation accommodation);
     List<Accommodation> findBySellerId(String sellerId);
 
+    public int accommRateAverage(Accommodation accom);
 }

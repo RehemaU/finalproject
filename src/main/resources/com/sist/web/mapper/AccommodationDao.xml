@@ -108,4 +108,13 @@
     ORDER BY ACCOMM_ID DESC
 </select>
     
+    <!-- 별점 값 세팅해주기 -->
+    <update id="accommRateAverage" parameterType="com.sist.web.model.Accommodation">
+		UPDATE T_ACCOMM
+		SET
+		    ACCOMM_AVG = #{accomAvg}
+		WHERE
+		        ACCOMM_ID = #{accomId}
+    </update>
+    
 </mapper>

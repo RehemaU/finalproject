@@ -119,4 +119,37 @@ public class ReviewService {
 		return count;
 	}
 	
+	//리뷰 삭제
+	public int reviewDelete(String accommReviewId)
+	{
+		int count = 0;
+		
+		try
+		{
+			count = reviewDao.reviewDelete(accommReviewId);
+		}
+		catch(Exception e)
+		{
+			logger.error("[ReviewService]reviewDelete Exception", e);
+		}
+		
+		return count;
+	}
+	
+	//리뷰 셀렉트
+	public Review reviewSelect(String accommReviewId)
+	{
+		Review review = new Review();
+		
+		try
+		{
+			review = reviewDao.reviewSelect(accommReviewId);
+		}
+		catch(Exception e)
+		{
+			logger.error("[ReviewService]reviewSelect Exception", e);
+		}
+		
+		return review;
+	}
 }

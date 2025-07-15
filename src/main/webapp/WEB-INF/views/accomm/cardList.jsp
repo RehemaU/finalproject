@@ -147,12 +147,12 @@
       </div>
       
       
-<fmt:formatNumber value="${item.rating}" maxFractionDigits="1" var="formattedRating" />
+<fmt:formatNumber value="${item.accomAvg}" maxFractionDigits="1" var="formattedRating" />
 
 <div class="card-title">
   <div class="star-rating-row">
     <div class="star-left">
-      <c:set var="rating" value="${item.rating}" />
+      <c:set var="rating" value="${item.accomAvg}" />
       <c:forEach begin="1" end="5" var="i">
         <c:choose>
           <c:when test="${i <= rating}">
