@@ -113,8 +113,6 @@
       });
       
       $("#btnkakao").on("click", function(){
-          //location.href = "https://kauth.kakao.com/oauth/authorize?client_id=80e4419557c7b5feaa6bcbaa1cae6ae8&redirect_uri=http://finalproject.sist.co.kr:8088/user/kakaoLogin&response_type=code&scope=profile_nickname";
-    	  //location.href = "https://kauth.kakao.com/oauth/authorize?client_id=abc12345678901234567890123456789&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fkakao%2Fcallback&response_type=code&prompt=login";
     	  //location.href = "https://kauth.kakao.com/oauth/authorize?client_id=80e4419557c7b5feaa6bcbaa1cae6ae8&redirect_uri=http://finalproject.sist.co.kr:8088/user/kakaoLogin&response_type=code&scope=profile_nickname&prompt=login";
     	  location.href = "https://kauth.kakao.com/oauth/authorize"
     	    			+ "?client_id=80e4419557c7b5feaa6bcbaa1cae6ae8"
@@ -127,6 +125,11 @@
       $("#btngoogle").on("click", function(){
     	  location.href = "https://accounts.google.com/o/oauth2/v2/auth?client_id=292826362473-d70q9e2i8kaiksg49ij9vfhhupbv61fq.apps.googleusercontent.com&redirect_uri=http://finalproject.sist.co.kr:8088/user/googleLogin&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=select_account";
       }); 
+      
+      $("#btnnaver").on("click", function(){
+    	  location.href = "/user/naverAuth";
+      }); 
+      
    });
    
    function fn_loginCheck()
@@ -199,6 +202,8 @@
         <button type="button" id="btnkakao" class="btn">카카오로그인</button>
         <!--구글로그인 -->
         <button type="button" id="btngoogle" class="btn">구글로그인</button>
+        <!--네이버로그인 -->
+        <button type="button" id="btnnaver" class="btn">네이버로그인</button>
       </form>
     </div>
   </div>

@@ -82,10 +82,30 @@ public class AdminController {
     /**
      * ✅ 판매자 목록 페이지
      */
-    @RequestMapping("/admin/sellerList")
-    public String sellerListPage(HttpServletRequest request, ModelMap model) {
-        List<Seller> sellerList = adminService.sellerList();
+    @GetMapping("/admin/sellerList")
+    public String sellerList(@RequestParam(value = "keyword", required = false) String keyword,
+                             @RequestParam(value = "page", defaultValue = "1") int page,
+                             Model model) {
+
+        int pageSize = 10;
+        int startRow = (page - 1) * pageSize + 1;
+        int endRow = page * pageSize;
+
+        Map<String, Object> param = new HashMap<>();
+        param.put("keyword", keyword);
+        param.put("start", startRow);
+        param.put("end", endRow);
+
+        List<Seller> sellerList = adminService.getSellerList(param);
+        int totalCount = adminService.getSellerCount(param);
+        int totalPage = (int) Math.ceil((double) totalCount / pageSize);
+
         model.addAttribute("sellerList", sellerList);
+        model.addAttribute("curPage", page);
+        model.addAttribute("totalPage", totalPage);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("totalCount", totalCount);
+
         return "/admin/sellerList";
     }
 
@@ -114,19 +134,32 @@ public class AdminController {
     }
     // ✅ 회원 목록 페이지
     @GetMapping("/admin/userList")
-    public String userList(@RequestParam(value = "keyword", required = false) String keyword, Model model) {
-        List<User> userList;
+    public String userList(@RequestParam(value = "keyword", required = false) String keyword,
+                           @RequestParam(value = "page", defaultValue = "1") int curPage,
+                           Model model) {
 
-        if (keyword != null && !keyword.trim().isEmpty()) {
-            userList = adminService.searchUsersById(keyword);
-        } else {
-            userList = adminService.getAllUsers();
-        }
+        int pageSize = 10;
+        int startRow = (curPage - 1) * pageSize;
+        int endRow = curPage * pageSize;
+        // 검색 및 페이징 파라미터 Map
+        Map<String, Object> param = new HashMap<>();
+        param.put("keyword", keyword);
+        param.put("startRow", startRow);
+        param.put("endRow", endRow);
 
+        // 검색된 사용자 목록 및 총 카운트
+        List<User> userList = adminService.getUsersWithPaging(param);
+        int totalCount = adminService.getUserCount(param);
+        int totalPage = (int) Math.ceil((double) totalCount / pageSize);
+
+        // JSP에 데이터 전달
         model.addAttribute("userList", userList);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("curPage", curPage);
+        model.addAttribute("totalPage", totalPage);
+        model.addAttribute("totalCount", totalCount);
 
-        // Ajax 요청이면 userListAjax.jsp를 반환 (선택)
-        return "/admin/userList"; // 그대로 사용해도 되고, 부분 렌더링용 별도 JSP도 가능
+        return "/admin/userList";
     }
 
     // ✅ 회원 탈퇴/복구 처리
@@ -137,6 +170,64 @@ public class AdminController {
 
         Map<String, Object> result = new HashMap<>();
         result.put("code", success ? 0 : -1);
+        return result;
+    }
+    
+    
+ // ✅ 숙소 목록 조회 (전체 or 요청 대기만 조회)
+    @GetMapping("/admin/accommList")
+    public String accommList(@RequestParam(value = "keyword", required = false) String keyword,
+                             @RequestParam(value = "status", required = false) String status,
+                             @RequestParam(value = "page", defaultValue = "1") int page,
+                             Model model) {
+    	 System.out.println("▶ 숙소 리스트 요청: keyword=" + keyword + ", status=" + status + ", page=" + page);
+    	 if ("ALL".equals(status)) {
+    		    status = null;
+    		}
+
+        int pageSize = 10;
+        int startRow = (page - 1) * pageSize + 1;
+        int endRow = page * pageSize;
+        
+        Map<String, Object> param = new HashMap<>();
+        param.put("keyword", keyword);
+        param.put("status", status); // 'N' 또는 null
+        param.put("start", startRow);
+        param.put("end", endRow);
+
+        List<Map<String, Object>> accommList = adminService.getAccommList(param);
+        int totalCount = adminService.getAccommCount(param);
+        int totalPage = (int) Math.ceil((double) totalCount / pageSize);
+        System.out.println("▶ DAO로 전달될 param: " + param);
+        
+        model.addAttribute("accommList", accommList);
+        model.addAttribute("curPage", page);
+        model.addAttribute("totalPage", totalPage);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("status", status);
+        model.addAttribute("totalCount", totalCount);
+
+        
+        
+        int blockSize = 10;
+        int blockStart = ((page - 1) / blockSize) * blockSize + 1;
+        int blockEnd = Math.min(blockStart + blockSize - 1, totalPage);
+
+        model.addAttribute("blockStart", blockStart);
+        model.addAttribute("blockEnd", blockEnd);
+        
+        return "/admin/accommList";
+    }
+    
+ // ✅ 숙소 승인 처리 (ACCOMM_STATUS = 'Y'로 변경)
+    @PostMapping("/admin/approveAccomm")
+    @ResponseBody
+    public Map<String, Object> approveAccomm(@RequestParam String accommId) {
+        Map<String, Object> result = new HashMap<>();
+
+        boolean success = adminService.approveAccomm(accommId); // → ACCOMM_STATUS = 'Y' 업데이트
+        result.put("code", success ? 0 : -1);
+
         return result;
     }
 }

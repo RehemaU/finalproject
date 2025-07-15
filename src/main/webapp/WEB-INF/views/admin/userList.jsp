@@ -33,18 +33,43 @@
             background-color: #1ab394;
             color: white;
         }
+           .pagination {
+       margin-top: 20px;
+       text-align: center;
+      }
+      
+      .pagination a {
+          display: inline-block;
+          margin: 0 4px;
+          padding: 6px 12px;
+          text-decoration: none;
+          border: 1px solid #ccc;
+          color: #333;
+          border-radius: 4px;
+          font-size: 14px;
+          background-color: #f9f9f9;
+          transition: all 0.2s;
+      }
+      
+      .pagination a:hover {
+          background-color: #e0e0e0;
+      }
+      
+      .pagination a.active {
+          background-color: #1ab394;
+          color: white;
+          font-weight: bold;
+          border-color: #1ab394;
+      }
     </style>
 </head>
 <body>
-
-<h2>회원 관리</h2>
-
 <div style="margin-bottom: 15px;">
     <input type="text" id="userSearchInput" placeholder="아이디 검색" style="padding: 5px;">
-    <button onclick="searchUser()" style="padding: 5px 10px;">검색</button>
+    <button id="userSearchBtn" style="padding: 5px 10px;">검색</button>
 </div>
-
-<table>
+<div id="userTableArea">
+    <table>
   <thead>
   
     <tr>
@@ -72,80 +97,48 @@
             <c:otherwise>정상</c:otherwise>
           </c:choose>
         </td>
-        <td class="user-button">
-          <c:choose>
-            <c:when test="${user.userOut == 'N'}">
-              <button type="button" class="ban-btn" onclick="toggleUserOut('${user.userId}', 'Y')">탈퇴 처리</button>
-            </c:when>
-            <c:when test="${user.userOut == 'Y'}">
-              <button type="button" class="unban-btn" onclick="toggleUserOut('${user.userId}', 'N')">복구</button>
-            </c:when>
-          </c:choose>
-        </td>
+<td class="user-button">
+  <c:choose>
+    <c:when test="${user.userOut == 'N'}">
+      <button type="button"
+              class="ban-btn toggle-user-btn"
+              data-userid="${user.userId}"
+              data-status="Y">탈퇴 처리</button>
+    </c:when>
+    <c:when test="${user.userOut == 'Y'}">
+      <button type="button"
+              class="unban-btn toggle-user-btn"
+              data-userid="${user.userId}"
+              data-status="N">복구</button>
+    </c:when>
+  </c:choose>
+</td>
       </tr>
     </c:forEach>
+    
   </tbody>
-</table>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-function toggleUserOut(userId, newStatus) {
-    const message = newStatus === 'Y' 
-        ? "해당 회원을 탈퇴 처리하시겠습니까?" 
-        : "해당 회원을 복구하시겠습니까?";
-
-    if (!confirm(message)) return;
-
-    $.ajax({
-        url: "/admin/toggleUserStatus",
-        type: "POST",
-        data: {
-            userId: userId,
-            status: newStatus
-        },
-        success: function(res) {
-            if (res.code === 0) {
-                alert("처리 완료!");
-                const $row = $("tr[data-user-id='" + userId + "']");
-                const $statusCell = $row.find(".user-status");
-                const $buttonCell = $row.find(".user-button");
-
-                if (newStatus === 'Y') {
-                    $statusCell.text("탈퇴");
-                    $buttonCell.html(`<button type="button" class="unban-btn" onclick="toggleUserOut('${userId}', 'N')">복구</button>`);
-                } else {
-                    $statusCell.text("정상");
-                    $buttonCell.html(`<button type="button" class="ban-btn" onclick="toggleUserOut('${userId}', 'Y')">탈퇴 처리</button>`);
-                }
-            } else {
-                alert("처리 실패. 다시 시도해주세요.");
-            }
-        },
-        error: function() {
-            alert("서버 오류가 발생했습니다.");
-        }
-    });
-}
   
-function searchUser() {
-    const keyword = $('#userSearchInput').val();
+  
+ </table>
 
-    $.ajax({
-        url: '/admin/userList',
-        type: 'GET',
-        data: { keyword: keyword },
-        success: function (res) {
-            $('#contentArea').html(res); // 관리자 대시보드에서 이 영역에 다시 덮어씀
-        },
-        error: function () {
-            alert('검색에 실패했습니다.');
-        }
-    });
-}
-    
-    
-    
-</script>
+    <div class="pagination" id="userPagination">
+        <c:if test="${curPage > 1}">
+            <a href="javascript:void(0);" class="user-page-link" data-page="${curPage - 1}">« 이전</a>
+        </c:if>
 
-</body>
-</html>
+        <c:forEach begin="1" end="${totalPage}" var="i">
+            <c:choose>
+                <c:when test="${i == curPage}">
+                    <a href="javascript:void(0);" class="user-page-link active" data-page="${i}">${i}</a>
+                </c:when>
+                <c:otherwise>
+                    <a href="javascript:void(0);" class="user-page-link" data-page="${i}">${i}</a>
+                </c:otherwise>
+            </c:choose>
+        </c:forEach>
+
+        <c:if test="${curPage < totalPage}">
+            <a href="javascript:void(0);" class="user-page-link" data-page="${curPage + 1}">다음 »</a>
+        </c:if>
+    </div>
+</div>

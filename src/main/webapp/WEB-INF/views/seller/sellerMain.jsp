@@ -1,5 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ include file="/WEB-INF/views/include/head.jsp" %>
+<%@ include file="/WEB-INF/views/include/sellerHead2.jsp" %>
 <%@ include file="/WEB-INF/views/include/sellerNavigation.jsp" %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -84,13 +84,17 @@
       <div class="card">
         <h3>숙소 목록</h3>
         <p>등록된 숙소들을 확인하고 수정/삭제할 수 있습니다.</p>
+<<<<<<< HEAD
         <a href="/seller/accommlist">목록 보기</a>
+=======
+        <a href="/seller/accommList">목록 보기</a>
+>>>>>>> refs/heads/master
       </div>
 
       <div class="card">	
         <h3>객실 등록</h3>
         <p>숙소에 객실을 추가하고 가격, 수량 등을 설정하세요.</p>
-        <a href="/seller/room/add">객실 등록</a>
+        <a href="/accomm/accommRoomRegForm">객실 등록</a>
       </div>
 
       <div class="card">

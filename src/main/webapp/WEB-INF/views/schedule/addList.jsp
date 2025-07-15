@@ -114,21 +114,31 @@
     /* ───── Swiper & Litepicker ───── */
     const swiper = new Swiper('.mySwiper',{allowTouchMove:false,speed:300});
     const picker = new Litepicker({
-      element: document.getElementById('dateInput'),
-      inlineMode:true, container:document.getElementById('calendarArea'),
-      singleMode:false, lang:'ko', numberOfMonths:2, numberOfColumns:2, theme:'dark',
-      setup:p=>{
-        p.on('selected',(s,e)=>{
-          if(!s||!e) return;
-          const fmt=d=>d.format('YYYY-MM-DD');
-          startDate.value = fmt(s); endDate.value = fmt(e);
-          const arr=[],cur=s.clone();
-          while(cur.isSameOrBefore(e,'day')){arr.push(fmt(cur));cur.add(1,'day');}
-          selectedDates.value = JSON.stringify(arr);
-          swiper.slideNext();
-        });
-      }
-    });
+    	  element: document.getElementById('dateInput'),
+    	  inlineMode: true,
+    	  container: document.getElementById('calendarArea'),
+    	  singleMode: false,
+    	  lang: 'ko',
+    	  numberOfMonths: 2,
+    	  numberOfColumns: 2,
+    	  theme: 'dark',
+    	  minDate: new Date(),  // ✅ 오늘 이전 날짜 선택 막기
+    	  setup: p => {
+    	    p.on('selected', (s, e) => {
+    	      if (!s || !e) return;
+    	      const fmt = d => d.format('YYYY-MM-DD');
+    	      startDate.value = fmt(s);
+    	      endDate.value = fmt(e);
+    	      const arr = [], cur = s.clone();
+    	      while (cur.isSameOrBefore(e, 'day')) {
+    	        arr.push(fmt(cur));
+    	        cur.add(1, 'day');
+    	      }
+    	      selectedDates.value = JSON.stringify(arr);
+    	      swiper.slideNext();
+    	    });
+    	  }
+    	});
 
     /* ───── sigungu 데이터 ───── */
     const sigunguData=[];

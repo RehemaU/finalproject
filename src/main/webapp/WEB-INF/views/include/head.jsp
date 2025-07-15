@@ -37,7 +37,9 @@
   font-weight: 400;
   letter-spacing: 2px;
   margin-right: auto;
+  margin-left: calc(-1 * var(--gutter)); /* 좌측 패딩 만큼 뺌 */
 }
+
     .util-icons{gap:28px;font-size:13px;text-transform:uppercase;}
     .search{width:26px;height:26px;border:2px solid var(--fg);border-radius:50%;position:relative;cursor:pointer;}
     .search:after{content:'';position:absolute;width:12px;height:2px;background:var(--fg);right:-4px;bottom:4px;transform:rotate(45deg);}

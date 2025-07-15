@@ -2,6 +2,7 @@
 <%@ include file="/WEB-INF/views/include/taglib.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!-- navigation.jsp : 공통 Header / GNB -->
+
 <header>
   <!-- 상단 유틸바 -->
   <div class="util-bar wrap flex between center">
@@ -9,7 +10,6 @@
     <div class="util-icons flex center">
       <a class="icon" href="/mypage/main">MY PAGE</a>
       <a class="icon" href="/like/list">MY LIKE</a>
-      <a class="icon" href="/bag">BAG</a>
 <c:choose>
   <c:when test="${not empty sessionScope.userId}">
     <a class="icon" href="/user/loginOut">LOGOUT</a>

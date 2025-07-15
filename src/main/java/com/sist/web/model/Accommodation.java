@@ -6,6 +6,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Accommodation {
 
+	public Accommodation() {
+		
+		this.unifiedId = "";
+		
+	}
+	
     @JsonProperty("contentid")
     private String accomId;
 
@@ -47,8 +53,37 @@ public class Accommodation {
 
     @JsonProperty("firstimage2")
     private String firstImage2;
+    
+    private String unifiedId;
+    
+    private double rating;
+    private int accommCount;
+    
+    public int getAccommCount() {
+		return accommCount;
+	}
 
-    private int accomAvg;
+	public void setAccommCount(int accommCount) {
+		this.accommCount = accommCount;
+	}
+
+	public double getRating() {
+		return rating;
+	}
+
+	public void setRating(double rating) {
+		this.rating = rating;
+	}
+
+	public String getUnifiedId() {
+		return unifiedId;
+	}
+
+	public void setUnifiedId(String unfiedId) {
+		this.unifiedId = unfiedId;
+	}
+
+	private int accomAvg;
 
     private boolean liked;
 

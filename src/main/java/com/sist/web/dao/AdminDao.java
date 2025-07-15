@@ -19,8 +19,8 @@ public interface AdminDao {
 	public int approveSeller(String sellerId);
 	
 	
-    // ✅ 페이징/검색 포함한 판매자 리스트 조회
-    public List<Seller> getSellerList(Map<String, Object> param);
+//    // ✅ 페이징/검색 포함한 판매자 리스트 조회
+//    public List<Seller> getSellerList(Map<String, Object> param);
 
     // ✅ 판매자 수 조회 (검색 포함)
     public int getSellerCount(String keyword);
@@ -31,4 +31,15 @@ public interface AdminDao {
     int updateUserStatus(@Param("userId") String userId, @Param("status") String status);
     
     public List<User> searchUsersById(String keyword);
+    
+    public List<User> getUsersWithPaging(Map<String, Object> param);
+    int getUserCount(Map<String, Object> param);
+    
+    public List<Seller> getSellerList(Map<String, Object> param);
+    int getSellerCount(Map<String, Object> param);
+    
+    
+    List<Map<String, Object>> getAccommList(Map<String, Object> param);
+    int getAccommCount(Map<String, Object> param);
+    int approveAccomm(String accommId);
 }

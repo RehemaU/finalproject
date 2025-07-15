@@ -202,14 +202,18 @@
   			  return;
   			}
   			
-  			//var userAdd = $.trim($("#userAdd").val());
-  			
-  			//if (!addressCheck.test(userAdd)) 
-  			//{
-  			//  alert("주소는 한글/영문/숫자 조합으로 5자 이상 입력해야 합니다.");
-  			//  $("#userAdd").focus();
-  			//  return;
-  			//}
+  		    
+  		  	if ($.trim($("#zipCode").val()).length <= 0) {
+  		      alert("우편번호를 선택해주세요.");
+  		      $("#zipCode").focus();
+  		      return;
+  		    }
+  		  	
+  		  	if ($("#streetAdr").val().trim().length <= 0) {
+  		      alert("도로명 주소를 입력해주세요.");
+  		      $("#streetAdr").focus();
+  		      return;
+  		    }
   			
   			
   			var birth = $.trim($("#userBirth").val());
