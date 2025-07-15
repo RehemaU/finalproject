@@ -18,4 +18,8 @@ public interface ReviewDao {
 	public double reviewRatingAvg(String accommId);
 	//숙소페이지후기갯수
 	public int reviewAccommCount(String accommId);
+	//리뷰 삭제
+	public int reviewDelete(String accommReviewId);
+	//리뷰 셀렉트
+	public Review reviewSelect(String accommReviewId);
 }

@@ -42,4 +42,11 @@ public interface OrderDao {
     
     // 체크아웃 날짜 한달 내인지
     public int userOrderCheckout(String orderId);
+    
+    // 판매자 페이지 정산 내역 띄워주는 거
+    public List<OrderDetail> sellerSellList(String sellerId);
+    
+    // 판매자 정산 총액 띄워주는 거
+    public int sellerSum(String sellerId);
+    
 }

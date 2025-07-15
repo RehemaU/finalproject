@@ -206,4 +206,5 @@ public class MypageController {
 		return "/mypage/orderdetail";
 	}
 
+	//내 숙소 후기 보기
 }

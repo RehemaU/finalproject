@@ -9,6 +9,8 @@ import com.sist.web.model.Accommodation;
 import com.sist.web.model.AccommodationRoom;
 import com.sist.web.model.Sigungu;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -22,6 +24,8 @@ import java.util.Set;
 
 @Service
 public class AccommodationService {
+	private static Logger logger = LoggerFactory.getLogger(AccommodationService.class);
+	
     private static final String BASE_URL = "http://apis.data.go.kr/B551011/KorService2/searchStay2";
     private static final String SERVICE_KEY = "FI/5+Yaw6f0s/3FPHecXtwv8WvGz4xVfTDwKdI9Poe+KV9qTGaG+wGoh2khuWd7w4mUKPGC1dIsyvNORXpkrrQ==";
 
@@ -241,4 +245,18 @@ public class AccommodationService {
     public List<Accommodation> findBySellerId(String sellerId) {
         return accommodationDao.findBySellerId(sellerId);
     }
-   }
+    
+    public int accommRateAverage(Accommodation accom)
+    {
+    	int count = 0;
+    	try
+    	{
+    		count = accommodationDao.accommRateAverage(accom);
+    	}
+    	catch(Exception e)
+    	{
+    		logger.error("[AccommodationService]accommRateAverage Exception", e);
+    	}
+    	return count;
+    }
+}
