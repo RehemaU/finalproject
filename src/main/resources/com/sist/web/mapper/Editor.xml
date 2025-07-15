@@ -26,7 +26,8 @@
 		PLAN_COUNT,
 		PLAN_REPORT,
 		PLAN_RECOMMEND,
-		T_CALANDER_LIST_ID)
+		T_CALANDER_LIST_ID,
+		PLAN_STATUS)
 		VALUES (PLAN_SEQ.NEXTVAL,
 		#{userId},
 		#{planTitle},
@@ -36,7 +37,7 @@
 		0,
 		0,
 		#{tCalanderListId},
-		Y)
+		'Y')
 
 	  </insert>
 	  

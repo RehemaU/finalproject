@@ -30,7 +30,7 @@ public class ReviewController {
 	{
 		String accommId = request.getParameter("accommId");
 	    model.addAttribute("accommId", accommId);
-		
+	    
 	    return "/mypage/reviewPopup";
 	}
 	
@@ -45,8 +45,9 @@ public class ReviewController {
 		String userId = HttpUtil.get(request, "userId", "");
 		
 		int rating = HttpUtil.get(request, "rating", 0);
-		
 		String content = HttpUtil.get(request, "content", "");
+		
+		String orderId = HttpUtil.get(request, "orderId", "");
 		
 		try
 		{
@@ -56,14 +57,22 @@ public class ReviewController {
 			review.setUserId(userId);
 			review.setAccommReviewRating(rating);
 			review.setAccommReviewContent(content);
+			review.setOrderId(orderId);
 			
-			if(reviewService.reviewInsert(review)>0)
+			if(reviewService.reviewCount(review)>0)
 			{
-				ajaxResponse.setResponse(0, "review insert success");
+				ajaxResponse.setResponse(-10, "review already exsist");
 			}
 			else
 			{
-				ajaxResponse.setResponse(-1, "review insert fail");
+				if(reviewService.reviewInsert(review)>0)
+				{
+					ajaxResponse.setResponse(0, "review insert success");
+				}
+				else
+				{
+					ajaxResponse.setResponse(-1, "review insert fail");
+				}
 			}
 		}
 		catch(Exception e)
@@ -73,4 +82,5 @@ public class ReviewController {
 		
 		return ajaxResponse;
 	}
+	
 }

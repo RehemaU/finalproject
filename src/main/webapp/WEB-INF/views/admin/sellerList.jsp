@@ -25,11 +25,11 @@
             border-radius: 4px;
             cursor: pointer;
         }
-        .approve-btn {
+        .seller-approve-btn {
             background-color: #1ab394;
             color: white;
         }
-        .cancel-btn {
+        .seller-cancel-btn {
             background-color: #d9534f;
             color: white;
         }
@@ -98,10 +98,10 @@
         <td class="seller-button">
           <c:choose>
             <c:when test="${seller.sellerStatus == 'N'}">
-              <button type="button" class="approve-btn" onclick="toggleSellerStatus('${seller.sellerId}', 'Y')">승인</button>
+              <button type="button" class="seller-approve-btn" onclick="toggleSellerStatus('${seller.sellerId}', 'Y')">승인</button>
             </c:when>
             <c:when test="${seller.sellerStatus == 'Y'}">
-              <button type="button" class="cancel-btn" onclick="toggleSellerStatus('${seller.sellerId}', 'N')">승인 취소</button>
+              <button type="button" class="seller-cancel-btn" onclick="toggleSellerStatus('${seller.sellerId}', 'N')">승인 취소</button>
             </c:when>
           </c:choose>
         </td>
@@ -147,10 +147,10 @@ function toggleSellerStatus(sellerId, newStatus) {
 
                 if (newStatus === 'Y') {
                     $statusCell.text("승인 완료");
-                    $buttonCell.html(`<button type="button" class="cancel-btn" onclick="toggleSellerStatus('${sellerId}', 'N')">승인 취소</button>`);
+                    $buttonCell.html(`<button type="button" class="seller-cancel-btn" onclick="toggleSellerStatus('${sellerId}', 'N')">승인 취소</button>`);
                 } else {
                     $statusCell.text("대기중");
-                    $buttonCell.html(`<button type="button" class="approve-btn" onclick="toggleSellerStatus('${sellerId}', 'Y')">승인</button>`);
+                    $buttonCell.html(`<button type="button" class="seller-approve-btn" onclick="toggleSellerStatus('${sellerId}', 'Y')">승인</button>`);
                 }
             } else {
                 alert("처리 실패. 다시 시도해주세요.");

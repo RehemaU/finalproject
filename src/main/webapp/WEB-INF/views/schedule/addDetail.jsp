@@ -339,69 +339,87 @@ document.addEventListener('DOMContentLoaded',function(){
   };
 
   /* ★★★ 수정된 addSpot 함수 ★★★ */
-  function addSpot(loc){
-    console.log('=== addSpot 함수 호출 ===');
-    console.log('loc 객체:', loc);
-    console.log('currentDayNo:', currentDayNo);
+function addSpot(loc) {
+  console.log('=== addSpot 함수 호출 ===');
+  console.log('loc 객체:', loc);
+  console.log('currentDayNo:', currentDayNo);
 
-    if (!loc || !loc.name) {
-      console.error('loc 또는 loc.name이 없습니다:', loc);
-      return;
-    }
-    
-    if (!currentDayNo) {
-      console.error('currentDayNo가 없습니다:', currentDayNo);
-      return;
-    }
-    
-    var pos = new kakao.maps.LatLng(loc.lat, loc.lon);
-    map.setCenter(pos);
-    new kakao.maps.Marker({map: map, position: pos, title: loc.name});
-
-    var card = document.createElement('div');
-    card.className = 'entry';
-    
-    var dayNoValue = currentDayNo;
-    var spotIdValue = loc.id;
-    var displayText = '[Day ' + dayNoValue + '] ' + loc.name;
-    
-    var html = '';
-    html += '<input type="hidden" name="dayNos" value="' + dayNoValue + '">';
-    html += '<input type="hidden" name="spotIds" value="' + spotIdValue + '">';
-    
-    // ✅ 수동 추가 여부를 명확히 구분
-    if (loc.isManual) {
-      html += '<input type="hidden" name="isManual" value="true">';
-      html += '<input type="hidden" name="manualNames" value="' + escapeHtml(loc.name) + '">';
-      html += '<input type="hidden" name="manualAddresses" value="' + escapeHtml(loc.address) + '">';
-      html += '<input type="hidden" name="manualLats" value="' + loc.lat + '">';
-      html += '<input type="hidden" name="manualLons" value="' + loc.lon + '">';
-      displayText += ' (직접 입력: ' + loc.address + ')';
-    } else {
-      html += '<input type="hidden" name="isManual" value="false">';
-      // 일반 장소의 경우 빈 값으로 자리만 채움
-      html += '<input type="hidden" name="manualNames" value="">';
-      html += '<input type="hidden" name="manualAddresses" value="">';
-      html += '<input type="hidden" name="manualLats" value="">';
-      html += '<input type="hidden" name="manualLons" value="">';
-    }
-    
-    html += '<strong>' + escapeHtml(displayText) + '</strong>';
-    html += '<br>시작 <input type="datetime-local" name="startTimes" required>';
-    html += '<br>종료 <input type="datetime-local" name="endTimes" required>';
-    html += '<br><button type="button" class="remove-btn" onclick="removeSpot(this)">삭제</button>';
-    
-    card.innerHTML = html;
-    
-    var selectedBox = document.getElementById('selectedBox');
-    if (!selectedBox) {
-      console.error('selectedBox 요소를 찾을 수 없습니다');
-      return;
-    }
-    
-    selectedBox.appendChild(card);
-    console.log('카드가 selectedBox에 추가되었습니다');
+  if (!loc || !loc.name) {
+    console.error('loc 또는 loc.name이 없습니다:', loc);
+    return;
   }
+
+  if (!currentDayNo) {
+    console.error('currentDayNo가 없습니다:', currentDayNo);
+    return;
+  }
+
+  var pos = new kakao.maps.LatLng(loc.lat, loc.lon);
+  map.setCenter(pos);
+  new kakao.maps.Marker({ map: map, position: pos, title: loc.name });
+
+  var card = document.createElement('div');
+  card.className = 'entry';
+
+  var dayNoValue = currentDayNo;
+  var spotIdValue = loc.id;
+  var displayText = '[Day ' + dayNoValue + '] ' + loc.name;
+
+  // 🌟 Day1 ~ DayN에 해당하는 날짜 가져오기
+  var dateStr = '';
+  <% if (selectedDates != null) { %>
+    var selectedDates = <%= new com.google.gson.Gson().toJson(selectedDates) %>;
+    if (selectedDates.length >= currentDayNo) {
+      dateStr = selectedDates[currentDayNo - 1]; // 'YYYY-MM-DD'
+    }
+  <% } %>
+
+  var html = '';
+  html += '<input type="hidden" name="dayNos" value="' + dayNoValue + '">';
+  html += '<input type="hidden" name="spotIds" value="' + spotIdValue + '">';
+
+  if (loc.isManual) {
+    html += '<input type="hidden" name="isManual" value="true">';
+    html += '<input type="hidden" name="manualNames" value="' + escapeHtml(loc.name) + '">';
+    html += '<input type="hidden" name="manualAddresses" value="' + escapeHtml(loc.address) + '">';
+    html += '<input type="hidden" name="manualLats" value="' + loc.lat + '">';
+    html += '<input type="hidden" name="manualLons" value="' + loc.lon + '">';
+    displayText += ' (직접 입력: ' + loc.address + ')';
+  } else {
+    html += '<input type="hidden" name="isManual" value="false">';
+    html += '<input type="hidden" name="manualNames" value="">';
+    html += '<input type="hidden" name="manualAddresses" value="">';
+    html += '<input type="hidden" name="manualLats" value="">';
+    html += '<input type="hidden" name="manualLons" value="">';
+  }
+
+  html += '<strong>' + escapeHtml(displayText) + '</strong>';
+
+  // datetime-local 기본값 및 min 값 설정
+  const now = new Date();
+  const pad = n => n.toString().padStart(2, '0');
+
+  let defaultDate = '';
+  let minDateTime = now.toISOString().slice(0, 16); // 기본 min: 현재시각
+
+  if (dateStr) {
+    defaultDate = dateStr + 'T09:00'; // 시작시간 기본값 오전 9시
+    const dateOnly = new Date(dateStr);
+    if (dateOnly > now) {
+      minDateTime = dateStr + 'T00:00';
+    }
+  }
+
+  html += '<br>시작 <input type="datetime-local" name="startTimes" required value="' + defaultDate + '" min="' + minDateTime + '">';
+  html += '<br>종료 <input type="datetime-local" name="endTimes" required value="' + defaultDate + '" min="' + minDateTime + '">';
+  html += '<br><button type="button" class="remove-btn" onclick="removeSpot(this)">삭제</button>';
+
+  card.innerHTML = html;
+
+  document.getElementById('selectedBox').appendChild(card);
+  console.log('카드가 selectedBox에 추가되었습니다');
+}
+
 
   /* ★★★ 수정된 수동 주소 추가 버튼 이벤트 ★★★ */
   document.getElementById('addByAddressBtn').onclick = function() {

@@ -7,7 +7,7 @@
 		   <result column="ACCOMM_ID" property="accommId" />
 		   <result column="ACCOMM_REVIEW_CONTENT" property="accommReviewContent" />
 		   <result column="ACCOMM_REVIEW_RATING" property="accommReviewRating" />
-		   <result column="ACCOMM_REVIEW_PARENT" property="accommReviewParent" />
+		   <result column="ORDER_ID" property="orderId" />
 	  </resultMap>
 	  
 	  <insert id="reviewInsert" parameterType="com.sist.web.model.Review">
@@ -17,13 +17,67 @@
 		    ACCOMM_ID,
 		    ACCOMM_REVIEW_CONTENT,
 		    ACCOMM_REVIEW_RATING,
-		    ACCOMM_REVIEW_PARENT
+		    ORDER_ID
 		) VALUES ( REVIEW_SEQ.NEXTVAL,
 		           #{userId},
 		           #{accommId},
 		           #{accommReviewContent},
 		           #{accommReviewRating},
-		           NULL )
+		           #{orderId})
 	  </insert>
+	  
+	  <select id="reviewCount" parameterType="com.sist.web.model.Review" resultType="int">
+		SELECT
+		    COUNT(*)
+		FROM
+		    T_ACCOMM_REVIEW
+		WHERE
+		    USER_ID = #{userId}
+		AND
+		    ORDER_ID = #{orderId}
+	  </select>
+	  
+	  <select id="reviewList" parameterType="String" resultMap="reviewResultMap">
+		SELECT *
+		FROM
+		    T_ACCOMM_REVIEW
+		WHERE
+		    USER_ID = #{userId}
+	  </select>
+	  
+	  <!-- 숙소 후기 리스트 -->
+	  <select id="reviewAccommList" parameterType="String" resultMap="reviewResultMap">
+		SELECT
+		    ACCOMM_REVIEW_ID,
+		    USER_ID,
+		    ACCOMM_ID,
+		    ACCOMM_REVIEW_CONTENT,
+		    ACCOMM_REVIEW_RATING,
+		    ORDER_ID
+		FROM
+		    T_ACCOMM_REVIEW
+		WHERE
+		    ACCOMM_ID = #{value}
+	  </select>
+	  
+	  <!-- 숙소 별점 -->
+	  <select id="reviewRatingAvg" parameterType="String" resultType="double">
+		SELECT 
+		    AVG(ACCOMM_REVIEW_RATING) AS avg_rating
+		FROM 
+		    T_ACCOMM_REVIEW
+		WHERE 
+		    ACCOMM_ID = #{value}
+	  </select>
+	  
+	  <!-- 숙소 후기 갯수 -->
+	  <select id="reviewAccommCount" parameterType="String" resultType="int">
+		SELECT 
+		    COUNT(*) AS review_count
+		FROM 
+		    T_ACCOMM_REVIEW
+		WHERE 
+		    ACCOMM_ID = #{value}
+	  </select>
 	  
 </mapper>

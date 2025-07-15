@@ -3,6 +3,7 @@
 
 <%
 	String accommId = request.getParameter("accommId");
+	String orderId = request.getParameter("orderId");
 	String userId = (String) session.getAttribute("userId");
 %>
 
@@ -88,7 +89,9 @@
   <form id="reviewForm">
     
     <input type="hidden" name="accommId" value="<%= accommId %>">
+    <input type="hidden" name="orderId" value="<%= orderId %>">
     <input type="hidden" name="userId" value="<%= userId %>">
+    
     
     <!-- 별점 입력 -->
     <div class="star-rating">
@@ -122,6 +125,9 @@ function submitReview(event) {
 	    if(data.code === 0) {
 	      alert("리뷰 등록 완료!");
 	      window.close(); // 팝업 닫기
+	    } else if(data.code === -10) {
+	    	alert("리뷰가 이미 존재합니다.");
+	    	window.close();
 	    } else {
 	      alert("리뷰 등록 실패: " + data.message);
 	    }

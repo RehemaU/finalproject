@@ -17,7 +17,6 @@
     <div class="util-icons flex center">
       <a class="icon" href="/mypage/main">MY PAGE</a>
       <a class="icon" href="/like/list">MY LIKE</a>
-      <a class="icon" href="/bag">BAG</a>
       <c:choose>
         <c:when test="${not empty sessionScope.userId}">
           <a class="icon" href="/user/loginOut">LOGOUT</a>
