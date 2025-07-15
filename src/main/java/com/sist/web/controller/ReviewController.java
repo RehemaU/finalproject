@@ -1,5 +1,8 @@
 package com.sist.web.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -12,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.sist.web.model.Accommodation;
 import com.sist.web.model.Response;
 import com.sist.web.model.Review;
+import com.sist.web.service.AccommodationService;
 import com.sist.web.service.ReviewService;
 import com.sist.web.util.HttpUtil;
 
@@ -24,6 +29,8 @@ public class ReviewController {
 	
 	@Autowired
 	private ReviewService reviewService;
+	@Autowired
+	private AccommodationService accomService;
 	
 	@RequestMapping(value = "/mypage/reviewPopup", method=RequestMethod.GET)
 	public String reportPopup(HttpServletRequest request, HttpServletResponse response, ModelMap model)
@@ -67,7 +74,14 @@ public class ReviewController {
 			{
 				if(reviewService.reviewInsert(review)>0)
 				{
-					ajaxResponse.setResponse(0, "review insert success");
+					double rateAvg = reviewService.reviewRatingAvg(accommId);
+					Accommodation accom = new Accommodation();
+					accom.setAccomId(accommId);
+					accom.setAccomAvg(rateAvg);
+					if(accomService.accommRateAverage(accom)>0)
+					{
+						ajaxResponse.setResponse(0, "review insert success");
+					}
 				}
 				else
 				{
@@ -83,4 +97,54 @@ public class ReviewController {
 		return ajaxResponse;
 	}
 	
+	//리뷰목록
+	@RequestMapping(value = "/mypage/reviewlist", method=RequestMethod.GET)
+	public String reviewList(HttpServletRequest request, HttpServletResponse response, ModelMap model)
+	{
+		String userId = (String) request.getSession().getAttribute("userId");
+	    List<Review> list = new ArrayList<>();
+	    
+	    list = reviewService.reviewList(userId);
+	    
+	    model.addAttribute("list", list);
+	    
+	    return "/mypage/reviewlist";
+	}
+	
+	//리뷰 삭제 ajax
+	@RequestMapping(value="/mypage/reviewdelete", method=RequestMethod.POST)
+	@ResponseBody
+	public Response<Object> reviewDelete(HttpServletRequest request, HttpServletResponse response)
+	{
+		Response<Object> ajaxResponse = new Response<Object>();
+		
+		String reviewId = HttpUtil.get(request, "reviewId", "");
+		
+		try
+		{
+			Review review = reviewService.reviewSelect(reviewId);
+			
+			if(reviewService.reviewDelete(reviewId) > 0)
+			{
+				String accommId = review.getAccommId();
+				double count = 0; 
+				count = reviewService.reviewRatingAvg(accommId);
+				Accommodation accomm = new Accommodation();
+				accomm.setAccomAvg(count);
+				accomm.setAccomId(accommId);
+				accomService.accommRateAverage(accomm);
+				ajaxResponse.setResponse(0, "review delete success" + count);
+			}
+			else
+			{
+				ajaxResponse.setResponse(-1, "review delete fail");
+			}
+		}
+		catch(Exception e)
+		{
+			ajaxResponse.setResponse(500, "internal server error");
+		}
+		
+		return ajaxResponse;
+	}
 }

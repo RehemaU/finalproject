@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -275,5 +276,39 @@ public class OrderService {
         }
 
         return refundAmount;
+    }
+    
+    // 판매자 페이지 정산 내역 띄워주는 거
+    public List<OrderDetail> sellerSellList(String sellerId)
+    {
+    	List<OrderDetail> list = new ArrayList<>();
+    	
+    	try
+    	{
+    		list = orderDao.sellerSellList(sellerId);
+    	}
+    	catch(Exception e)
+    	{
+    		logger.error("[OrderService] sellerSellList : ", e);
+    	}
+    	
+    	return list;
+    }
+    
+    // 판매자 정산 총액 띄워주는 거
+    public int sellerSum(String sellerId)
+    {
+    	int sum = 0;
+    	
+    	try
+    	{
+    		sum = orderDao.sellerSum(sellerId);
+    	}
+    	catch(Exception e)
+    	{
+    		logger.error("[OrderService] sellerSum : ", e);
+    	}
+    	
+    	return sum;
     }
 }

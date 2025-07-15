@@ -25,7 +25,7 @@
     <ul>
       <li><a href="/accomm/accommRegForm">새 숙소 등록</a></li>
       <li><a href="/seller/accommList">숙소 및 객실 관리</a></li>
-      <li><a href="/seller/reservation/list">정산 내역</a></li>
+      <li><a href="/seller/sellerSellList">정산 내역</a></li>
     </ul>
   </aside>
 

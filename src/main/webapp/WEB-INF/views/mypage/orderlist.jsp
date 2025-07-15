@@ -64,9 +64,19 @@
               주문일시: <fmt:formatDate value="${order.orderDate}" pattern="yyyy-MM-dd HH:mm"/>
             </div>
           </div>
-          <div>
-            <span class="badge bg-secondary badge-status">${order.orderStatus}</span>
-          </div>
+<div>
+  <c:choose>
+    <c:when test="${order.orderStatus == 'S'}">
+      <span class="badge bg-success">결제완료</span>
+    </c:when>
+    <c:when test="${order.orderStatus == 'R'}">
+      <span class="badge bg-danger">환불완료</span>
+    </c:when>
+    <c:otherwise>
+      <span class="badge bg-secondary">알 수 없음</span>
+    </c:otherwise>
+  </c:choose>
+</div>
         </div>
 
         <hr>
@@ -74,7 +84,6 @@
         <div class="d-flex justify-content-between">
           <div>
             <div class="order-meta">쿠폰 ID: ${order.orderCouponId}</div>
-            <div class="order-meta">사용 포인트: <fmt:formatNumber value="${order.orderExpendPoint}" type="number" />P</div>
           </div>
           <div class="text-end">
             <div class="order-meta">총 결제 금액</div>
@@ -83,10 +92,6 @@
             </div>
           </div>
         </div>
-
-        <c:if test="${not empty order.orderTid}">
-          <div class="mt-2 order-meta">거래번호(TID): ${order.orderTid}</div>
-        </c:if>
       </div>
     </a>
     </c:forEach>
