@@ -1,6 +1,7 @@
-
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 <style>
 .card-grid {
   display: grid;
@@ -80,6 +81,55 @@
   font-size: 1.4rem;
   pointer-events: none;
 }
+
+
+
+.star-rating-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.star-left {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.star {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.full-star {
+  background-image: url('https://upload.wikimedia.org/wikipedia/commons/1/17/Star_full.svg');
+}
+
+.half-star {
+  background-image: url('https://upload.wikimedia.org/wikipedia/commons/d/d3/Star_half.svg');
+}
+
+.empty-star {
+  background-image: url('https://upload.wikimedia.org/wikipedia/commons/4/49/Star_empty.svg');
+}
+
+.rating-number {
+  font-size: 14px;
+  color: #555;
+  margin-left: 4px;
+}
+
+.review-count {
+  font-size: 13px;
+  color: #777;
+}
+
+
 </style>
 
 <!-- ★ 카드 HTML만 반환 -->
@@ -95,6 +145,34 @@
           <c:otherwise><div class="no-image">NO IMAGE</div></c:otherwise>
         </c:choose>
       </div>
+      
+      
+<fmt:formatNumber value="${item.rating}" maxFractionDigits="1" var="formattedRating" />
+
+<div class="card-title">
+  <div class="star-rating-row">
+    <div class="star-left">
+      <c:set var="rating" value="${item.rating}" />
+      <c:forEach begin="1" end="5" var="i">
+        <c:choose>
+          <c:when test="${i <= rating}">
+            <i class="bi bi-star-fill text-warning"></i>
+          </c:when>
+          <c:when test="${i - 1 < rating && rating < i}">
+            <i class="bi bi-star-half text-warning"></i>
+          </c:when>
+          <c:otherwise>
+            <i class="bi bi-star text-warning"></i>
+          </c:otherwise>
+        </c:choose>
+      </c:forEach>
+      <span class="rating-number">(${formattedRating})</span>
+    </div>
+
+    <div class="review-count">리뷰갯수: ${item.accommCount}</div>
+  </div>
+</div>
+
 
       <!-- 제목 -->
       <div class="card-title">
