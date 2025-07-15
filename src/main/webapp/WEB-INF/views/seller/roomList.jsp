@@ -70,11 +70,11 @@
     color: #fff;
   }
   .btn-add {
-    background-color: #28a745;
+    background-color: #111;
     margin-top: 20px;
   }
   .btn-add:hover {
-    background-color: #218838;
+    background-color: #495057;
   }
   .no-data {
     text-align: center;
@@ -122,7 +122,7 @@
         <col style="width: 100px;">     <!-- 체크인 -->
         <col style="width: 100px;">     <!-- 체크아웃 -->
         <col style="width: 120px;">     <!-- 기본요금 -->
-        <col style="width: auto;">      <!-- 옵션 -->
+        <col style="width: 120px;">      <!-- 옵션 -->
       </colgroup>
       <thead>
         <tr>

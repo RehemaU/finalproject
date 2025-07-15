@@ -143,7 +143,7 @@ public class AccommController
 	    	String sellerId = (String) session.getAttribute("sellerId");	        
 	    	if (sellerId == null) {
 	            model.addAttribute("msg", "로그인이 필요합니다.");
-	            return "/user/login"; // 로그인 페이지로
+	            return "/seller/login"; // 로그인 페이지로
 	        }
 	        accom.setSellerId(sellerId);
 
@@ -187,7 +187,7 @@ public class AccommController
 	    	String sellerId = (String) session.getAttribute("sellerId");	        
 	        
 	        if (sellerId == null) {
-	            return "redirect:/user/login";  // 로그인 안된 경우
+	            return "redirect:/seller/login";  // 로그인 안된 경우
 	        }
 
 	        List<Accommodation> accommList = accommodationService.findBySellerId(sellerId);
