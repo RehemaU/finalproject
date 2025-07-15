@@ -27,7 +27,7 @@
 
 <div class="container">
   <h2>객실 등록</h2>
- <form method="post" action="/seller/room/add" enctype="multipart/form-data">
+ <form method="post" action="/seller/roomAdd" enctype="multipart/form-data">
   <input type="hidden" name="accommId" value="${accommId}" />
 
   <div class="form-group">
@@ -68,34 +68,17 @@
 
   <div class="form-group">
     <label>객실 옵션</label>
-    <div class="checkbox-group">
-      <input type="hidden" name="bathroom" value="N" />
-      <label><input type="checkbox" name="bathroom" value="Y" /> 욕실</label>
-
-      <input type="hidden" name="bath" value="N" />
-      <label><input type="checkbox" name="bath" value="Y" /> 욕조</label>
-
-      <input type="hidden" name="tv" value="N" />
-      <label><input type="checkbox" name="tv" value="Y" /> TV</label>
-
-      <input type="hidden" name="pc" value="N" />
-      <label><input type="checkbox" name="pc" value="Y" /> PC</label>
-
-      <input type="hidden" name="internet" value="N" />
-      <label><input type="checkbox" name="internet" value="Y" /> 인터넷</label>
-
-      <input type="hidden" name="refrigerator" value="N" />
-      <label><input type="checkbox" name="refrigerator" value="Y" /> 냉장고</label>
-
-      <input type="hidden" name="sofa" value="N" />
-      <label><input type="checkbox" name="sofa" value="Y" /> 소파</label>
-
-      <input type="hidden" name="table" value="N" />
-      <label><input type="checkbox" name="table" value="Y" /> 테이블</label>
-
-      <input type="hidden" name="dryer" value="N" />
-      <label><input type="checkbox" name="dryer" value="Y" /> 드라이기</label>
-    </div>
+     <div class="checkbox-group">
+    <label><input type="checkbox" name="bathroom" value="Y" /> 욕실</label>
+    <label><input type="checkbox" name="bath" value="Y" /> 욕조</label>
+    <label><input type="checkbox" name="tv" value="Y" /> TV</label>
+    <label><input type="checkbox" name="pc" value="Y" /> PC</label>
+    <label><input type="checkbox" name="internet" value="Y" /> 인터넷</label>
+    <label><input type="checkbox" name="refrigerator" value="Y" /> 냉장고</label>
+    <label><input type="checkbox" name="sofa" value="Y" /> 소파</label>
+    <label><input type="checkbox" name="table" value="Y" /> 테이블</label>
+    <label><input type="checkbox" name="dryer" value="Y" /> 드라이기</label>
+  </div>
   </div>
 
   <div class="form-group">

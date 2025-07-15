@@ -117,7 +117,7 @@
           <td>${accomm.accomTel}</td>
           <td>${accomm.accomStatus}</td>
           <td>
-          <a href="/seller/roomList?accomId=${accomm.accomId}" class="btn-view">객실 보기</a>
+          <a href="/seller/roomList?accommId=${accomm.accomId}" class="btn-view">객실 보기</a>
           </td>
         </tr>
       </c:forEach>
