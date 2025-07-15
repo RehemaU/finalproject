@@ -5,10 +5,9 @@ import java.util.List;
 import com.sist.web.model.AccommodationRoom;
 
 public interface RoomManageDao {
-    void insertRoom(AccommodationRoom room);
+    void insertAccommodationRoom(AccommodationRoom room);  // 매퍼의 실제 메서드명과 일치
     List<AccommodationRoom> findByAccommId(String accommId);
     AccommodationRoom findByRoomId(String roomId);
     String getNextAccommRoomSeq();
-    List<AccommodationRoom> findRoomsByAccomm(String accommId);  // ✅ 이름 맞추기
 
 }
