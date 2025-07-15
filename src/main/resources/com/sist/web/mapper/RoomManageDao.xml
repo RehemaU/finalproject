@@ -58,5 +58,9 @@
         SELECT * FROM T_ACCOMM_ROOM 
         WHERE ACCOMM_ROOM_ID = #{roomId}
     </select>
+    
+    <delete id="deleteRoomById" parameterType="string">
+    DELETE FROM T_ACCOMM_ROOM WHERE ACCOMM_ROOM_ID = #{roomId}
+</delete>
 </mapper>
 

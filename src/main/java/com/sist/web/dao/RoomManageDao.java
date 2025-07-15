@@ -9,5 +9,6 @@ public interface RoomManageDao {
     List<AccommodationRoom> findByAccommId(String accommId);
     AccommodationRoom findByRoomId(String roomId);
     String getNextAccommRoomSeq();
+    void deleteRoomById(String roomId);
 
 }
