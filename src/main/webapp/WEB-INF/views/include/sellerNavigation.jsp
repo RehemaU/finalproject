@@ -22,11 +22,9 @@
 <!-- 좌측 대시보드 사이드바 -->
 <div class="admin-container">
   <aside class="sidebar">
-    <h2>대시보드</h2>
     <ul>
-      <li><a href="/accomm/accommRegForm">숙소 등록</a></li>
-      <li><a href="/seller/accommList">숙소 목록</a></li>
-      <li><a href="/accomm/accommRoomRegForm">객실 등록</a></li>
+      <li><a href="/accomm/accommRegForm">새 숙소 등록</a></li>
+      <li><a href="/seller/accommList">숙소 및 객실 관리</a></li>
       <li><a href="/seller/reservation/list">정산 내역</a></li>
     </ul>
   </aside>
