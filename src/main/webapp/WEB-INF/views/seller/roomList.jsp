@@ -198,4 +198,8 @@
     <a href="/accomm/accommRoomRegForm?accommId=${accommId}" class="btn btn-add">+ 객실 추가</a>
   </div>
 
+  <!-- 객실 금액 수정 버튼 -->
+  <div>
+    <a href="/seller/roomPriceUpdateForm?accommId=${accommId}" class="btn btn-add">+ 금액 수정</a>
+  </div>
 </main>
