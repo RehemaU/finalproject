@@ -93,6 +93,18 @@
     font-size: 11px;
     color: #495057;
   }
+  .room-img {
+  width: 100px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 4px;
+
+  background-color: #e0e0e0; /* 배경 색상 */
+  background-image: url('/resources/images/no-image-bg.svg'); /* 대체 이미지 */
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
 </style>
 
 <main class="wrap">
@@ -130,14 +142,14 @@
           <tr>
             <td>
               <c:choose>
-                <c:when test="${not empty room.roomImage}">
-                  <img src="${room.roomImage}" alt="객실 이미지" class="room-img" 
-                       onerror="this.src='/resources/images/no-image.jpg'">
-                </c:when>
-                <c:otherwise>
-                  <img src="/resources/images/no-image.jpg" alt="기본 이미지" class="room-img">
-                </c:otherwise>
-              </c:choose>
+  <c:when test="${not empty room.roomImage}">
+    <img src="${room.roomImage}" class="room-img" />
+  </c:when>
+  <c:otherwise>
+    <img src="" class="room-img" />
+  </c:otherwise>
+</c:choose>
+
             </td>
             <td>${room.roomName}</td>
             <td>${room.roomScale}</td>
