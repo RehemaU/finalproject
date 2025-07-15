@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
@@ -26,8 +27,11 @@ import com.sist.web.service.RoomManageService;
 @Controller("accommRoomManageController")
 public class RoomManageController {
 	 private static Logger logger = LoggerFactory.getLogger(RoomManageController.class);
-	    
-	    @Autowired
+	 
+		@Value("#{env['upload.save.dir.accomm']}")
+		private String UPLOAD_SAVE_DIR_ROOM;
+	
+		@Autowired
 	    private RoomManageService roomManageService;
 	    
 		  @RequestMapping(value = "/accomm/accommRoomRegForm", method = RequestMethod.GET)
@@ -39,62 +43,67 @@ public class RoomManageController {
 		  }
 
 	    // 객실 등록 처리
-	    @RequestMapping(value = "/seller/roomAdd", method = RequestMethod.POST)
-	    public String insertRoom(
-	        @RequestParam("roomImageFile") MultipartFile roomImageFile,
-	        AccommodationRoom room,
-	        HttpSession session,
-	        HttpServletRequest request
-	    ) {
-	        String sellerId = (String) session.getAttribute("sellerId");
-	        if (sellerId == null) {
-	            return "redirect:/user/login";
-	        }
-	        
-	        logger.debug("객실 등록 요청 - accommId: {}, roomName: {}", room.getAccommId(), room.getRoomName());
-	        
-	        // 업로드 경로 설정
-	        String uploadPath = request.getServletContext().getRealPath("/resources/upload/room/");
-	        File dir = new File(uploadPath);
-	        if (!dir.exists()) {
-	            dir.mkdirs(); // 폴더 없으면 생성
-	        }
-	        
-	        // 업로드 파일명 처리
-	        if (roomImageFile != null && !roomImageFile.isEmpty()) {
-	            String originName = roomImageFile.getOriginalFilename();
-	            String extension = originName.substring(originName.lastIndexOf("."));
-	            String uuidName = UUID.randomUUID().toString() + extension;
-	            File dest = new File(uploadPath, uuidName);
-	            
-	            try {
-	                roomImageFile.transferTo(dest);
-	                room.setRoomImage("/resources/upload/room/" + uuidName); // DB에는 상대경로 저장
-	                logger.debug("객실 이미지 업로드 완료: {}", uuidName);
-	            } catch (IOException e) {
-	                logger.error("객실 이미지 업로드 실패", e);
-	                return "redirect:/seller/roomList?accommId=" + room.getAccommId();
-	            }
-	        }
-	        room.setBathroom(room.getBathroom() != null ? "Y" : "N");  // ✔ 추가
-	        room.setBath(room.getBath() != null ? "Y" : "N");          // ✔ 추가
-	        room.setTv(room.getTv() != null ? "Y" : "N");              // ✔ 추가
-	        room.setPc(room.getPc() != null ? "Y" : "N");              // ✔ 추가
-	        room.setInternet(room.getInternet() != null ? "Y" : "N");  // ✔ 추가
-	        room.setRefrigerator(room.getRefrigerator() != null ? "Y" : "N"); // ✔ 추가
-	        room.setSofa(room.getSofa() != null ? "Y" : "N");          // ✔ 추가
-	        room.setTable(room.getTable() != null ? "Y" : "N");        // ✔ 추가
-	        room.setDryer(room.getDryer() != null ? "Y" : "N");    
-	        // DB 등록
-	        try {
-	            roomManageService.insertRoom(room);
-	            logger.debug("객실 등록 완료");
-	        } catch (Exception e) {
-	            logger.error("객실 등록 실패", e);
-	        }
-	        
-	        return "redirect:/seller/roomList?accommId=" + room.getAccommId();
-	    }
+		    @RequestMapping(value = "/seller/roomAdd", method = RequestMethod.POST)
+		    public String insertRoom(
+		        @RequestParam("roomImageFile") MultipartFile roomImageFile,
+		        AccommodationRoom room,
+		        HttpSession session,
+		        HttpServletRequest request,
+		        Model model
+		    ) {
+		        try {
+		            // 1. 로그인한 사용자 ID 확인
+		            String sellerId = (String) session.getAttribute("sellerId");
+		            if (sellerId == null) {
+		                model.addAttribute("msg", "로그인이 필요합니다.");
+		                return "/user/login";
+		            }
+		            
+		            logger.debug("객실 등록 요청 - accommId: {}, roomName: {}", room.getAccommId(), room.getRoomName());
+		            
+		            // 2. 이미지 저장 처리
+		            if (roomImageFile != null && !roomImageFile.isEmpty()) {
+		                String origin = roomImageFile.getOriginalFilename();
+		                String ext = origin.substring(origin.lastIndexOf('.'));
+		                String saveName = "room_" + System.currentTimeMillis() + ext;
+
+		                File dir = new File(UPLOAD_SAVE_DIR_ROOM);
+		                if (!dir.exists()) {
+		                    dir.mkdirs();
+		                }
+
+		                File dest = new File(dir, saveName);
+		                roomImageFile.transferTo(dest);
+
+		                // DB에는 웹 경로로 저장
+		                room.setRoomImage("/resources/accomm/" + saveName);
+		                
+		                logger.debug("객실 이미지 저장 완료: {}", dest.getAbsolutePath());
+		            }
+		            
+		            // 3. 편의시설 Y/N 처리
+		            room.setBathroom(room.getBathroom() != null ? "Y" : "N");
+		            room.setBath(room.getBath() != null ? "Y" : "N");
+		            room.setTv(room.getTv() != null ? "Y" : "N");
+		            room.setPc(room.getPc() != null ? "Y" : "N");
+		            room.setInternet(room.getInternet() != null ? "Y" : "N");
+		            room.setRefrigerator(room.getRefrigerator() != null ? "Y" : "N");
+		            room.setSofa(room.getSofa() != null ? "Y" : "N");
+		            room.setTable(room.getTable() != null ? "Y" : "N");
+		            room.setDryer(room.getDryer() != null ? "Y" : "N");
+		            
+		            // 4. DB 등록
+		            roomManageService.insertRoom(room);
+		            logger.debug("객실 등록 완료");
+		            
+		            return "redirect:/seller/roomList?accommId=" + room.getAccommId();
+		            
+		        } catch (Exception e) {
+		            logger.error("객실 등록 오류", e);
+		            model.addAttribute("msg", "객실 등록 중 오류: " + e.getMessage());
+		            return "/error";
+		        }
+		    }
 	    
 	    @RequestMapping(value = "/seller/roomList", method = RequestMethod.GET)
 	    public String roomList(
