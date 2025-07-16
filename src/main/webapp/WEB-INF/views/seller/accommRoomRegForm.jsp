@@ -23,7 +23,7 @@
   </style>
 </head>
 <body>
-<%@ include file="/WEB-INF/views/include/navigation2.jsp" %>
+<%@ include file="/WEB-INF/views/include/navigation.jsp" %>
 
 <div class="container">
   <h2>객실 등록</h2>

@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
 <%@ include file="/WEB-INF/views/include/taglib.jsp" %>
 <!DOCTYPE html>
-<%@ include file="/WEB-INF/views/include/head2.jsp" %>
+<%@ include file="/WEB-INF/views/include/head.jsp" %>
 
 <html lang="ko">
 <head>

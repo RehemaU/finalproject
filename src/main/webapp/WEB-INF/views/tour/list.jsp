@@ -1,7 +1,7 @@
 <!-- 무신사 스타일 기반 관광지 필터링 UI 리팩토링 버전 -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ include file="/WEB-INF/views/include/head2.jsp" %>
+<%@ include file="/WEB-INF/views/include/head.jsp" %>
 <%@ include file="/WEB-INF/views/include/navigation_editor.jsp" %>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -182,6 +182,8 @@ a {
 }
 
 .heart-icon {
+  pointer-events: none;
+  font-family: 'Noto Sans KR', sans-serif;
   font-size: 1.4rem;
   pointer-events: none;
 }

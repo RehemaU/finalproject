@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<%@ include file="/WEB-INF/views/include/userHead.jsp" %>
+<%@ include file="/WEB-INF/views/include/sellerHead.jsp" %>
   <title>판매자등록</title>
   <style>
     :root{

@@ -1,6 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ include file="/WEB-INF/views/include/head2.jsp" %>
+<%@ include file="/WEB-INF/views/include/head.jsp" %>
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %>
 
 <style>
@@ -110,6 +110,9 @@
     font-size: 20px;
     cursor: pointer;
     color: #ff4d4f;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 1.4rem;
+  pointer-events: none;
   }
 </style>
 

@@ -3,7 +3,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"   %>
 
 <!DOCTYPE html>
-<%@ include file="/WEB-INF/views/include/head2.jsp" %>
+<%@ include file="/WEB-INF/views/include/head.jsp" %>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />

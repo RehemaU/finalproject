@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<%@ include file="/WEB-INF/views/include/head2.jsp" %>
+<%@ include file="/WEB-INF/views/include/head.jsp" %>
   <title>회원가입</title>
 <style>
   :root{

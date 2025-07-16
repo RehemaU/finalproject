@@ -7,7 +7,7 @@
   <meta charset="UTF-8">
   <title>판매자 정산 내역</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<%@ include file="/WEB-INF/views/include/sellerHead2.jsp" %>
+<%@ include file="/WEB-INF/views/include/sellerHead.jsp" %>
 </head>
 <body>
 <%@ include file="/WEB-INF/views/include/sellerNavigation.jsp" %>
