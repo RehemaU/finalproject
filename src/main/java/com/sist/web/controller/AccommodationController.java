@@ -104,39 +104,69 @@ public class AccommodationController {
                     .collect(Collectors.toList());
 
             String userId = (String) session.getAttribute("userId");
-            List<Accommodation> results = accommodationService.findBySigunguList(selectedSigunguList, userId);
-            model.addAttribute("results", results);
+//            List<Accommodation> results = accommodationService.findBySigunguList(selectedSigunguList, userId);
+//            model.addAttribute("results", results);
             model.addAttribute("filtering", true);
-            System.out.println("초기 로딩 regionId: " + regionId + " → 숙소 개수: " + results.size());  // ✅ 로그도 수정
+//            System.out.println("초기 로딩 regionId: " + regionId + " → 숙소 개수: " + results.size());  // ✅ 로그도 수정
         }
 
         return "/accomm/list";
     }
 
+    // 어떻게 list를 들어가도 결국 처음에 filterList를 호출한다.
     @PostMapping("/accomm/filterList")
-    public String filterList(@RequestBody List<Sigungu> sigunguList,
-            HttpSession session, Model model) {
-        String userId = (String) session.getAttribute("userId");  // ✅ 이 줄만 추가
- 
-    	List<Accommodation> results = accommodationService.findBySigunguList(sigunguList);
-    	for(Accommodation accomm : results)
-    	{
-    		double rating = 0;
-    		int accommCount = 0;
-    		rating = reviewService.reviewRatingAvg(accomm.getAccomId());
-    		accommCount = reviewService.reviewAccommCount(accomm.getAccomId());
-    		accomm.setRating(rating);
-    		accomm.setAccommCount(accommCount);
-    	}
-    	    model.addAttribute("results", results);
-    	    System.out.println("받은 조건 개수: " + sigunguList.size());
-    	    for (Sigungu s : sigunguList) {
-    	        System.out.println("조건: " + s.getRegionId() + ", " + s.getSigunguId());
-    	    }
-    	    System.out.println("조회된 숙소 개수: " + results.size());
+    public String filterList(@RequestBody Map<String, Object> requestBody,
+                             HttpSession session,
+                             Model model) {
+        String userId = (String) session.getAttribute("userId");
 
-    	    return "/accomm/cardList";
+        // 1. 페이지 파라미터 파싱
+        int page = ((Number) requestBody.getOrDefault("page", 1)).intValue();
+
+        // 2. 시군구 리스트 파싱
+        List<Map<String, Object>> rawList = (List<Map<String, Object>>) requestBody.get("sigunguList");
+        List<Sigungu> sigunguList = rawList.stream().map(map -> {
+            Sigungu s = new Sigungu();
+            s.setRegionId((String) map.get("regionId"));
+            s.setSigunguId((String) map.get("sigunguId"));
+            return s;
+        }).collect(Collectors.toList());
+
+        // 3. 페이징 설정
+        int pageSize = 20;
+        int pageBlockSize = 10;
+
+        int totalCount = accommodationService.getAccommodationcount(sigunguList);
+        int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+
+        int startPage = ((page - 1) / pageBlockSize) * pageBlockSize + 1;
+        int endPage = Math.min(startPage + pageBlockSize - 1, totalPages);
+        boolean hasPrev = startPage > 1;
+        boolean hasNext = endPage < totalPages;
+
+        // 4. 숙소 리스트 조회 (with 페이징)
+        List<Accommodation> results = accommodationService.findBySigunguList(sigunguList, userId, page);
+
+        // 5. 리뷰 정보 추가
+        for (Accommodation accomm : results) {
+            double rating = reviewService.reviewRatingAvg(accomm.getAccomId());
+            int accommCount = reviewService.reviewAccommCount(accomm.getAccomId());
+            accomm.setRating(rating);
+            accomm.setAccommCount(accommCount);
+        }
+
+        // 6. 모델에 추가
+        model.addAttribute("results", results);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+        model.addAttribute("hasPrev", hasPrev);
+        model.addAttribute("hasNext", hasNext);
+
+        return "/accomm/cardList";
     }
+
     
     @GetMapping("/accomm/accommDetail")
     public String accommDetail(@RequestParam("accommId") String accommId, Model model) {
