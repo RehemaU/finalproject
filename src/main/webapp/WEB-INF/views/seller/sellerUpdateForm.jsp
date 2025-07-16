@@ -340,6 +340,7 @@
 	  </div>
 
       <button type="button" id="btnUpdate" class="submit-btn">수정하기</button>
+      <a href="/seller/sellerPasswordForm" class="submit-btn">비밀번호 변경</a>
     </form>
   </div>
 </body>

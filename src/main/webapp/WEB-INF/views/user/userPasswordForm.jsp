@@ -1,3 +1,4 @@
+
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/views/include/taglib.jsp" %>
@@ -98,6 +99,8 @@
   }
 </style>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
   <script type="text/javascript">
   $(document).ready(function(){
 	  $("#btnChange").on("click",function(){
@@ -178,7 +181,7 @@
 		   				if(response.code == 0)
 		   				{
 		   					alert("비밀번호가 성공적으로 변경되었습니다.");
-		   					location.href = "/user/login"; 
+		   					location.href = "/"; 
 		   				}
 		   				else
 		   				{

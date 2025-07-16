@@ -445,7 +445,7 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 	}
 	
 	
-	//회원가입화면
+	//비밀번호변경화면
 	@RequestMapping(value="/user/userPasswordForm", method=RequestMethod.GET)
 	public String userPasswordForm(HttpServletRequest request, HttpServletResponse response)
 	{

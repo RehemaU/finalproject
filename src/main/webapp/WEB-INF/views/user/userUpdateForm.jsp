@@ -405,7 +405,10 @@
       </div>//-->
       
 <div style="text-align: center;">
+<div class="top-buttons" style="display: flex; gap: 10px;">
       <button type="button" id="btnUpdate" class="submit-btn">수정하기</button>
+      <a href="/user/userPasswordForm" class="submit-btn">비밀번호 변경</a>
+</div>
       <button type="button" id="btnWithdrawal" class="submit-btn" style="width:30%; background-color: gray;">회원탈퇴</button>
 </div>
     </form>
