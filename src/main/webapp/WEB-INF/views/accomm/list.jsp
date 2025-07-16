@@ -17,7 +17,7 @@ body {
   margin: 0 auto;
   display: flex;
   padding: 40px 20px;
-   padding-top: 260px; 
+   padding-top: 260px;
 }
 
 .category-sidebar {
@@ -106,6 +106,11 @@ body {
   margin-left: 6px;
   cursor: pointer;
   color: #777;
+}
+.heart-icon {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 1.4rem;
+  pointer-events: none;
 }
 </style>
 
