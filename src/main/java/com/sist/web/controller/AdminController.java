@@ -230,4 +230,42 @@ public class AdminController {
 
         return result;
     }
+    
+ // ✅ 리뷰 목록
+    @GetMapping("/admin/reviewList")
+    public String reviewList(
+            @RequestParam(value="keyword", required=false) String keyword,
+            @RequestParam(value="order",   defaultValue="recent") String order, // recent|report|view
+            @RequestParam(value="page",    defaultValue="1") int page,
+            Model model) {
+
+        int pageSize = 10;
+        int startRow = (page-1)*pageSize + 1;
+        int endRow   =  page   *pageSize;
+
+        Map<String,Object> param = new HashMap<>();
+        param.put("keyword", keyword);
+        param.put("order",   order);
+        param.put("start",   startRow);
+        param.put("end",     endRow);
+
+        List<Map<String,Object>> reviewList = adminService.getReviewList(param);
+        int totalCount = adminService.getReviewCount(param);
+        int totalPage  = (int)Math.ceil((double)totalCount / pageSize);
+
+        // 페이징 블록
+        int blockSize   = 10;
+        int blockStart  = ((page-1)/blockSize)*blockSize + 1;
+        int blockEnd    = Math.min(blockStart + blockSize - 1, totalPage);
+
+        model.addAttribute("reviewList", reviewList);
+        model.addAttribute("keyword",    keyword);
+        model.addAttribute("order",      order);
+        model.addAttribute("curPage",    page);
+        model.addAttribute("totalPage",  totalPage);
+        model.addAttribute("blockStart", blockStart);
+        model.addAttribute("blockEnd",   blockEnd);
+
+        return "/admin/reviewList";
+    }
 }
