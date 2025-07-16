@@ -30,7 +30,7 @@
       font-family: 'Pretendard', sans-serif;
       background-color: #ffffff;
     }
-
+    
     .login-container {
       display: flex;
       justify-content: center;
