@@ -87,11 +87,6 @@
         <a href="/seller/accommList">목록 보기</a>
       </div>
 
-      <div class="card">	
-        <h3>객실 등록</h3>
-        <p>숙소에 객실을 추가하고 가격, 수량 등을 설정하세요.</p>
-        <a href="/accomm/accommRoomRegForm">객실 등록</a>
-      </div>
 
       <div class="card">
         <h3>정산 내역</h3>

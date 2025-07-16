@@ -217,25 +217,31 @@ function renderConditionList() {
   });
 }
 
-function fetchFilteredList() {
-  const resultContainer = document.getElementById('results');
-  resultContainer.innerHTML = '로딩 중...';
+function fetchFilteredList(page = 1) {
+	  const resultContainer = document.getElementById('results');
+	  resultContainer.innerHTML = '로딩 중...';
 
-  fetch('/accomm/filterList', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(conditions)
-  })
-  .then(r => r.text())
-  .then(html => {
-    resultContainer.innerHTML = html;
-    fetchLikedAccommIds();
-  })
-  .catch(e => {
-    console.error(e);
-    resultContainer.innerHTML = '불러오기 실패';
-  });
-}
+	  const body = {
+	    page: page,
+	    sigunguList: conditions
+	  };
+
+	  fetch('/accomm/filterList', {
+	    method: 'POST',
+	    headers: { 'Content-Type': 'application/json' },
+	    body: JSON.stringify(body)
+	  })
+	  .then(r => r.text())
+	  .then(html => {
+	    resultContainer.innerHTML = html;
+	    fetchLikedAccommIds(); // 찜 버튼 상태 동기화
+	  })
+	  .catch(e => {
+	    console.error(e);
+	    resultContainer.innerHTML = '불러오기 실패';
+	  });
+	}
+
 
 let likedAccommIds = [];
 function fetchLikedAccommIds() {

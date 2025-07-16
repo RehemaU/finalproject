@@ -19,7 +19,9 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -205,9 +207,7 @@ public class AccommodationService {
     
     // 기능구현을 위해
     
-    public List<Accommodation> findBySigunguList(List<Sigungu> sigunguList) {
-        return accommodationDao.searchBySigungu(sigunguList);
-    }
+
     
 
     public List<Accommodation> getAllAccommodations() {
@@ -232,14 +232,29 @@ public class AccommodationService {
     @Autowired
     private LikeService likeService; // 이미 주입되어 있을 수도 있음
 
-    public List<Accommodation> findBySigunguList(List<Sigungu> sigunguList, String userId) {
-        List<Accommodation> list = accommodationDao.searchBySigungu(sigunguList);
+    public List<Accommodation> findBySigunguList(List<Sigungu> sigunguList, String userId, int page) {
+    	int pageSize = 20;
+    	
+    	int start = (page -1) * pageSize;
+    	int end = page * pageSize;
+    	
+    	Map<String, Object> param = new HashMap<>();
+    	param.put("start", start);
+    	param.put("end", end);
+    	param.put("list", sigunguList);
+        List<Accommodation> list = accommodationDao.searchBySigungu(param);
         
         if (userId == null || userId.trim().isEmpty()) return list;
 
         Set<String> likedIds = likeService.getLikedSpotIdSet(userId);
         list.forEach(ac -> ac.setLiked(likedIds.contains(ac.getAccomId())));
         return list;
+    }
+    
+    public int getAccommodationcount(List<Sigungu> sigunguList) {
+    	Map<String, Object> param = new HashMap<>();
+    	param.put("list", sigunguList);
+    	return accommodationDao.getAccommodationCount(param);
     }
 
     public List<Accommodation> findBySellerId(String sellerId) {

@@ -88,52 +88,76 @@ public class AccommodationController {
     }
 
     @GetMapping("/accomm/list")
-    public String listPage(@RequestParam(value = "regionId", required = false) String regionId,  // ✅ 수정
-                           Model model, HttpSession session) {
+    public String listPage(@RequestParam(value = "regionId", required = false) String regionId,
+                           Model model,
+                           HttpSession session) {
 
         List<Sigungu> sigunguList = sigunguService.getAllSigungus();
         List<Region> regionList = regionService.getAllRegions();
+
         model.addAttribute("sigunguList", sigunguList);
         model.addAttribute("regionList", regionList);
-        model.addAttribute("regionId", regionId);  // ✅ model에도 regionId로
+        model.addAttribute("regionId", regionId);  // JS에서 조건 세팅용
 
-        // 숙소 필터링
-        if (regionId != null && !regionId.isEmpty()) {
-            List<Sigungu> selectedSigunguList = sigunguList.stream()
-                    .filter(s -> s.getRegionId().equals(regionId))  // ✅ 변수명 반영
-                    .collect(Collectors.toList());
+        return "/accomm/list";  // 👉 실제 결과는 JS fetch로 채움
+    }
 
-            String userId = (String) session.getAttribute("userId");
-            List<Accommodation> results = accommodationService.findBySigunguList(selectedSigunguList, userId);
-            model.addAttribute("results", results);
-            model.addAttribute("filtering", true);
-            System.out.println("초기 로딩 regionId: " + regionId + " → 숙소 개수: " + results.size());  // ✅ 로그도 수정
+
+    // 어떻게 list를 들어가도 결국 처음에 filterList를 호출한다.
+    @PostMapping("/accomm/filterList")
+    public String filterList(@RequestBody Map<String, Object> body,
+                             HttpSession session,
+                             Model model) {
+        String userId = (String) session.getAttribute("userId");
+
+        // 1. page 추출
+        int page = 1;
+        if (body.get("page") instanceof Number) {
+            page = ((Number) body.get("page")).intValue();
         }
 
-        return "/accomm/list";
+        // 2. sigunguList 파싱
+        List<Map<String, String>> rawList = (List<Map<String, String>>) body.get("sigunguList");
+        List<Sigungu> sigunguList = rawList.stream().map(map -> {
+            Sigungu s = new Sigungu();
+            s.setRegionId(map.get("regionId"));
+            s.setSigunguId(map.get("sigunguId"));
+            return s;
+        }).collect(Collectors.toList());
+
+        // 3. 페이징 계산
+        int pageSize = 20;
+        int pageBlockSize = 10;
+        int totalCount = accommodationService.getAccommodationcount(sigunguList);
+        int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+        int startPage = ((page - 1) / pageBlockSize) * pageBlockSize + 1;
+        int endPage = Math.min(startPage + pageBlockSize - 1, totalPages);
+        boolean hasPrev = startPage > 1;
+        boolean hasNext = endPage < totalPages;
+
+        // 4. 숙소 리스트 조회
+        List<Accommodation> results = accommodationService.findBySigunguList(sigunguList, userId, page);
+
+        for (Accommodation accomm : results) {
+            int accommCount = reviewService.reviewAccommCount(accomm.getAccomId());
+            System.out.println("숙소 이름: " + accomm.getAccomName() + ", ID: " + accomm.getAccomId());
+            accomm.setAccommCount(accommCount);
+        }
+        System.out.println("조회된 숙소 개수: " + results.size());
+        // 5. 모델 바인딩
+        model.addAttribute("results", results);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+        model.addAttribute("hasPrev", hasPrev);
+        model.addAttribute("hasNext", hasNext);
+
+        return "/accomm/cardList";
     }
 
-    @PostMapping("/accomm/filterList")
-    public String filterList(@RequestBody List<Sigungu> sigunguList,
-            HttpSession session, Model model) {
-        String userId = (String) session.getAttribute("userId");  // ✅ 이 줄만 추가
- 
-    	List<Accommodation> results = accommodationService.findBySigunguList(sigunguList);
-    	for(Accommodation accomm : results)
-    	{
-    		int accommCount = 0;
-    		accommCount = reviewService.reviewAccommCount(accomm.getAccomId());
-    		accomm.setAccommCount(accommCount);
-    	}
-    	    model.addAttribute("results", results);
-    	    System.out.println("받은 조건 개수: " + sigunguList.size());
-    	    for (Sigungu s : sigunguList) {
-    	        System.out.println("조건: " + s.getRegionId() + ", " + s.getSigunguId());
-    	    }
-    	    System.out.println("조회된 숙소 개수: " + results.size());
 
-    	    return "/accomm/cardList";
-    }
+
     
     @GetMapping("/accomm/accommDetail")
     public String accommDetail(@RequestParam("accommId") String accommId, Model model) {
