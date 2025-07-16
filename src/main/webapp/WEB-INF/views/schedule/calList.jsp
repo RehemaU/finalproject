@@ -5,7 +5,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <%@ include file="/WEB-INF/views/include/head2.jsp" %>
+  <%@ include file="/WEB-INF/views/include/head.jsp" %>
   <title>내 일정 목록 · MYTRIP</title>
   <style>
     body {
