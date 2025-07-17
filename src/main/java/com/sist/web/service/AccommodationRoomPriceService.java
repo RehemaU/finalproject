@@ -47,7 +47,7 @@ public class AccommodationRoomPriceService {
         LocalDate checkOut = LocalDate.parse(checkOutStr);
         int days = 0;
         long totalPrice = 0;
-
+        System.out.println("계산 로직 실행됨");
         LocalDate current = checkIn;
         while (current.isBefore(checkOut)) {
             days++;
@@ -89,6 +89,8 @@ public class AccommodationRoomPriceService {
 	        RoomPriceResult result = new RoomPriceResult();
 	        result.setDays(days);
 	        result.setTotalPrice(totalPrice);
+	        System.out.println("days : " + days);
+	        System.out.println("totalPrice : " + totalPrice);
 	        return result;
 	    }
 	public List<AccommodationRoomPrice> getAccommodationRoomPrice(String roomId){
