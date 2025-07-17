@@ -4,87 +4,72 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<%@ include file="/WEB-INF/views/include/head.jsp" %>   <%-- 공통 head --%>
   <meta charset="UTF-8">
   <title>내가 쓴 댓글</title>
-  <style>
-    .board-container {
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-    }
-    .board-title {
-      font-size: 24px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    .board-table {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: fixed;
-    }
-    .board-table th {
-      background-color: #f8f8f8;
-      border-bottom: 2px solid #ddd;
-      padding: 12px;
-      text-align: center;
-    }
-    .board-table td {
-      border-bottom: 1px solid #eee;
-      padding: 12px;
-      text-align: center;
-      word-wrap: break-word;
-      cursor: pointer;
-    }
-    .board-table tr:hover {
-      background-color: #f1f1f1;
-    }
-    /* 폭 재조정 */
-    .col-title {
-      width: 35%;
-    }
-    .col-content {
-      width: 50%;
-      text-align: left;
-    }
-    .col-date {
-      width: 30%;
-    }
-  </style>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<%@ include file="/WEB-INF/views/include/head.jsp" %>   <%-- 공통 head --%>
+
+<style>
+/* 기본 링크 스타일 */
+a {
+  color: black; /* 기본 글자색은 파란색 */
+  text-decoration: none; /* 기본 밑줄 제거 */
+  transition: color 0.3s; /* 색상 변경 시 0.3초 동안 부드럽게 전환 */
+}
+
+/* 마우스를 올렸을 때 스타일 */
+a:hover {
+  color: dark gray; /* 마우스를 올리면 글자색이 빨간색으로 변경 */
+  text-decoration: underline; /* 마우스를 올리면 밑줄 생성 */
+}
+</style>
+
   <script>
     function goToPost(planId) {
       location.href = "/editor/planview?planId=" + planId;
     }
   </script>
+
 </head>
 <body>
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %> <%-- 공통 Header/Nav --%>
-  <div class="board-container">
-    <h2 class="board-title">내가 쓴 댓글</h2>
-    <table class="board-table">
-      <thead>
-        <tr>
-          <th class="col-title">게시글 제목</th>
-          <th class="col-content">내용</th>
-          <th class="col-date">작성일</th>
-        </tr>
-      </thead>
-      <tbody>
-        <c:forEach var="comment" items="${list}">
-          <tr onclick="goToPost('${comment.planId}')">
-            <td class="col-title">${comment.planTitle}</td>
-            <td class="col-content">${comment.planCommentContent}</td>
-            <td class="col-date">${comment.planCommentDate}</td>
-          </tr>
-        </c:forEach>
-        <c:if test="${empty list}">
-          <tr>
-            <td colspan="3">작성한 댓글이 없습니다.</td>
-          </tr>
-        </c:if>
-      </tbody>
-    </table>
+<div class="container mt-5">
+    <h2 class="mb-4">내가 쓴 댓글</h2>
+    
+    
+  <c:choose>
+    <c:when test="${empty list}">
+      <div class="alert alert-info">작성한 댓글이 없습니다.</div>
+    </c:when>
+    <c:otherwise>
+      <div class="row row-cols-1 row-cols-md-2 g-4">
+<c:forEach var="comment" items="${list}">
+  <div class="col">
+    <div class="card h-100">
+      <div class="card-body">
+      
+      <a href="/editor/planview?planId=${comment.planId}">
+		<h3>${comment.planTitle}</h3>
+	  </a>
+        
+        <p class="card-text">${comment.planCommentContent}</p>
+		
+		<div class="mt-2">
+          <small class="text-muted">${comment.planCommentDate}</small>
+        </div>
+		
+      </div>
+    </div>
+  </div>
+</c:forEach>
+
+      </div>
+    </c:otherwise>
+  </c:choose>
+    
+    
+    
   </div>
 </body>
 </html>
