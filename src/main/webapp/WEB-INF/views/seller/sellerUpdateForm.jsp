@@ -99,17 +99,26 @@
 
   /* 제출 버튼 ────────────────────────── */
   .submit-btn{
-    width:100%;
-    padding:16px 0;
-    margin-top:36px;
-    font-size:16px;
-    font-weight:700;
-    background:var(--primary);
-    color:#fff;
-    border:none;
-    border-radius:var(--radius);
-    cursor:pointer;
-    transition:opacity .15s;
+  /* 모양 및 크기 설정 */
+  display: inline-block; /* 너비, 높이, 패딩을 적용하기 위해 필요 */
+  padding: 12px 24px;   /* 내부 여백 (상하 12px, 좌우 24px) */
+  border: 1px solid #000; /* 테두리 */
+  border-radius: 8px;     /* 모서리 둥글게 */
+  min-width: 150px;     /* 최소 너비 지정 */
+
+  /* 색상 설정 */
+  background-color: #000; /* 배경색 */
+  color: #fff;           /* 글자색 */
+
+  /* 텍스트 설정 */
+  font-size: 16px;            /* 글자 크기 */
+  font-weight: bold;          /* 글자 굵기 */
+  text-align: center;         /* 글자 가운데 정렬 */
+  text-decoration: none;      /* a 태그의 기본 밑줄 제거 */
+
+  /* 기타 */
+  cursor: pointer; /* 마우스를 올렸을 때 손가락 모양으로 변경 */
+  margin: 5px;     /* 요소 바깥 여백 (버튼끼리 너무 붙지 않게) */
   }
   .submit-btn:hover{opacity:.85}
   </style>
