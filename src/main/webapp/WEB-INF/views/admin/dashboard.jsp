@@ -13,7 +13,7 @@
             width: 220px;
             background-color: #2f4050;
             color: white;
-            padding-top: 20px;
+            padding-top: 20px; 
         }
         .sidebar h2 {
             text-align: center;

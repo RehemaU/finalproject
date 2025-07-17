@@ -123,10 +123,10 @@
                 </c:when>
                 <c:otherwise>
                     <a href="javascript:void(0);" class="review-page-link" data-page="${i}">${i}</a>
-                </c:otherwise>
+                </c:otherwise> 
             </c:choose>
         </c:forEach>
-
+ 
         <!-- ▶ 다음 블록 -->
         <c:if test="${blockEnd < totalPage}">
             <a href="javascript:void(0);" class="review-page-link" data-page="${blockEnd + 1}">다음 »</a>
