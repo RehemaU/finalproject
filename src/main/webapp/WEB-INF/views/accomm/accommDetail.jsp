@@ -28,8 +28,82 @@
         .room-features span { margin-right: 10px; font-size: 14px; }
         .price-result { margin-top: 10px; color: #2c3e50; font-weight: bold; }
     </style>
+    
+<style>
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #f5f5f5;
+    padding: 40px;
+  }
+
+  .review-wrapper {
+    max-width: 1450px;
+    margin: 50px auto;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+
+  .review-box {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .single-review {
+    padding: 15px 0;
+  }
+
+  .review-stars {
+    margin-bottom: 5px;
+    text-align: left;
+  }
+
+  .review-stars .star,
+  .star {
+    font-size: 1.2rem;
+    color: #ccc;
+  }
+
+  .review-stars .filled,
+  .star.filled {
+    color: gold;
+  }
+
+  .review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  .review-content {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #333;
+    white-space: pre-line;
+  }
+
+  .review-divider {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 10px 0;
+  }
+
+  .no-review {
+    text-align: center;
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    color: #666;
+  }
+</style>
+
+    
 </head>
 <body>
+<br/><br/><br/><br/>
 <div class="container">
     <div class="accomm-header">
         <img src="${accommodation.firstImage}" alt="${accommodation.accomName}" />
@@ -77,6 +151,55 @@
         </c:forEach>
     </div>
 </div>
+
+
+<div class="review-wrapper">
+  <h2>숙소 후기</h2>
+
+  <c:choose>
+    <c:when test="${not empty review}">
+      <div class="review-box">
+        <c:forEach var="r" items="${review}" varStatus="status">
+          <div class="single-review">
+            
+            <!-- ★ 별점 먼저 출력 -->
+            <div class="review-stars">
+              <c:forEach begin="1" end="5" var="i">
+                <c:choose>
+                  <c:when test="${i <= r.accommReviewRating}">
+                    <span class="star filled">★</span>
+                  </c:when>
+                  <c:otherwise>
+                    <span class="star">☆</span>
+                  </c:otherwise>
+                </c:choose>
+              </c:forEach>
+            </div>
+
+            <!-- 작성자 -->
+            <div class="review-header">
+              <span><b>작성자:</b> ${r.userId}</span>
+            </div>
+<br/>
+            <!-- 내용 -->
+            <div class="review-content">${r.accommReviewContent}</div>
+          </div>
+<br/>
+          <!-- 마지막 리뷰가 아닐 때만 구분선 -->
+          <c:if test="${!status.last}">
+            <hr class="review-divider"/>
+          </c:if>
+        </c:forEach>
+      </div>
+    </c:when>
+    <c:otherwise>
+      <p class="no-review">등록된 후기가 없습니다.</p>
+    </c:otherwise>
+  </c:choose>
+</div>
+
+
+
 
 <script>
 function formatDateLocal(date) {

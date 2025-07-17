@@ -11,7 +11,7 @@ public class Review implements Serializable {
 	private String accommId;
 	private String accommReviewContent;
 	private int accommReviewRating;
-	private String accommReviewParent;
+	private String orderId;
 	
 	public Review()
 	{
@@ -20,7 +20,7 @@ public class Review implements Serializable {
 		accommId = "";
 		accommReviewContent = "";
 		accommReviewRating = 0;
-		accommReviewParent = "";
+		orderId = "";
 	}
 
 	//getter-setter
@@ -63,13 +63,13 @@ public class Review implements Serializable {
 	public void setAccommReviewRating(int accommReviewRating) {
 		this.accommReviewRating = accommReviewRating;
 	}
-
-	public String getAccommReviewParent() {
-		return accommReviewParent;
-	}
-
-	public void setAccommReviewParent(String accommReviewParent) {
-		this.accommReviewParent = accommReviewParent;
+	
+	public String getOrderId() {
+		return orderId;
 	}
 	
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+
 }

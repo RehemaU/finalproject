@@ -204,8 +204,8 @@
 		WHERE
 		    USER_ID = #{value}
 		AND
-		    ORDER_STATUS = 'S'
-		ORDER BY ORDER_DATE
+		    (ORDER_STATUS = 'S' OR ORDER_STATUS = 'R')
+		ORDER BY ORDER_DATE DESC
 	</select>
 	
 	<!-- 유저 결제 상세 조회 -->
@@ -286,4 +286,40 @@
 		AND ORDER_ID = #{value}
 	</select>
 	
+	<!-- 판매자 페이지에서 정산 내역 띄워주기 -->
+	<select id="sellerSellList" parameterType="String" resultMap="orderAllDetailsResultMap">
+        SELECT
+			d.ORDER_DETAILS_ID,
+		    d.ORDER_ID,
+		    d.ORDER_DETAILS_ROOM_EACH_PRICE,
+		    d.ORDER_DETAILS_PAYMENT_METHOD,
+		    d.ORDER_DETAILS_CHECKIN_DATE,
+		    d.ORDER_DETAILS_CHECKOUT_DATE,
+
+		    r.ACCOMM_ROOM_ID,
+		    r.ACCOMM_ID,
+		    r.ACCOMM_ROOM_NAME,
+
+		    a.ACCOMM_NAME,
+		    a.ACCOMM_ADD
+		FROM
+		    T_ORDER_DETAILS d
+		    JOIN T_ACCOMM_ROOM r  ON d.ACCOMM_ROOM_ID = r.ACCOMM_ROOM_ID
+		    JOIN T_ACCOMM a       ON r.ACCOMM_ID = a.ACCOMM_ID
+		WHERE
+		    a.SELLER_ID = #{value}
+        ORDER BY d.ORDER_DETAILS_CHECKIN_DATE, d.ORDER_DETAILS_CHECKOUT_DATE
+	</select>
+	
+	<!-- 판매자 총 정산 금액 -->
+	<select id="sellerSum" parameterType="String" resultType="int">
+		SELECT
+		    SUM(d.ORDER_DETAILS_ROOM_EACH_PRICE) AS total_amount
+		FROM
+		    T_ORDER_DETAILS d
+		    JOIN T_ACCOMM_ROOM r ON d.ACCOMM_ROOM_ID = r.ACCOMM_ROOM_ID
+		    JOIN T_ACCOMM a ON r.ACCOMM_ID = a.ACCOMM_ID
+		WHERE
+		    a.SELLER_ID = #{value}
+	</select>
 </mapper>

@@ -1,6 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ include file="/WEB-INF/views/include/head.jsp" %>
+<%@ include file="/WEB-INF/views/include/sellerHead.jsp" %>
 <%@ include file="/WEB-INF/views/include/sellerNavigation.jsp" %>
 
 <style>
@@ -15,6 +15,7 @@
     max-width: 100%;
     padding: 40px 60px;
     box-sizing: border-box;
+    background-color: #f9f9f9;
   }
 
   h2 {
@@ -26,8 +27,10 @@
   table {
     width: 100%;
     border-collapse: collapse;
-    text-align: left;
     font-size: 14px;
+    text-align: left;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
   }
 
   thead {
@@ -57,20 +60,45 @@
     font-size: 13px;
     color: #555;
   }
+    .btn-view {
+    display: inline-block;
+    padding: 8px 16px;
+    font-size: 13px;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+  }
+
+  .btn-view:hover {
+    background-color: #333;
+  }
 </style>
 
 <main class="wrap">
   <h2>내가 등록한 숙소</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>이미지</th>
-        <th>숙소명</th>
-        <th>주소</th>
-        <th>전화번호</th>
-        <th>상태</th>
-      </tr>
-    </thead>
+
+<table>
+  <colgroup>
+    <col style="width: 100px;">     <!-- 이미지 -->
+    <col style="width: 180px;">     <!-- 숙소명 -->
+    <col style="width: 300px;">     <!-- 주소 -->
+    <col style="width: 140px;">     <!-- 전화번호 -->
+    <col style="width: 100px;">     <!-- 상태 -->
+    <col style="width: 120px;">     <!-- 객실 보기 -->
+  </colgroup>
+  <thead>
+    <tr>
+      <th>이미지</th>
+      <th>숙소명</th>
+      <th>주소</th>
+      <th>전화번호</th>
+      <th>승인여부</th>
+      <th>객실</th>
+    </tr>
+  </thead>
     <tbody>
       <c:forEach var="accomm" items="${accommList}">
         <tr>
@@ -88,6 +116,9 @@
           <td class="small-text">${accomm.accomAdd}</td>
           <td>${accomm.accomTel}</td>
           <td>${accomm.accomStatus}</td>
+          <td>
+          <a href="/seller/roomList?accommId=${accomm.accomId}" class="btn-view">객실 보기</a>
+          </td>
         </tr>
       </c:forEach>
     </tbody>

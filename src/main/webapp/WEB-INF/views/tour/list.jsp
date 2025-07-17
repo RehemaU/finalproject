@@ -1,7 +1,7 @@
 <!-- 무신사 스타일 기반 관광지 필터링 UI 리팩토링 버전 -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ include file="/WEB-INF/views/include/head2.jsp" %>
+<%@ include file="/WEB-INF/views/include/head.jsp" %>
 <%@ include file="/WEB-INF/views/include/navigation_editor.jsp" %>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -182,6 +182,8 @@ a {
 }
 
 .heart-icon {
+  pointer-events: none;
+  font-family: 'Noto Sans KR', sans-serif;
   font-size: 1.4rem;
   pointer-events: none;
 }
@@ -292,25 +294,30 @@ function renderConditionList() {
   });
 }
 
-function fetchFilteredList() {
-  const resultContainer = document.getElementById('results');
-  resultContainer.innerHTML = '로딩 중...';
+function fetchFilteredList(page = 1) {
+	  currentPage = page;
 
-  fetch('/tour/filterList', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(conditions)
-  })
-  .then(r => r.text())
-  .then(html => {
-    resultContainer.innerHTML = html;
-    fetchLikedTourIds();
-  })
-  .catch(e => {
-    console.error(e);
-    resultContainer.innerHTML = '불러오기 실패';
-  });
-}
+	  const resultContainer = document.getElementById('results');
+	  resultContainer.innerHTML = '로딩 중...';
+
+	  fetch('/tour/filterList', {
+	    method: 'POST',
+	    headers: { 'Content-Type': 'application/json' },
+	    body: JSON.stringify({
+	      page: currentPage,
+	      sigunguList: conditions
+	    })
+	  })
+	  .then(r => r.text())
+	  .then(html => {
+	    resultContainer.innerHTML = html;
+	    fetchLikedTourIds();
+	  })
+	  .catch(e => {
+	    console.error(e);
+	    resultContainer.innerHTML = '불러오기 실패';
+	  });
+	}
 
 function norm(id) { return String(id ?? '').trim().toUpperCase(); }
 let likedTourIds = [];

@@ -12,12 +12,11 @@
     background:white;
     z-index:1000;
     border-bottom:1px solid #ddd;">
-  <div class="wrap flex between center" style="max-width:1200px; margin:0 auto; height:100%; padding:0 20px;">
-    <a href="/" class="logo">logo</a>
+  <div class="wrap flex between center" style="height:100%;">
+    <a href="/" class="logo">MY TRIP</a>
     <div class="util-icons flex center">
       <a class="icon" href="/mypage/main">MY PAGE</a>
       <a class="icon" href="/like/list">MY LIKE</a>
-      <a class="icon" href="/bag">BAG</a>
       <c:choose>
         <c:when test="${not empty sessionScope.userId}">
           <a class="icon" href="/user/loginOut">LOGOUT</a>

@@ -185,8 +185,7 @@ public class AdminController {
     	 if ("ALL".equals(status)) {
     		    status = null;
     		}
-    	 
-    	 
+
         int pageSize = 10;
         int startRow = (page - 1) * pageSize + 1;
         int endRow = page * pageSize;
@@ -201,6 +200,7 @@ public class AdminController {
         int totalCount = adminService.getAccommCount(param);
         int totalPage = (int) Math.ceil((double) totalCount / pageSize);
         System.out.println("▶ DAO로 전달될 param: " + param);
+        
         model.addAttribute("accommList", accommList);
         model.addAttribute("curPage", page);
         model.addAttribute("totalPage", totalPage);

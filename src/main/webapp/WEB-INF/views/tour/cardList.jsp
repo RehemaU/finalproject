@@ -1,3 +1,4 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <style>
 .card-grid {
@@ -82,6 +83,36 @@
   font-size: 1.4rem;
   pointer-events: none;
 }
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 40px;
+}
+
+.pagination button {
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #333;
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pagination button:hover {
+  border-color: #000;
+  color: #000;
+}
+
+.pagination button.active {
+  background-color: #000;
+  color: #fff;
+  font-weight: 600;
+  border-color: #000;
+}
 </style>
 
 <!-- 카드 HTML --><!-- 관광지 카드 리스트 -->
@@ -113,4 +144,19 @@
       </button>
     </div>
   </c:forEach>
+</div>
+
+<div class="pagination">
+  <c:if test="${hasPrev}">
+    <button onclick="fetchFilteredList(${startPage - 1})">◀ 이전</button>
+  </c:if>
+
+  <c:forEach begin="${startPage}" end="${endPage}" var="i">
+    <button class="${i == currentPage ? 'active' : ''}"
+            onclick="fetchFilteredList(${i})">${i}</button>
+  </c:forEach>
+
+  <c:if test="${hasNext}">
+    <button onclick="fetchFilteredList(${endPage + 1})">다음 ▶</button>
+  </c:if>
 </div>

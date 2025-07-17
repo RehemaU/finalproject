@@ -56,7 +56,17 @@ public class Accommodation {
     
     private String unifiedId;
     
-    public String getUnifiedId() {
+    private int accommCount;
+    
+    public int getAccommCount() {
+		return accommCount;
+	}
+
+	public void setAccommCount(int accommCount) {
+		this.accommCount = accommCount;
+	}
+
+	public String getUnifiedId() {
 		return unifiedId;
 	}
 
@@ -64,7 +74,7 @@ public class Accommodation {
 		this.unifiedId = unfiedId;
 	}
 
-	private int accomAvg;
+	private double accomAvg;
 
     private boolean liked;
 
@@ -196,11 +206,11 @@ public class Accommodation {
 		this.firstImage2 = firstImage2;
 	}
 
-	public int getAccomAvg() {
+	public double getAccomAvg() {
 		return accomAvg;
 	}
 
-	public void setAccomAvg(int accomAvg) {
+	public void setAccomAvg(double accomAvg) {
 		this.accomAvg = accomAvg;
 	}
     

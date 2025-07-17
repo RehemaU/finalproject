@@ -9,6 +9,8 @@ import com.sist.web.model.Accommodation;
 import com.sist.web.model.AccommodationRoom;
 import com.sist.web.model.Sigungu;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -17,11 +19,15 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Service
 public class AccommodationService {
+	private static Logger logger = LoggerFactory.getLogger(AccommodationService.class);
+	
     private static final String BASE_URL = "http://apis.data.go.kr/B551011/KorService2/searchStay2";
     private static final String SERVICE_KEY = "FI/5+Yaw6f0s/3FPHecXtwv8WvGz4xVfTDwKdI9Poe+KV9qTGaG+wGoh2khuWd7w4mUKPGC1dIsyvNORXpkrrQ==";
 
@@ -201,9 +207,7 @@ public class AccommodationService {
     
     // 기능구현을 위해
     
-    public List<Accommodation> findBySigunguList(List<Sigungu> sigunguList) {
-        return accommodationDao.searchBySigungu(sigunguList);
-    }
+
     
 
     public List<Accommodation> getAllAccommodations() {
@@ -228,8 +232,17 @@ public class AccommodationService {
     @Autowired
     private LikeService likeService; // 이미 주입되어 있을 수도 있음
 
-    public List<Accommodation> findBySigunguList(List<Sigungu> sigunguList, String userId) {
-        List<Accommodation> list = accommodationDao.searchBySigungu(sigunguList);
+    public List<Accommodation> findBySigunguList(List<Sigungu> sigunguList, String userId, int page) {
+    	int pageSize = 20;
+    	
+    	int start = (page -1) * pageSize;
+    	int end = page * pageSize;
+    	
+    	Map<String, Object> param = new HashMap<>();
+    	param.put("start", start);
+    	param.put("end", end);
+    	param.put("list", sigunguList);
+        List<Accommodation> list = accommodationDao.searchBySigungu(param);
         
         if (userId == null || userId.trim().isEmpty()) return list;
 
@@ -237,8 +250,28 @@ public class AccommodationService {
         list.forEach(ac -> ac.setLiked(likedIds.contains(ac.getAccomId())));
         return list;
     }
+    
+    public int getAccommodationcount(List<Sigungu> sigunguList) {
+    	Map<String, Object> param = new HashMap<>();
+    	param.put("list", sigunguList);
+    	return accommodationDao.getAccommodationCount(param);
+    }
 
     public List<Accommodation> findBySellerId(String sellerId) {
         return accommodationDao.findBySellerId(sellerId);
     }
-   }
+    
+    public int accommRateAverage(Accommodation accom)
+    {
+    	int count = 0;
+    	try
+    	{
+    		count = accommodationDao.accommRateAverage(accom);
+    	}
+    	catch(Exception e)
+    	{
+    		logger.error("[AccommodationService]accommRateAverage Exception", e);
+    	}
+    	return count;
+    }
+}

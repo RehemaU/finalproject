@@ -49,11 +49,10 @@
       <li><a href="/schedule/myList">내가 쓴 일정</a></li>
       <li><a href="/mypage/planlist">내가 쓴 게시글</a></li>
       <li><a href="/mypage/commentlist">내가 쓴 댓글</a></li>
+      <li><a href="/mypage/reviewlist">내가 쓴 숙소 후기</a></li>
       <li><a href="/mypage/recommendlist">좋아요 누른 게시글</a></li>
       <li><a href="/like/list">찜한 장소</a></li>
-      <li><a href="/mypage/cart">장바구니</a></li>
       <li><a href="/mypage/orderlist">결제 내역</a></li>
-      <li><a href="/mypage/cancel">취소 내역</a></li>
     </ul>
   </div>
 </body>

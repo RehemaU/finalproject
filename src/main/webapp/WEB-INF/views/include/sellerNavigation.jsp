@@ -1,10 +1,11 @@
-<!-- /WEB-INF/views/include/seller_nav.jsp -->
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<!-- /WEB-INF/views/include/sellerNavigation.jsp -->
+<!-- 상단 네비게이션 -->
 <header class="top-nav">
-  <div class="logo">MY TRIP SELLER</div>
+  <div class="logo">
+    <a href="/seller/sellerMain">MY TRIP SELLER</a>
+  </div>
   <div class="nav-right">
     <c:choose>
       <c:when test="${not empty sessionScope.sellerId}">
@@ -18,17 +19,17 @@
   </div>
 </header>
 
+<!-- 좌측 대시보드 사이드바 -->
 <div class="admin-container">
   <aside class="sidebar">
-    <h2>대시보드</h2>
     <ul>
-      <li><a href="/accomm/accommRegForm">숙소 등록</a></li>
-      <li><a href="/seller/accommList">숙소 목록</a></li>
-      <li><a href="/seller/room/add">객실 등록</a></li>
-      <li><a href="/seller/reservation/list">정산 내역</a></li>
+      <li><a href="/accomm/accommRegForm">새 숙소 등록</a></li>
+      <li><a href="/seller/accommList">숙소 및 객실 관리</a></li>
+      <li><a href="/seller/sellerSellList">정산 내역</a></li>
     </ul>
   </aside>
 
+  <!-- 이 아래에 콘텐츠(main) 들어가야 함 -->
 <style>
   body {
     font-family: 'Noto Sans KR', sans-serif;
@@ -47,9 +48,15 @@
     padding: 0 40px;
   }
 
-  .top-nav .logo {
+  .top-nav .logo a {
     font-size: 20px;
     font-weight: bold;
+    color: #fff;
+    text-decoration: none;
+  }
+
+  .top-nav .logo a:hover {
+    text-decoration: underline;
   }
 
   .top-nav .nav-right a {
@@ -65,7 +72,7 @@
 
   .admin-container {
     display: flex;
-    min-height: calc(100vh - 60px);
+    min-height: calc(100vh - 60px); /* 상단 nav 제외 전체 영역 */
   }
 
   .sidebar {
@@ -105,4 +112,3 @@
     background: #222;
   }
 </style>
-

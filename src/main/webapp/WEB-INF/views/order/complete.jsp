@@ -78,7 +78,7 @@
         <span>인원 수:</span> ${detail.orderDetailsPeopleCount}명
     </div>
 
-    <a href="/mypage/orderList" class="btn">주문 내역 확인</a>
+    <a href="/mypage/orderlist" class="btn">주문 내역 확인</a>
 </div>
 </body>
 </html>

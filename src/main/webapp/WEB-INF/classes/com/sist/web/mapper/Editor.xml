@@ -26,7 +26,8 @@
 		PLAN_COUNT,
 		PLAN_REPORT,
 		PLAN_RECOMMEND,
-		T_CALANDER_LIST_ID)
+		T_CALANDER_LIST_ID,
+		PLAN_STATUS)
 		VALUES (PLAN_SEQ.NEXTVAL,
 		#{userId},
 		#{planTitle},
@@ -36,7 +37,7 @@
 		0,
 		0,
 		#{tCalanderListId},
-		Y)
+		'Y')
 
 	  </insert>
 	  
@@ -47,8 +48,8 @@
 		    FROM T_PLAN A
 		    JOIN T_USER B
 		      ON A.USER_ID = B.USER_ID
-		   WHERE PLAN_STATUS = 'Y'
 		  <where>
+		   PLAN_STATUS = 'Y'
 		  	<if test='searchType != null and searchType != "" and searchValue != null and searchValue !=""'>
 		  	<choose>
 			    <when test='searchType == "1"'>
@@ -83,12 +84,12 @@
 		  FROM T_PLAN A
 		  JOIN T_USER B
 		    ON A.USER_ID = B.USER_ID
-		 WHERE A.PLAN_STATUS = 'Y'
 		
 		  <!-- searchType 1: 이름으로 검색 -->
 		  <!-- searchType 2: 제목으로 검색 -->
 		  <!-- searchType 3: 내용으로 검색 -->
 		  <where>
+		 A.PLAN_STATUS = 'Y'
 		  	<if test='searchType != null and searchType != "" and searchValue != null and searchValue !=""'>
 		  	<choose>
 			    <when test='searchType == "1"'>
@@ -112,10 +113,10 @@
 		      ORDER BY A.PLAN_REGDATE DESC
 		    </when>
 		    <when test='listType == "2"'>
-		      ORDER BY A.PLAN_RECOMMEND DESC
+		      ORDER BY A.PLAN_RECOMMEND DESC, A.PLAN_COUNT DESC
 		    </when>
 		    <when test='listType == "3"'>
-		      ORDER BY A.PLAN_COUNT DESC
+		      ORDER BY A.PLAN_COUNT DESC, A.PLAN_RECOMMEND DESC
 		    </when>
 		    <otherwise>
 		      <!-- 최신순(기본) -->

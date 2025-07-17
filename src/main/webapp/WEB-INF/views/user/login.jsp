@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
 <%@ include file="/WEB-INF/views/include/taglib.jsp" %>
 <!DOCTYPE html>
-<%@ include file="/WEB-INF/views/include/head2.jsp" %>
+<%@ include file="/WEB-INF/views/include/head.jsp" %>
 
 <html lang="ko">
 <head>
@@ -30,7 +30,7 @@
       font-family: 'Pretendard', sans-serif;
       background-color: #ffffff;
     }
-
+    
     .login-container {
       display: flex;
       justify-content: center;
@@ -83,6 +83,70 @@
     .btn:hover {
       background-color: #333;
     }
+    
+    /*카카오 로그인버튼*/
+    .kakao-btn {
+	  background-color: #FEE500; 
+	  color: #000000;            
+	  font-weight: 700;
+	  box-shadow: 0 2px 5px rgb(0 0 0 / 0.15);
+	  transition: background-color 0.3s ease;
+	}
+
+	.kakao-btn:hover {
+	  background-color: #f9d71c; 
+	}
+
+	.kakao-btn img {
+	  height: 18px;
+	  width: auto;
+	  display: inline-block;
+	  vertical-align: middle;
+	}
+	
+	 /*구글 로그인버튼*/
+	.google-btn {
+	  background-color: #FFFFFF; 
+	  color: #000000;            
+	  font-weight: 700;
+	  border: 1.5px solid #dadce0; 
+	  box-shadow: 0 2px 5px rgb(0 0 0 / 0.1);
+	  transition: background-color 0.3s ease;
+	}
+
+	.google-btn:hover {
+	  background-color: #f5f5f5; 
+	}
+
+	.google-btn img {
+	   height: 18px;
+  	   width: 18px;
+  	   display: inline-block;
+  	   vertical-align: middle;
+	}
+	
+	
+	/*네이버 로그인버튼*/
+	.naver-btn {
+	  background-color: #03C75A;   /* 네이버 초록색 */
+	  color: #FFFFFF;              /* 흰색 텍스트 */
+	  font-weight: 700;
+	  border: none;
+	  box-shadow: 0 2px 5px rgb(0 0 0 / 0.1);
+	  transition: background-color 0.3s ease;
+	}
+
+	.naver-btn:hover {
+	  background-color: #02b152;   /* 약간 진한 초록색으로 호버 효과 */
+	}
+
+	/* 네이버 로고 아이콘 */
+	.naver-btn img {
+	  height: 18px;
+	  width: 18px;
+	  display: inline-block;
+	  vertical-align: middle;
+	}
   </style>
 
   <!-- 로그인 로직 -->
@@ -125,13 +189,11 @@
       $("#btngoogle").on("click", function(){
     	  location.href = "https://accounts.google.com/o/oauth2/v2/auth?client_id=292826362473-d70q9e2i8kaiksg49ij9vfhhupbv61fq.apps.googleusercontent.com&redirect_uri=http://finalproject.sist.co.kr:8088/user/googleLogin&response_type=code&scope=openid%20email%20profile&access_type=offline&prompt=select_account";
       }); 
-
       
       $("#btnnaver").on("click", function(){
     	  location.href = "/user/naverAuth";
       }); 
       
-
    });
    
    function fn_loginCheck()
@@ -171,7 +233,7 @@
                if(code == 0) location.href = "/";
                else {
                   if(code == -1) alert("비밀번호가 올바르지 않습니다.");
-                  else if(code == -99) alert("탈퇴한 사용자 입니다.");
+                  else if(code == -99) alert("정지된 사용자 입니다.");
                   else if(code == 404) alert("아이디와 일치하는 사용자 정보가 없습니다");
                   else if(code == 400) alert("파라미터 값이 올바르지 않습니다.");
                   else alert("오류가 발생하였습니다.(1)");
@@ -201,13 +263,18 @@
         <button type="button" id="btnLogin" class="btn">로그인</button>
         <button type="button" id="btnReg" class="btn">회원가입</button>
         <!--카카오로그인 -->
-        <button type="button" id="btnkakao" class="btn">카카오로그인</button>
+		<button type="button" id="btnkakao" class="btn kakao-btn">
+  			<img src="https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_small.png" alt="카카오로고" />
+ 			 카카오 로그인
+		</button>
         <!--구글로그인 -->
-        <button type="button" id="btngoogle" class="btn">구글로그인</button>
-
+        <button type="button" id="btngoogle" class="btn google-btn">
+  			<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"> 구글 로그인
+		</button>
         <!--네이버로그인 -->
-        <button type="button" id="btnnaver" class="btn">네이버로그인</button>
-
+        <button type="button" id="btnnaver" class="btn naver-btn">
+  			네이버 로그인
+		</button>
       </form>
     </div>
   </div>
