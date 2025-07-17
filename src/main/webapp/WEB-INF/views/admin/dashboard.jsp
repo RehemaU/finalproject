@@ -197,12 +197,69 @@ function initAccommEvents() {
         });
     });
 }
+function initReviewEvents() {
+    // 검색 버튼 클릭 시
+    $(document).on("click", "#reviewSearchBtn_rev", function () {
+        const keyword = $("#reviewSearchInput_rev").val();
+        const order = $("#reviewOrderSelect_rev").val();
+        $.ajax({
+            url: "/admin/reviewList",
+            type: "GET",
+            data: { keyword, order },
+            success: function (data) {
+                $("#contentArea").html(data);
+            }
+        });
+    });
+
+    // 페이지 링크 클릭 시
+    $(document).on("click", ".review-page-link", function () {
+        const page = $(this).data("page");
+        const keyword = $("#reviewSearchInput_rev").val();
+        const order = $("#reviewOrderSelect_rev").val();
+        $.ajax({
+            url: "/admin/reviewList",
+            type: "GET",
+            data: { page, keyword, order },
+            success: function (data) {
+                $("#contentArea").html(data);
+            }
+        });
+    });
+
+    // 정렬 순서 변경 시
+    $(document).on("change", "#reviewOrderSelect_rev", function () {
+        $("#reviewSearchBtn_rev").click();  // 자동으로 검색 재실행
+    });
+    
+ // 상태 필터 버튼 클릭 (공개/비공개)
+    $(document).on("click", "#filterPublicReviewBtn, #filterPrivateReviewBtn", function () {
+        const status = $(this).data("status");
+        $(".filter-btn").removeClass("active");
+        $(this).addClass("active");
+
+        const keyword = $("#reviewSearchInput_rev").val();
+        const order = $("#reviewOrderSelect_rev").val();
+
+        $.ajax({
+            url: "/admin/reviewList",
+            type: "GET",
+            data: { keyword, order, status },
+            success: function (data) {
+                $("#contentArea").html(data);
+            }
+        });
+    });
+    
+}
+
 
 // ✅ 전체 초기화
 function initDashboard() {
     loadAccommList();          // 초기 로딩은 숙소
     initUserEvents();          // 유저 이벤트 등록
     initAccommEvents();        // 숙소 이벤트 등록
+    initReviewEvents();
 
     // 메뉴 클릭 시 화면 전환
     $(document).on("click", ".menu-item", function () {
@@ -216,6 +273,48 @@ function initDashboard() {
 $(document).ready(function () {
     initDashboard();
 });
+
+//✅ 리뷰 비공개 처리 버튼 이벤트 위임
+//✅ 리뷰 비공개 처리 버튼 이벤트 위임 (고친 버전)
+$(document).on("click", ".review-hide-btn", function () {
+    const planId = $(this).data("plan-id");
+
+    if (confirm("해당 리뷰를 비공개 처리하시겠습니까?")) {
+        fetch("/admin/updateReviewStatus", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ planId: planId, status: "N" })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.code === 0) {
+                alert("비공개 처리 완료");
+
+                // ✅ 현재 검색어, 정렬, 상태, 페이지 유지
+                const keyword = $("#reviewSearchInput_rev").val();
+                const order = $("#reviewOrderSelect_rev").val();
+                const status = $(".filter-btn.active").data("status") || "Y";
+                const curPage = $(".review-page-link.active").data("page") || 1;
+
+                const query = "?page=" + curPage +
+                "&keyword=" + encodeURIComponent(keyword) +
+                "&order=" + order +
+                "&status=" + status;
+                loadContent("/admin/reviewList" + query); // ✅ reload 말고 이걸로 대체!
+            } else {
+                alert("처리 실패: " + data.msg);
+            }
+        })
+        .catch(err => {
+            console.error("에러 발생", err);
+            alert("서버 오류");
+        });
+    }
+});
+
+
 </script>
 
 </body>

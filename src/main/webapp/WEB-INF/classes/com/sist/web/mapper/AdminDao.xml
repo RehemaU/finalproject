@@ -251,7 +251,10 @@
 <select id="getReviewCount" parameterType="map" resultType="int">
 SELECT COUNT(*)
 FROM   T_PLAN
-WHERE  PLAN_STATUS = 'Y'          <!-- 필요한 조건 예시 -->
+WHERE 1=1
+<if test="status != null and status != ''">
+    AND PLAN_STATUS = #{status}
+</if>
 <if test="keyword != null and keyword != ''">
     AND USER_ID LIKE '%' || #{keyword} || '%'
 </if>
@@ -259,36 +262,44 @@ WHERE  PLAN_STATUS = 'Y'          <!-- 필요한 조건 예시 -->
 
 	<!-- =============== 리뷰 리스트(페이징) =============== -->
 	<select id="getReviewList" resultMap="editorResultMap" parameterType="map">
-	SELECT *
-	FROM (
-	    SELECT R.*, ROWNUM AS RN
-	    FROM (
-	        SELECT PLAN_ID, USER_ID, PLAN_TITLE, PLAN_CONTENT,
-	               TO_CHAR(PLAN_REGDATE, 'YYYY-MM-DD') PLAN_REGDATE,
-	               PLAN_COUNT, PLAN_REPORT, PLAN_RECOMMEND,
-	               PLAN_STATUS
-	        FROM   T_PLAN
-	        WHERE  PLAN_STATUS = 'Y'
-	        <if test="keyword != null and keyword != ''">
-	            AND USER_ID LIKE '%' || #{keyword} || '%'
-	        </if>
+SELECT *
+FROM (
+    SELECT R.*, ROWNUM AS RN
+    FROM (
+        SELECT PLAN_ID, USER_ID, PLAN_TITLE, PLAN_CONTENT,
+               TO_CHAR(PLAN_REGDATE, 'YYYY-MM-DD') PLAN_REGDATE,
+               PLAN_COUNT, PLAN_REPORT, PLAN_RECOMMEND,
+               PLAN_STATUS
+        FROM   T_PLAN
+        WHERE 1=1
+        <if test="status != null and status != ''">
+            AND PLAN_STATUS = #{status}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND USER_ID LIKE '%' || #{keyword} || '%'
+        </if>
+        <choose>
+            <when test="order == 'report'">
+                ORDER BY PLAN_REPORT DESC, PLAN_ID DESC
+            </when>
+            <when test="order == 'view'">
+                ORDER BY PLAN_COUNT DESC, PLAN_ID DESC
+            </when>
+            <otherwise>
+                ORDER BY PLAN_ID DESC
+            </otherwise>
+        </choose>
+    ) R
+    WHERE ROWNUM &lt;= #{end}
+)
+WHERE RN &gt;= #{start}
+</select>
 	
-	        <choose>
-	            <when test="order == 'report'">
-	                ORDER BY PLAN_REPORT DESC, PLAN_ID DESC
-	            </when>
-	            <when test="order == 'view'">
-	                ORDER BY PLAN_COUNT DESC, PLAN_ID DESC
-	            </when>
-	            <otherwise>
-	                ORDER BY PLAN_ID DESC            <!-- recent -->
-	            </otherwise>
-	        </choose>
-	    ) R
-	    WHERE ROWNUM &lt;= #{end}          <!-- end = page*pageSize -->
-	)
-	WHERE RN &gt;= #{start}              <!-- start = (page-1)*pageSize+1 -->
-	</select>
+	<update id="updateReviewStatus" parameterType="map">
+    UPDATE T_PLAN
+    SET PLAN_STATUS = #{status}
+    WHERE PLAN_ID = #{planId}
+	</update>
 	
 	
 </mapper>
