@@ -1,10 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/views/include/taglib.jsp" %>
+<%@ include file="/WEB-INF/views/include/sellerHead.jsp" %>
+<%@ include file="/WEB-INF/views/include/sellerNavigation.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>
-<%@ include file="/WEB-INF/views/include/sellerHead.jsp" %>
   <title>비밀번호 변경</title>
   <style>
     :root {
@@ -23,13 +24,12 @@
     font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
     font-size: 15px;
     line-height: 1.5;
-    padding: 60px 20px;
   }
 
   .container {
     max-width: 460px;
-    margin: 0 auto;
-    padding: 48px 40px;
+    margin:80px auto;
+    padding:56px 60px;
     border: 1px solid var(--border);
     border-radius: var(--radius);
     background: #fff;
@@ -99,7 +99,6 @@
   </style>
 </head>
 <body>
-<%@ include file="/WEB-INF/views/include/sellerNavigation.jsp" %>
 
   <div class="container">
     <h2>비밀번호 변경</h2>
