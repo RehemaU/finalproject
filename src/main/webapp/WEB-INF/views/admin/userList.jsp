@@ -65,7 +65,7 @@
 </head>
 <body>
 <div style="margin-bottom: 15px;">
-    <input type="text" id="userSearchInput" placeholder="아이디 검색" style="padding: 5px;">
+    <input type="text" id="userSearchInput" value="${keyword}" placeholder="아이디 검색" style="padding: 5px;">
     <button id="userSearchBtn" style="padding: 5px 10px;">검색</button>
 </div>
 <div id="userTableArea">

@@ -46,4 +46,6 @@ public interface AdminDao {
     public List<Map<String,Object>> getReviewList(Map<String,Object> param);
     public int getReviewCount(Map<String,Object> param);
     
+    int updateReviewStatus(@Param("planId") int planId, @Param("status") String status);
+    
 }

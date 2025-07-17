@@ -106,4 +106,8 @@ public class AdminService {
     	return adminDao.getReviewCount(param);
     }
     
+    public int updateReviewStatus(int planId, String status) {
+        return adminDao.updateReviewStatus(planId, status); // DAO 호출
+    }
+    
 }

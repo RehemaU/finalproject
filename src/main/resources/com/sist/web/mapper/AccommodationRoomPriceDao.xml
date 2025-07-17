@@ -21,7 +21,7 @@
 <!-- 객실 금액 조회(기간받고), 만약 조건 늘어날 시 새로운 모델 생성해서 할 예정@@  -->
 <select id="selectAccommodationRoomPrice"
         parameterType="map"
-        resultMap="roomPriceResultMap">
+        resultType="com.sist.web.model.AccommodationRoomPrice">
 	SELECT ACCOMM_ROOM_PRICE_ID,
 	       ACCOMM_ROOM_ID,
 	       ACCOMM_ROOM_PRICE_WEEKDAY,
