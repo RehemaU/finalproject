@@ -167,9 +167,9 @@ public class OrderService {
     	orderDao.updateOrderStatus(param);
     }
     
-    public void deleteExpiredOrders() {
+    public void deleteExpiredOrders(String status) {
         Map<String, Object> param = new HashMap<>();
-        param.put("status", "S"); // 결제 안 된 상태
+        param.put("status", status); // 결제 안 된 상태
 
         List<String> expiredOrderIds = orderDao.selectExpiredOrderIds(param);
         

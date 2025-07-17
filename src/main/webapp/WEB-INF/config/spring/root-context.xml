@@ -4,14 +4,18 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:util="http://www.springframework.org/schema/util"
        xmlns:tx="http://www.springframework.org/schema/tx"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-	                       http://www.springframework.org/schema/beans/spring-beans.xsd
-	                       http://www.springframework.org/schema/context
-                           http://www.springframework.org/schema/context/spring-context.xsd
-	                       http://www.springframework.org/schema/util
-       					   http://www.springframework.org/schema/util/spring-util.xsd
-       					   http://www.springframework.org/schema/tx
-                           http://www.springframework.org/schema/tx/spring-tx.xsd">
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context.xsd
+           http://www.springframework.org/schema/util
+           http://www.springframework.org/schema/util/spring-util.xsd
+           http://www.springframework.org/schema/tx
+           http://www.springframework.org/schema/tx/spring-tx.xsd
+           http://www.springframework.org/schema/task
+           http://www.springframework.org/schema/task/spring-task.xsd">
 	
 	<!-- 환경변수 시작 -->
 	<util:properties id="env" location="/WEB-INF/config/env.xml" />
@@ -69,6 +73,6 @@
     <tx:annotation-driven transaction-manager="transactionManager" />
     <!-- 어노테이션 트랜잭션 사용 종료 -->
 	
-	<context:component-scan base-package="com.sist.web.service" />
-		
+	<context:component-scan base-package="com.sist.web" />
+	<task:annotation-driven />	
 </beans>
