@@ -103,8 +103,16 @@ public class ReviewController {
 	{
 		String userId = (String) request.getSession().getAttribute("userId");
 	    List<Review> list = new ArrayList<>();
+	    String accomName = "";
 	    
 	    list = reviewService.reviewList(userId);
+	    
+	    for (Review review : list)
+	    {
+	    	Accommodation accom = accomService.selectAccommodation(review.getAccommId());
+	    	accomName = accom.getAccomName();
+	    	review.setAccommName(accomName);
+	    }
 	    
 	    model.addAttribute("list", list);
 	    
