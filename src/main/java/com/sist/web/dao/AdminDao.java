@@ -42,4 +42,10 @@ public interface AdminDao {
     List<Map<String, Object>> getAccommList(Map<String, Object> param);
     int getAccommCount(Map<String, Object> param);
     int approveAccomm(String accommId);
+    
+    public List<Map<String,Object>> getReviewList(Map<String,Object> param);
+    public int getReviewCount(Map<String,Object> param);
+    
+    int updateReviewStatus(@Param("planId") int planId, @Param("status") String status);
+    
 }

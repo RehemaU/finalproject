@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -229,5 +230,71 @@ public class AdminController {
         result.put("code", success ? 0 : -1);
 
         return result;
+    }
+    
+ // ✅ 리뷰 목록
+    @GetMapping("/admin/reviewList")
+    public String reviewList(
+            @RequestParam(value="keyword", required=false) String keyword,
+            @RequestParam(value="order",   defaultValue="recent") String order,
+            @RequestParam(value="status",  required=false) String status, // ✅ 추가
+            @RequestParam(value="page",    defaultValue="1") int page,
+            Model model) {
+
+        if (status == null || status.isEmpty()) {
+            status = "Y"; // 기본값 공개
+        }
+
+        int pageSize = 10;
+        int startRow = (page-1)*pageSize + 1;
+        int endRow   =  page   *pageSize;
+
+        Map<String,Object> param = new HashMap<>();
+        param.put("keyword", keyword);
+        param.put("order",   order);
+        param.put("start",   startRow);
+        param.put("end",     endRow);
+        param.put("status",  status); // ✅ 동적 처리
+
+        List<Map<String,Object>> reviewList = adminService.getReviewList(param);
+        int totalCount = adminService.getReviewCount(param);
+        int totalPage  = (int)Math.ceil((double)totalCount / pageSize);
+
+        int blockSize   = 10;
+        int blockStart  = ((page-1)/blockSize)*blockSize + 1;
+        int blockEnd    = Math.min(blockStart + blockSize - 1, totalPage);
+
+        model.addAttribute("reviewList", reviewList);
+        model.addAttribute("keyword",    keyword);
+        model.addAttribute("order",      order);
+        model.addAttribute("status",     status); // ✅ 상태도 전달
+        model.addAttribute("curPage",    page);
+        model.addAttribute("totalPage",  totalPage);
+        model.addAttribute("blockStart", blockStart);
+        model.addAttribute("blockEnd",   blockEnd);
+
+        return "/admin/reviewList";
+    }
+
+    @PostMapping("/admin/updateReviewStatus")
+    @ResponseBody
+    public Map<String, Object> updateReviewStatus(@RequestBody Map<String, Object> param) {
+        // planId → float형처럼 들어온 걸 int로 변환
+        String planIdStr = String.valueOf(param.get("planId")); // 예: "90.0"
+        int planId = (int) Double.parseDouble(planIdStr);       // 90.0 → 90
+
+        String status = (String) param.get("status");
+
+        int result = adminService.updateReviewStatus(planId, status);
+
+        Map<String, Object> response = new HashMap<>();
+        if (result > 0) {
+            response.put("code", 0);
+            response.put("msg", "성공");
+        } else {
+            response.put("code", 1);
+            response.put("msg", "실패");
+        }
+        return response;
     }
 }

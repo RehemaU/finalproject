@@ -9,22 +9,6 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 <%@ include file="/WEB-INF/views/include/head.jsp" %> <%-- Bootstrap 포함되어 있다고 가정 --%>
-
-<style>
-/* 기본 링크 스타일 */
-a {
-  color: black; /* 기본 글자색은 파란색 */
-  text-decoration: none; /* 기본 밑줄 제거 */
-  transition: color 0.3s; /* 색상 변경 시 0.3초 동안 부드럽게 전환 */
-}
-
-/* 마우스를 올렸을 때 스타일 */
-a:hover {
-  color: dark gray; /* 마우스를 올리면 글자색이 빨간색으로 변경 */
-  text-decoration: underline; /* 마우스를 올리면 밑줄 생성 */
-}
-</style>
-
 </head>
 <body>
 <%@ include file="/WEB-INF/views/include/navigation.jsp" %> <%-- 공통 헤더/네비게이션 --%>
@@ -41,19 +25,11 @@ a:hover {
   <div class="col">
     <div class="card h-100">
       <div class="card-body">
-      
-        <div class="mt-2">
-         <a href="/mypage/orderdetail?orderId=${review.orderId}">
-          <small class="text-muted">주문 ID: ${review.orderId}</small>
-         </a>
-        </div>
-        
+        <h5 class="card-title">숙소 ID: ${review.accommId}</h5>
+        <p class="card-text">${review.accommReviewContent}</p>
+
         <!-- 별점 출력 -->
         <div>
-        <a href="/accomm/accommDetail?accommId=${review.accommId}">
-        ${review.accommName}
-        </a>
-        &nbsp;&nbsp;
           <c:set var="rating" value="${review.accommReviewRating}" />
           <c:forEach begin="1" end="5" var="i">
             <c:choose>
@@ -65,9 +41,12 @@ a:hover {
               </c:otherwise>
             </c:choose>
           </c:forEach>
+          <span class="ms-2">${review.accommReviewRating}점</span>
         </div>
-        
-        <p class="card-text">${review.accommReviewContent}</p>
+
+        <div class="mt-2">
+          <small class="text-muted">주문 ID: ${review.orderId}</small>
+        </div>
 
         <!-- 삭제 버튼 -->
         <div class="mt-3 text-end">

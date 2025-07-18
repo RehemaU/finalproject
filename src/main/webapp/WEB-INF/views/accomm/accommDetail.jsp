@@ -269,11 +269,8 @@ function fetchRoomPrices(checkIn, checkOut) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ roomId: roomId, checkIn: checkIn, checkOut: checkOut })
         })
-        .then(function(res) {
-            return res.json();
-        })
+        .then(function(res) { return res.json(); })
         .then(function(data) {
-            console.log(`[${roomId}] 가격 응답:`, data);  // 추가
             var target = document.getElementById("priceResult-" + roomId);
             if (data && typeof data.days !== "undefined" && typeof data.totalPrice !== "undefined") {
                 target.innerText = "총 " + data.days + "박 / 총액: ₩" + Number(data.totalPrice).toLocaleString();
@@ -281,8 +278,7 @@ function fetchRoomPrices(checkIn, checkOut) {
                 target.innerText = "총액 계산 실패 (데이터 없음)";
             }
         })
-        .catch(function(err) {
-            console.error(`[${roomId}] 가격 오류:`, err);  // 추가
+        .catch(function() {
             var target = document.getElementById("priceResult-" + roomId);
             target.innerText = "가격 계산 실패";
         });
