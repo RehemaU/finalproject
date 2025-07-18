@@ -1,6 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ include file="/WEB-INF/views/include/head.jsp" %>
+<%@ include file="/WEB-INF/views/include/navigation.jsp" %>
 <html>
 <head>
     <title>숙소 예약</title>
@@ -16,12 +18,15 @@
             cursor: pointer; border: none; border-radius: 10px;
             width: 100%;
         }
-        .room-img {
-            width: 100%;
-            max-height: 200px;
-            object-fit: cover;
-            border-radius: 10px;
-        }
+   .room-img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 350px;  /* 원하는 높이 제한 */
+    margin: 0 auto;
+    border-radius: 10px;
+	}
     </style>
 </head>
 <body>
