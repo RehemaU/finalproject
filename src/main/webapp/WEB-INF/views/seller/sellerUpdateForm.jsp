@@ -70,7 +70,7 @@
   input[readonly]{background:#f5f5f5;color:#888;cursor:not-allowed}
 
   /* 주소 검색 영역 */
-  .address-group{gap:18px}
+  .address-group{gap:18px} 
   .address-group button{
     height:46px;
     padding:0 26px;

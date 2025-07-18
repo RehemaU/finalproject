@@ -12,6 +12,9 @@ public class Review implements Serializable {
 	private String accommReviewContent;
 	private int accommReviewRating;
 	private String orderId;
+	private String accommReviewStatus;
+	
+	private String accommName;
 	
 	public Review()
 	{
@@ -21,9 +24,28 @@ public class Review implements Serializable {
 		accommReviewContent = "";
 		accommReviewRating = 0;
 		orderId = "";
+		accommReviewStatus = "Y";
+		
+		accommName = "";
 	}
 
 	//getter-setter
+	public String getAccommReviewStatus() {
+		return accommReviewStatus;
+	}
+	
+	public void setAccommReviewStatus(String accommReviewStatus) {
+		this.accommReviewStatus = accommReviewStatus;
+	}
+
+	public String getAccommName() {
+		return accommName;
+	}
+	
+	public void setAccommName(String accommName) {
+		this.accommName = accommName;
+	}
+
 	public String getAccommReviewId() {
 		return accommReviewId;
 	}

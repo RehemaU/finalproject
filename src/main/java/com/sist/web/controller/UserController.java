@@ -49,6 +49,7 @@ import com.sist.common.util.StringUtil;
 import com.sist.web.model.Response;
 import com.sist.web.model.User;
 import com.sist.web.service.EditorService;
+import com.sist.web.service.ReviewService;
 import com.sist.web.service.UserService;
 import com.sist.web.util.CookieUtil;
 import com.sist.web.util.HttpUtil;
@@ -68,6 +69,8 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 	private UserService userService;
 	@Autowired
 	private EditorService editorService;
+	@Autowired
+	private ReviewService reviewService;
 	
 	@Value("#{env['auth.user.name']}")
 	private String AUTH_USER_NAME;
@@ -635,8 +638,9 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 
 	        if (success > 0) {
 	        	int count = editorService.editorStatus(userId);
+	        	int revcount = reviewService.reviewUpdate(userId);
 	            result.put("code", 0);
-	            result.put("message", "회원 탈퇴 완료 & 게시글 비공개 처리 수: "+count);
+	            result.put("message", "회원 탈퇴 완료 & 게시글 비공개 처리 수: "+count+"후기 비공개 처리 수:"+revcount);
 	            
 	        } else {
 	            result.put("code", 500);
