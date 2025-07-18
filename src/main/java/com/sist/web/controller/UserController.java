@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -46,8 +47,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.sist.common.model.FileData;
 import com.sist.common.util.StringUtil;
+import com.sist.web.model.Accommodation;
 import com.sist.web.model.Response;
 import com.sist.web.model.User;
+import com.sist.web.service.AccommodationService;
 import com.sist.web.service.EditorService;
 import com.sist.web.service.ReviewService;
 import com.sist.web.service.UserService;
@@ -71,6 +74,8 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 	private EditorService editorService;
 	@Autowired
 	private ReviewService reviewService;
+	@Autowired
+	private AccommodationService accommService;
 	
 	@Value("#{env['auth.user.name']}")
 	private String AUTH_USER_NAME;
@@ -639,6 +644,19 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 	        if (success > 0) {
 	        	int count = editorService.editorStatus(userId);
 	        	int revcount = reviewService.reviewUpdate(userId);
+	        	
+
+	        	List<String> accomlist = reviewService.reviewUpdateList(userId);
+	        	double RateAvg = 0; 
+	        	for(String accommId : accomlist)
+	        	{
+	        		RateAvg = reviewService.reviewRatingAvg(accommId);
+					Accommodation accomm = new Accommodation();
+					accomm.setAccomAvg(RateAvg);
+					accomm.setAccomId(accommId);
+					accommService.accommRateAverage(accomm);
+	        	}
+	        	
 	            result.put("code", 0);
 	            result.put("message", "회원 탈퇴 완료 & 게시글 비공개 처리 수: "+count+"후기 비공개 처리 수:"+revcount);
 	            
@@ -659,7 +677,7 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 	
 	
 
-	//구글로그인
+	//구글로그인 
 	//로그인 페이지
 	@RequestMapping(value = "/user/googleLogin", method=RequestMethod.GET)
 	public String googleLogin(@RequestParam("code") String code, HttpSession session)

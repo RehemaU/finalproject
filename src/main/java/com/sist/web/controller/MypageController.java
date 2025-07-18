@@ -20,11 +20,13 @@ import com.sist.web.model.Editor;
 import com.sist.web.model.Order;
 import com.sist.web.model.OrderDetail;
 import com.sist.web.model.Pcomment;
+import com.sist.web.model.Review;
 import com.sist.web.model.User;
 import com.sist.web.service.EditorService;
 import com.sist.web.service.OrderService;
 import com.sist.web.service.PcommentService;
 import com.sist.web.service.RecommendService;
+import com.sist.web.service.ReviewService;
 import com.sist.web.service.UserService;
 
 @Controller("mypageController")
@@ -42,6 +44,8 @@ public class MypageController {
 	private RecommendService recommendService;
 	@Autowired
 	private OrderService orderService;
+	@Autowired
+	private ReviewService reviewService;
 	
 	//------------------------------------------------------------------------------
 	@RequestMapping(value = "/mypage/main", method=RequestMethod.GET)
@@ -197,17 +201,37 @@ public class MypageController {
 	public String orderdetail(ModelMap model, HttpServletRequest request, HttpServletResponse response)
 	{
 	    String orderId = request.getParameter("orderId");
+	    String userId = (String) request.getSession().getAttribute("userId");
 	    
-	    boolean isReview = false;
-	    boolean isRefund = false;
+	    boolean isRefundDate = false;
+	    boolean isReviewDate = false;
+	    boolean isRefund = true;
+	    boolean isReview = true;
+	    
+	    Review review = new Review();
+	    review.setOrderId(orderId);
+	    review.setUserId(userId);
+	    
+	    Order order = new Order();
 	    
 	    if(orderService.userOrderCheckin(orderId)>0)
 	    {
-	    	isRefund = true;
+	    	isRefundDate = true;
 	    }
 	    if(orderService.userOrderCheckout(orderId)>0)
 	    {
-	    	isReview = true;
+	    	isReviewDate = true;
+	    }
+	    
+	    if(reviewService.reviewCount(review)>0)
+	    {
+	    	isReview = false;
+	    }
+	    
+	    order = orderService.selectOrderById(orderId);
+	    if(order.getOrderStatus().equals("R"))
+	    {
+	    	isRefund = false;
 	    }
 	    
 	    OrderDetail orderDetail = orderService.userOrderDetails(orderId);
@@ -218,8 +242,12 @@ public class MypageController {
 	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	    String checkinDate = sdf.format(cidate);
 	    String checkoutDate = sdf.format(codate);
+	    
 	    model.addAttribute("checkinDate", checkinDate);
 	    model.addAttribute("checkoutDate", checkoutDate);
+	    
+	    model.addAttribute("isRefundDate", isRefundDate);
+	    model.addAttribute("isReviewDate", isReviewDate);
 	    
 	    model.addAttribute("isRefund", isRefund);
 	    model.addAttribute("isReview", isReview);
