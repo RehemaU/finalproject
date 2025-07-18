@@ -1,11 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/views/include/taglib.jsp" %>
-<%@ include file="/WEB-INF/views/include/sellerHead.jsp" %>
-<%@ include file="/WEB-INF/views/include/sellerNavigation.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>
+<%@ include file="/WEB-INF/views/include/sellerHead.jsp" %>
   <title>비밀번호 변경</title>
   <style>
     :root {
@@ -24,12 +23,13 @@
     font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
     font-size: 15px;
     line-height: 1.5;
+    padding: 60px 20px;
   }
 
   .container {
     max-width: 460px;
-    margin:80px auto;
-    padding:56px 60px;
+    margin: 0 auto;
+    padding: 48px 40px;
     border: 1px solid var(--border);
     border-radius: var(--radius);
     background: #fff;
@@ -97,34 +97,6 @@
     opacity: 0.85;
   }
   </style>
-</head>
-<body>
-
-  <div class="container">
-    <h2>비밀번호 변경</h2>
-    <div class="info-text">
-      <a href="#">안전한 비밀번호</a>로 내정보를 보호하세요<br><br>
-      <span class="red">・ 다른 아이디/사이트에서 사용한 적 없는 비밀번호</span><br>
-      <span class="red">・ 이전에 사용한 적 없는 비밀번호</span>가 안전합니다.
-    </div>
-
-    <form method="post">
-      <div class="form-group">
-        <input type="password" id="currentPassword" name="currentPassword" placeholder="현재 비밀번호" required>
-      </div>
-      <div class="form-group">
-        <input type="password" id="newPassword" name="newPassword" placeholder="새 비밀번호" required>
-      </div>
-      <div class="form-group">
-        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="새 비밀번호 확인" required>
-      </div>
-      
-      <input type="hidden" id="sellerPassword" name="sellerPassword">
-      <button type="button" id="btnChange" >비밀번호 변경</button>
-    </form>
-  </div>
-
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script type="text/javascript">
   $(document).ready(function(){
 	  $("#btnChange").on("click",function(){
@@ -205,7 +177,7 @@
 		   				if(response.code == 0)
 		   				{
 		   					alert("비밀번호가 성공적으로 변경되었습니다.");
-		   					location.href = "/seller/sellerMain"; 
+		   					location.href = "/seller/login"; 
 		   				}
 		   				else
 		   				{
@@ -223,6 +195,33 @@
 	  });
   });
   </script>  
+</head>
+<body>
+<%@ include file="/WEB-INF/views/include/navigation.jsp" %>
+<br /><br />
+  <div class="container">
+    <h2>비밀번호 변경</h2>
+    <div class="info-text">
+      <a href="#">안전한 비밀번호</a>로 내정보를 보호하세요<br><br>
+      <span class="red">・ 다른 아이디/사이트에서 사용한 적 없는 비밀번호</span><br>
+      <span class="red">・ 이전에 사용한 적 없는 비밀번호</span>가 안전합니다.
+    </div>
+
+    <form method="post">
+      <div class="form-group">
+        <input type="password" id="currentPassword" name="currentPassword" placeholder="현재 비밀번호" required>
+      </div>
+      <div class="form-group">
+        <input type="password" id="newPassword" name="newPassword" placeholder="새 비밀번호" required>
+      </div>
+      <div class="form-group">
+        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="새 비밀번호 확인" required>
+      </div>
+      
+      <input type="hidden" id="sellerPassword" name="sellerPassword">
+      <button type="button" id="btnChange" >비밀번호 변경</button>
+    </form>
+  </div>
 
 </body>
 </html>

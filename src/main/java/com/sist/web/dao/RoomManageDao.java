@@ -1,6 +1,7 @@
 package com.sist.web.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import com.sist.web.model.AccommodationRoom;
 
@@ -10,5 +11,6 @@ public interface RoomManageDao {
     AccommodationRoom findByRoomId(String roomId);
     String getNextAccommRoomSeq();
     void deleteRoomById(String roomId);
+    int isDuplicateRoomName(Map<String, Object> param);
 
 }
