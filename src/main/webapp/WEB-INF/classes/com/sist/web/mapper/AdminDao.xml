@@ -51,7 +51,20 @@
     <result property="firstImage2" column="FIRST_IMAGE2"/>
     <result property="accomDes" column="ACCOMM_DES"/>
     <result property="unifiedId" column="UNIFIED_ID"/>
-</resultMap>
+	</resultMap>
+    <!-- review resultMap 정의 -->
+	<resultMap id="editorResultMap" type="com.sist.web.model.Editor">
+	    <id      column="PLAN_ID"         property="planId"/>
+	    <result  column="USER_ID"         property="userId"/>
+	    <result  column="PLAN_TITLE"      property="planTitle"/>
+	    <result  column="PLAN_CONTENT"    property="planContent"/>
+	    <result  column="PLAN_REGDATE"    property="planRegdate"/>
+	    <result  column="PLAN_COUNT"      property="planCount"/>
+	    <result  column="PLAN_REPORT"     property="planReport"/>
+	    <result  column="PLAN_RECOMMEND"  property="planRecommend"/>
+	    <result  column="PLAN_STATUS"     property="planStatus"/>
+	</resultMap>
+
 	
 	    <!-- 관리자 조회 -->
     <select id="selectAdminById" parameterType="string" resultMap="adminResultMap">
@@ -233,5 +246,60 @@
         SET ACCOMM_STATUS = 'Y'
         WHERE ACCOMM_ID = #{accomId}
     </update>
+	
+	<!-- =============== 리뷰 총 개수 =============== -->
+<select id="getReviewCount" parameterType="map" resultType="int">
+SELECT COUNT(*)
+FROM   T_PLAN
+WHERE 1=1
+<if test="status != null and status != ''">
+    AND PLAN_STATUS = #{status}
+</if>
+<if test="keyword != null and keyword != ''">
+    AND USER_ID LIKE '%' || #{keyword} || '%'
+</if>
+</select>
 
+	<!-- =============== 리뷰 리스트(페이징) =============== -->
+	<select id="getReviewList" resultMap="editorResultMap" parameterType="map">
+SELECT *
+FROM (
+    SELECT R.*, ROWNUM AS RN
+    FROM (
+        SELECT PLAN_ID, USER_ID, PLAN_TITLE, PLAN_CONTENT,
+               TO_CHAR(PLAN_REGDATE, 'YYYY-MM-DD') PLAN_REGDATE,
+               PLAN_COUNT, PLAN_REPORT, PLAN_RECOMMEND,
+               PLAN_STATUS
+        FROM   T_PLAN
+        WHERE 1=1
+        <if test="status != null and status != ''">
+            AND PLAN_STATUS = #{status}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND USER_ID LIKE '%' || #{keyword} || '%'
+        </if>
+        <choose>
+            <when test="order == 'report'">
+                ORDER BY PLAN_REPORT DESC, PLAN_ID DESC
+            </when>
+            <when test="order == 'view'">
+                ORDER BY PLAN_COUNT DESC, PLAN_ID DESC
+            </when>
+            <otherwise>
+                ORDER BY PLAN_ID DESC
+            </otherwise>
+        </choose>
+    ) R
+    WHERE ROWNUM &lt;= #{end}
+)
+WHERE RN &gt;= #{start}
+</select>
+	
+	<update id="updateReviewStatus" parameterType="map">
+    UPDATE T_PLAN
+    SET PLAN_STATUS = #{status}
+    WHERE PLAN_ID = #{planId}
+	</update>
+	
+	
 </mapper>

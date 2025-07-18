@@ -7,8 +7,28 @@ public class AccommodationRoomPrice {
     private int accommRoomPriceFriday;
     private int accommRoomPriceSaturday;
     private int accommRoomPriceSunday;
+    private java.util.Date accommRoomPriceStart;
+    private java.util.Date accommRoomPriceEnd;
+    
 
-    public String getAccommRoomPriceId() {
+
+	public java.util.Date getAccommRoomPriceStart() {
+		return accommRoomPriceStart;
+	}
+
+	public void setAccommRoomPriceStart(java.util.Date accommRoomPriceStart) {
+		this.accommRoomPriceStart = accommRoomPriceStart;
+	}
+
+	public java.util.Date getAccommRoomPriceEnd() {
+		return accommRoomPriceEnd;
+	}
+
+	public void setAccommRoomPriceEnd(java.util.Date accommRoomPriceEnd) {
+		this.accommRoomPriceEnd = accommRoomPriceEnd;
+	}
+
+	public String getAccommRoomPriceId() {
 		return accommRoomPriceId;
 	}
 
@@ -67,5 +87,9 @@ public class AccommodationRoomPrice {
         this.accommRoomPriceSaturday = accommRoomPriceSaturday;
         this.accommRoomPriceSunday = accommRoomPriceSunday;
     }
+
+	public AccommodationRoomPrice() {
+		
+	}
 }
 	

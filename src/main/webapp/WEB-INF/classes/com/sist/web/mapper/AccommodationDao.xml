@@ -61,27 +61,7 @@
 		WHERE ACCOMM_ID = #{accomId}
 	</select>
 	
-<select id="searchBySigungu" resultMap="accomResultMap" parameterType="java.util.List">
-  SELECT * FROM T_ACCOMM
-  <where>
-    ACCOMM_STATUS = 'Y'
-    
-    <if test="list != null and !list.isEmpty()">
-      AND (
-        <foreach collection="list" item="sigungu" separator="OR">
-          <choose>
-            <when test="sigungu.sigunguId == null or sigungu.sigunguId == ''">
-              REGION_ID = #{sigungu.regionId}
-            </when>
-            <otherwise>
-              (REGION_ID = #{sigungu.regionId} AND SIGUNGU_CODE = #{sigungu.sigunguId})
-            </otherwise>
-          </choose>
-        </foreach>
-      )
-    </if>
-  </where>
-</select>
+
 
 	
    <!-- 🔥 새로운 폼 등록용 insert 쿼리 -->
@@ -108,4 +88,56 @@
     ORDER BY ACCOMM_ID DESC
 </select>
     
+    <!-- 별점 값 세팅해주기 -->
+    <update id="accommRateAverage" parameterType="com.sist.web.model.Accommodation">
+		UPDATE T_ACCOMM
+		SET
+		    ACCOMM_AVG = #{accomAvg}
+		WHERE
+		        ACCOMM_ID = #{accomId}
+    </update>
+   
+    <select id="getAccommodationCount" resultType="int" parameterType="map">
+	  SELECT COUNT(*) FROM T_ACCOMM
+	  <where>
+	    <if test="list != null and !list.isEmpty()">
+	      <foreach collection="list" item="sigungu" separator="OR" open="(" close=")">
+	        <choose>
+	          <when test="sigungu.sigunguId == null or sigungu.sigunguId == ''">
+	            REGION_ID = #{sigungu.regionId}
+	          </when>
+	          <otherwise>
+	            (REGION_ID = #{sigungu.regionId} AND SIGUNGU_CODE = #{sigungu.sigunguId})
+	          </otherwise>
+	        </choose>
+	      </foreach>
+	    </if>
+	  </where>
+	</select>
+	
+	
+<select id="searchBySigungu" resultMap="accomResultMap" parameterType="map">
+	  SELECT * FROM (
+	    SELECT a.*, ROWNUM rnum FROM (
+	      SELECT * FROM T_ACCOMM
+	      <where>
+	        <if test="list != null and !list.isEmpty()">
+	          <foreach collection="list" item="sigungu" separator="OR" open="(" close=")">
+	            <choose>
+	              <when test="sigungu.sigunguId == null or sigungu.sigunguId == ''">
+	                REGION_ID = #{sigungu.regionId}
+	              </when>
+	              <otherwise>
+	                (REGION_ID = #{sigungu.regionId} AND SIGUNGU_CODE = #{sigungu.sigunguId})
+	              </otherwise>
+	            </choose>
+	          </foreach>
+	        </if>
+	      </where>
+	      ORDER BY ACCOMM_ID DESC
+	    ) a
+	    WHERE ROWNUM <![CDATA[ <= ]]> #{end}
+	  )
+	  WHERE rnum <![CDATA[ > ]]> #{start}
+	</select>
 </mapper>

@@ -1,7 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ include file="/WEB-INF/views/include/sellerHead2.jsp" %>
+<%@ include file="/WEB-INF/views/include/sellerHead.jsp" %>
 <%@ include file="/WEB-INF/views/include/sellerNavigation.jsp" %>
 
 <style>
@@ -198,4 +198,8 @@
     <a href="/accomm/accommRoomRegForm?accommId=${accommId}" class="btn btn-add">+ 객실 추가</a>
   </div>
 
+  <!-- 객실 금액 수정 버튼 -->
+  <div>
+    <a href="/seller/roomPriceUpdateForm?accommId=${accommId}" class="btn btn-add">+ 금액 수정</a>
+  </div>
 </main>

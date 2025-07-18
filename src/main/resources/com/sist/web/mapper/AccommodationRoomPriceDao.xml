@@ -8,12 +8,14 @@
     <result column="ACCOMM_ROOM_PRICE_FRIDAY" property="accommRoomPriceFriday"/>
     <result column="ACCOMM_ROOM_PRICE_SATURDAY" property="accommRoomPriceSaturday"/>
     <result column="ACCOMM_ROOM_PRICE_SUNDAY" property="accommRoomPriceSunday"/>
+    <result column="ACCOMM_ROOM_PRICE_START" property="accommRoomPriceStart"/>
+	<result column="ACCOMM_ROOM_PRICE_END" property="accommRoomPriceEnd"/>
 </resultMap>
 
 <!-- 기간 별 객실 금액 데이터 삽입 -->
 <insert id="insertAccommodationRoomPrice" parameterType="com.sist.web.model.AccommodationRoomPrice">
-    INSERT INTO T_ACCOMM_ROOM (ACCOMM_ROOM_PRICE_ID, ACCOMM_ROOM_ID, ACCOMM_ROOM_PRICE_WEEKDAY, ACCOMM_ROOM_PRICE_FRIDAY, ACCOMM_ROOM_PRICE_SATURDAY, ACCOMM_ROOM_PRICE_SUNDAY)
-    VALUES (#{accommRoomPriceId}, #{accommRoomId}, #{accommRoomPriceWeekday}, #{accommRoomPriceFriday}, #{accommRoomPriceSaturday}, #{accommRoomPriceSunday})
+    INSERT INTO T_ACCOMM_ROOM_PRICE (ACCOMM_ROOM_PRICE_ID, ACCOMM_ROOM_ID, ACCOMM_ROOM_PRICE_WEEKDAY, ACCOMM_ROOM_PRICE_FRIDAY, ACCOMM_ROOM_PRICE_SATURDAY, ACCOMM_ROOM_PRICE_SUNDAY, ACCOMM_ROOM_PRICE_START, ACCOMM_ROOM_PRICE_END)
+    VALUES (ACCOMM_ROOM_PRICE_SEQ.NEXTVAL, #{accommRoomId}, #{accommRoomPriceWeekday}, #{accommRoomPriceFriday}, #{accommRoomPriceSaturday}, #{accommRoomPriceSunday}, #{accommRoomPriceStart}, #{accommRoomPriceEnd})
 </insert>
 
 <!-- 객실 금액 조회(기간받고), 만약 조건 늘어날 시 새로운 모델 생성해서 할 예정@@  -->
@@ -38,4 +40,24 @@
 	WHERE ACCOMM_ROOM_ID = #{roomId}
 	  AND #{targetDate} BETWEEN ACCOMM_ROOM_PRICE_START AND ACCOMM_ROOM_PRICE_END
 </select>
+
+<select id="selectByAccommRoomId" parameterType="map" resultMap="roomPriceResultMap">
+	SELECT *
+	FROM T_ACCOMM_ROOM_PRICE
+	WHERE ACCOMM_ROOM_ID = #{roomId}
+</select>
+
+<select id="checkDateOverlap" parameterType="map" resultType="int">
+  SELECT COUNT(1)
+  FROM T_ACCOMM_ROOM_PRICE
+  WHERE ACCOMM_ROOM_ID = #{roomId}
+    <![CDATA[
+    AND ACCOMM_ROOM_PRICE_START <= #{endDate}
+    AND ACCOMM_ROOM_PRICE_END   >= #{startDate}
+    ]]>
+</select>
+<delete id="deleteRoomPrice" parameterType="String">
+  DELETE FROM T_ACCOMM_ROOM_PRICE
+  WHERE ACCOMM_ROOM_PRICE_ID = #{priceId}
+</delete>
 </mapper>

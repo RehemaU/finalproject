@@ -10,6 +10,7 @@
 		   <result column="ORDER_ID" property="orderId" />
 	  </resultMap>
 	  
+	  <!-- 숙소 후기 insert -->
 	  <insert id="reviewInsert" parameterType="com.sist.web.model.Review">
 		INSERT INTO T_ACCOMM_REVIEW (
 		    ACCOMM_REVIEW_ID,
@@ -26,6 +27,7 @@
 		           #{orderId})
 	  </insert>
 	  
+	  <!-- 후기 썼었나 체크 -->
 	  <select id="reviewCount" parameterType="com.sist.web.model.Review" resultType="int">
 		SELECT
 		    COUNT(*)
@@ -37,6 +39,7 @@
 		    ORDER_ID = #{orderId}
 	  </select>
 	  
+	  <!-- 나의 숙소 후기 리스트 -->
 	  <select id="reviewList" parameterType="String" resultMap="reviewResultMap">
 		SELECT *
 		FROM
@@ -80,4 +83,25 @@
 		    ACCOMM_ID = #{value}
 	  </select>
 	  
+	  <!-- 리뷰 삭제 -->
+	  <delete id="reviewDelete" parameterType="String">
+		DELETE FROM T_ACCOMM_REVIEW
+		WHERE
+		        ACCOMM_REVIEW_ID = #{value}
+	  </delete>
+	  
+	  <!-- 리뷰 셀렉트 -->
+	  <select id="reviewSelect" parameterType="String" resultMap="reviewResultMap">
+		SELECT
+		    ACCOMM_REVIEW_ID,
+		    USER_ID,
+		    ACCOMM_ID,
+		    ACCOMM_REVIEW_CONTENT,
+		    ACCOMM_REVIEW_RATING,
+		    ORDER_ID
+		FROM
+		    T_ACCOMM_REVIEW
+		WHERE
+		    ACCOMM_REVIEW_ID = #{value}
+	  </select>
 </mapper>

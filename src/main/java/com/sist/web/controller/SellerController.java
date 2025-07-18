@@ -1,5 +1,6 @@
 package com.sist.web.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,13 +17,16 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sist.common.util.StringUtil;
 import com.sist.web.model.Editor;
+import com.sist.web.model.OrderDetail;
 import com.sist.web.model.Region;
 import com.sist.web.model.Response;
 import com.sist.web.model.Seller;
+import com.sist.web.service.OrderService;
 import com.sist.web.service.SellerService;
 import com.sist.web.util.CookieUtil;
 import com.sist.web.util.HttpUtil;
@@ -35,6 +39,8 @@ public class SellerController
 	
 	@Autowired
 	private SellerService sellerService;
+	@Autowired
+	private OrderService orderService;
 	
 	@Value("#{env['auth.seller.name']}")
 	private String AUTH_SELLER_NAME; 
@@ -379,5 +385,27 @@ public class SellerController
 		return seller.getSellerPassword().equals(currentPassword);
 	
 	}
+	
+	@RequestMapping(value="/seller/roomPriceUpdateForm")
+	public String roomPriceUpdateForm(@RequestParam("accomId") String accomId, Model model) {
+		
+		return "/seller/roomPriceUpdateForm";
+	}
 
+	// 판매자 페이지 정산 내역 띄워주는 거
+	@RequestMapping(value="/seller/sellerSellList", method=RequestMethod.GET)
+	public String sellerSellList(ModelMap model, HttpServletRequest request, HttpServletResponse response)
+	{
+		String cookieSellerId = CookieUtil.getHexValue(request, AUTH_SELLER_NAME);
+		
+		List<OrderDetail> list = new ArrayList<>();
+		int sum = 0;
+		list = orderService.sellerSellList(cookieSellerId);
+		sum = orderService.sellerSum(cookieSellerId);
+		
+		model.addAttribute("list", list);
+		model.addAttribute("sum", sum);
+    	
+		return "/seller/sellerSellList";
+	}
 }
