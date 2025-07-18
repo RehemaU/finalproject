@@ -1,6 +1,8 @@
 package com.sist.web.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,5 +30,11 @@ public class RoomManageService {
 	    }
 	    public void deleteRoom(String roomId) {
 	        roomManageDao.deleteRoomById(roomId);
+	    }
+	    public boolean isRoomNameDuplicate(String accommId, String roomName) {
+	        Map<String, Object> param = new HashMap<>();
+	        param.put("accommId", accommId);
+	        param.put("roomName", roomName);
+	        return roomManageDao.isDuplicateRoomName(param) > 0;
 	    }
 }

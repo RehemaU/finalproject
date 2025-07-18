@@ -62,5 +62,11 @@
     <delete id="deleteRoomById" parameterType="string">
     DELETE FROM T_ACCOMM_ROOM WHERE ACCOMM_ROOM_ID = #{roomId}
 </delete>
+<select id="isDuplicateRoomName" resultType="int" parameterType="map">
+  SELECT COUNT(*)
+  FROM T_ACCOMM_ROOM
+  WHERE ACCOMM_ID = #{accommId}
+    AND ACCOMM_ROOM_NAME = #{roomName}
+</select>
 </mapper>
 

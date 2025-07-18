@@ -58,7 +58,12 @@ public class RoomManageController {
 		                model.addAttribute("msg", "로그인이 필요합니다.");
 		                return "/user/login";
 		            }
-		            
+		         // 2.1 객실명 중복 체크
+
+		            if (roomManageService.isRoomNameDuplicate(room.getAccommId(), room.getRoomName())) {
+		                model.addAttribute("msg", "이미 동일한 객실명이 존재합니다.");
+		                return "/seller/roomAdd";
+		            }
 		            logger.debug("객실 등록 요청 - accommId: {}, roomName: {}", room.getAccommId(), room.getRoomName());
 		            
 		            // 2. 이미지 저장 처리
