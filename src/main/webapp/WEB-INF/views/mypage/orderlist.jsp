@@ -70,7 +70,7 @@
       <span class="badge bg-success">결제완료</span>
     </c:when>
     <c:when test="${order.orderStatus == 'R'}">
-      <span class="badge bg-danger">환불완료</span>
+      <span class="badge bg-danger" style="color:#d03333;">환불완료</span>
     </c:when>
     <c:otherwise>
       <span class="badge bg-secondary">알 수 없음</span>
