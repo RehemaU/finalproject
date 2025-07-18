@@ -160,7 +160,27 @@ public class AuthInterceptor extends HandlerInterceptorAdapter
 	    	    return false;
 	    	}
 	    // 여기까지가 관리자 인증 체크 블럭
-		
+	    
+	    // 마이페이지 인증 체크 시작 -----------------------------------------------------------------------------------
+	    
+	    Object user = request.getSession().getAttribute("userId");
+
+	    logger.debug("[Interceptor] 현재 요청 URL: " + url);
+	    logger.debug("[Interceptor] 세션 userLogin = " + (user != null ? user.toString() : "null"));
+	    
+	    if (url.startsWith("/mypage/") && user == null) {
+	    	    if (ajaxFlag) {
+	    	        response.setContentType("application/json");
+	    	        response.setCharacterEncoding("UTF-8");
+	    	        response.getWriter().write(JsonUtil.toJson(new Response<Object>(HttpStatus.UNAUTHORIZED.value(), "로그인 필요")));
+	    	    } else {
+	    	        response.sendRedirect("/user/login");
+	    	    }
+	    	    return false;
+	    	}
+	    
+	    // 마이페이지 인증 체크 종료 -----------------------------------------------------------------------------------
+	    
 		if(logger.isDebugEnabled())
 		{
 			request.setAttribute("_http_logger_start_time", String.valueOf(System.currentTimeMillis()));

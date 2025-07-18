@@ -120,4 +120,14 @@
 		WHERE
 		        USER_ID = #{value}
 	  </update>
+	  
+	  <!-- 탈퇴하면서 별점 업데이트 쳐야하는 숙소 리스트 -->
+	  <select id="reviewUpdateList" parameterType="String" resultType="String">
+		SELECT
+		    DISTINCT ACCOMM_ID
+		FROM
+		    T_ACCOMM_REVIEW
+		WHERE
+		    USER_ID = #{userId}
+	  </select>
 </mapper>

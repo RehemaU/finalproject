@@ -107,10 +107,10 @@
   <div class="card-body text-center">
     
     <div style="display: flex; justify-content: center; gap: 12px;">
-      <c:if test="${isRefund}">
+      <c:if test="${isRefundDate and isRefund}">
         <button type="button" class="custom-btn" onclick="openRefund('${orderDetail.orderId}')">환불 신청</button>
       </c:if>
-      <c:if test="${isReview}">
+      <c:if test="${isReviewDate and isReview}">
         <button type="button" class="custom-btn" onclick="openReviewPopup('${orderDetail.accomm.accomId}', '${orderDetail.orderId}')">리뷰 작성</button>
       </c:if>
       <a href="/mypage/orderlist" class="custom-btn"
@@ -135,8 +135,28 @@
 
     form.appendChild(input);
     document.body.appendChild(form);  // 폼을 body에 붙여야 submit 가능
-    form.submit();
+    Refund(form);
   }
+  
+  
+  function Refund(form) {
+
+	  const formData = new FormData(form);
+
+	  fetch('/order/kakao/cancel/refund', {
+		    method: 'POST',
+		    body: formData
+		  })
+		  .then(res => res.json())
+		  .then(data => {
+		      alert(data.message);
+		      location.href = "/mypage/orderlist";
+		  })
+		  .catch(err => {
+		    console.error(err);
+		    alert("서버 오류 발생");
+		  });
+	}
 </script>
 
 <!-- 리뷰 -->

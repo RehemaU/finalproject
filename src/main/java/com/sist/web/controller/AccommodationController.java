@@ -109,7 +109,7 @@ public class AccommodationController {
                              HttpSession session,
                              Model model) {
         String userId = (String) session.getAttribute("userId");
-
+        String keyword = (String) body.get("keyword");
         // 1. page 추출
         int page = 1;
         if (body.get("page") instanceof Number) {
@@ -128,7 +128,7 @@ public class AccommodationController {
         // 3. 페이징 계산
         int pageSize = 20;
         int pageBlockSize = 10;
-        int totalCount = accommodationService.getAccommodationcount(sigunguList);
+        int totalCount = accommodationService.getAccommodationcount(sigunguList, keyword);
         int totalPages = (int) Math.ceil((double) totalCount / pageSize);
         int startPage = ((page - 1) / pageBlockSize) * pageBlockSize + 1;
         int endPage = Math.min(startPage + pageBlockSize - 1, totalPages);
@@ -136,7 +136,7 @@ public class AccommodationController {
         boolean hasNext = endPage < totalPages;
 
         // 4. 숙소 리스트 조회
-        List<Accommodation> results = accommodationService.findBySigunguList(sigunguList, userId, page);
+        List<Accommodation> results = accommodationService.findBySigunguList(sigunguList, userId, page, keyword);
 
         for (Accommodation accomm : results) {
             int accommCount = reviewService.reviewAccommCount(accomm.getAccomId());

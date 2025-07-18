@@ -128,10 +128,18 @@ body {
 
       </c:forEach>
     </ul>
+    
   </div>
-
+	
   <!-- 우측 콘텐츠 -->
   <div class="content-area">
+  <!-- ✅ 검색창 -->
+<div style="margin-bottom: 20px;">
+  <input type="text" id="searchInput" placeholder="숙소명을 검색하세요"
+         style="padding: 6px 12px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; width: 250px;" />
+  <button onclick="applySearch()"
+          style="padding: 6px 14px; font-size: 14px; margin-left: 6px; cursor: pointer;">검색</button>
+</div>
     <div class="sigungu-nav" id="sigunguNav"></div>
     <div class="selected-conditions" id="conditionList"></div>
     <div id="results"></div>
@@ -145,10 +153,15 @@ const sigunguData = [
     { regionId: "${s.regionId}", sigunguId: "${s.sigunguId}", sigunguName: "${s.sigunguName}" }<c:if test="${!loop.last}">,</c:if>
   </c:forEach>
 ];
-
+let searchKeyword = ''; 
 let selectedRegionId = '';
 const conditions = [];
 
+function applySearch() {
+	  const input = document.getElementById('searchInput').value.trim();
+	  searchKeyword = input;
+	  fetchFilteredList(); // 검색어 반영해서 목록 조회
+	}
 function selectRegion(regionId, element) {
      selectedRegionId = regionId;
      document.querySelectorAll('.category-sidebar li').forEach(li => li.classList.remove('active'));
@@ -223,7 +236,8 @@ function fetchFilteredList(page = 1) {
 
 	  const body = {
 	    page: page,
-	    sigunguList: conditions
+	    sigunguList: conditions,
+	    keyword: searchKeyword // ✅ 검색어 포함
 	  };
 
 	  fetch('/accomm/filterList', {
