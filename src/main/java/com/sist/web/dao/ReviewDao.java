@@ -22,4 +22,6 @@ public interface ReviewDao {
 	public int reviewDelete(String accommReviewId);
 	//리뷰 셀렉트
 	public Review reviewSelect(String accommReviewId);
+	//리뷰 업데이트
+	public int reviewUpdate(String userId);
 }

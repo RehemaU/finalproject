@@ -152,4 +152,21 @@ public class ReviewService {
 		
 		return review;
 	}
+	
+	//리뷰 업데이트
+	public int reviewUpdate(String userId)
+	{
+		int count = 0;
+		
+		try
+		{
+			count = reviewDao.reviewUpdate(userId);
+		}
+		catch(Exception e)
+		{
+			logger.error("[ReviewService]reviewUpdate Exception", e);
+		}
+		
+		return count;
+	}
 }
