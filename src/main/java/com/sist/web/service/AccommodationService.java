@@ -232,7 +232,7 @@ public class AccommodationService {
     @Autowired
     private LikeService likeService; // 이미 주입되어 있을 수도 있음
 
-    public List<Accommodation> findBySigunguList(List<Sigungu> sigunguList, String userId, int page) {
+    public List<Accommodation> findBySigunguList(List<Sigungu> sigungulist, String userId, int page, String keyword) {
     	int pageSize = 20;
     	
     	int start = (page -1) * pageSize;
@@ -241,7 +241,8 @@ public class AccommodationService {
     	Map<String, Object> param = new HashMap<>();
     	param.put("start", start);
     	param.put("end", end);
-    	param.put("list", sigunguList);
+    	param.put("list", sigungulist);
+    	param.put("keyword", keyword);
         List<Accommodation> list = accommodationDao.searchBySigungu(param);
         
         if (userId == null || userId.trim().isEmpty()) return list;
@@ -251,9 +252,10 @@ public class AccommodationService {
         return list;
     }
     
-    public int getAccommodationcount(List<Sigungu> sigunguList) {
+    public int getAccommodationcount(List<Sigungu> sigunguList, String keyword) {
     	Map<String, Object> param = new HashMap<>();
     	param.put("list", sigunguList);
+    	param.put("keyword", keyword);
     	return accommodationDao.getAccommodationCount(param);
     }
 
