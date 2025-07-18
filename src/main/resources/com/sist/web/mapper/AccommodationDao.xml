@@ -112,9 +112,12 @@
 	        </choose>
 	      </foreach>
 	    </if>
+	    <if test="keyword != null and keyword != ''">
+		  AND ACCOMM_NAME LIKE '%' || #{keyword} || '%'
+		</if>
 	  </where>
 	</select>
-	
+	 
 	
 <select id="searchBySigungu" resultMap="accomResultMap" parameterType="map">
 	  SELECT * FROM (
@@ -133,6 +136,9 @@
 	            </choose>
 	          </foreach>
 	        </if>
+	        <if test="keyword != null and keyword != ''">
+			  AND ACCOMM_NAME LIKE '%' || #{keyword} || '%'
+			</if>
 	      </where>
 	      ORDER BY ACCOMM_ID DESC
 	    ) a
