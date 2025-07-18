@@ -45,6 +45,12 @@ public class SellerController
 	@Value("#{env['auth.seller.name']}")
 	private String AUTH_SELLER_NAME; 
 	
+	// /seller 했을 때 셀러 메인으로 가게
+	@RequestMapping(value = "/seller", method=RequestMethod.GET)
+	public String seller(HttpServletRequest request, HttpServletResponse response, Model model)
+	{
+		return "/seller/sellerMain";
+	}
 	
 	@RequestMapping(value = "/seller/sellerMain", method=RequestMethod.GET)
 	public String sellerMain(HttpServletRequest request, HttpServletResponse response, Model model)

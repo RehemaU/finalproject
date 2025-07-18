@@ -150,7 +150,7 @@
 		  .then(res => res.json())
 		  .then(data => {
 		      alert(data.message);
-		      href = "/mypage/orderlist";
+		      location.href = "/mypage/orderlist";
 		  })
 		  .catch(err => {
 		    console.error(err);
