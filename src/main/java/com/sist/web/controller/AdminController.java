@@ -36,6 +36,12 @@ public class AdminController {
     @Autowired
     private SellerService sellerService;
 
+    // /admin 했을 때 어드민 페이지 로그인으로 가게
+    @RequestMapping("/admin")
+    public String admin() {
+        return "/admin/adminLogin";
+    }
+    
     @RequestMapping("/admin/adminLogin")
     public String adminLoginPage() {
         return "/admin/adminLogin";
