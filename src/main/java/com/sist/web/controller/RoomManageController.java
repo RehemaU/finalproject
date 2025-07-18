@@ -74,7 +74,7 @@ public class RoomManageController {
 
 		                File dest = new File(dir, saveName);
 		                roomImageFile.transferTo(dest);
-
+ 
 		                // DB에는 웹 경로로 저장
 		                room.setRoomImage("/resources/accomm/" + saveName);
 		                
