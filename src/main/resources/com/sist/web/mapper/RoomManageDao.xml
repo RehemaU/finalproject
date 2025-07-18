@@ -44,7 +44,7 @@
             #{table}, #{dryer}, #{checkIn}, #{checkOut},
             #{standardPrice}, #{roomImage}
         )
-    </insert>
+    </insert> 
     
     <!-- 숙소별 객실 목록 조회 -->
     <select id="findByAccommId" resultMap="accomRoomResultMap" parameterType="string">

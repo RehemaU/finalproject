@@ -21,7 +21,7 @@ public class RoomManageService {
 	    
 	    public List<AccommodationRoom> findRoomsByAccomm(String accommId) {
 	        return roomManageDao.findByAccommId(accommId);  // 매퍼에 실제 존재하는 메서드 호출
-	    }
+	    } 
 	    
 	    public AccommodationRoom getRoom(String roomId) {
 	        return roomManageDao.findByRoomId(roomId);
