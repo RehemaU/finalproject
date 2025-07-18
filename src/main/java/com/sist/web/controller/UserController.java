@@ -677,7 +677,7 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 	
 	
 
-	//구글로그인
+	//구글로그인 
 	//로그인 페이지
 	@RequestMapping(value = "/user/googleLogin", method=RequestMethod.GET)
 	public String googleLogin(@RequestParam("code") String code, HttpSession session)
