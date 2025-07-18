@@ -63,28 +63,10 @@ public class MypageController {
 		String userId = (String) request.getSession().getAttribute("userId");
 		
 		List<Editor> list = null;
-		String thumbnail = "";
-		User user = null;
-		String userName = "";
-		String userImgEx = "";
-		int comCount = 0;
 		
 		try
 		{
 			list = editorService.editorMyplan(userId);
-			
-			for(Editor editor : list)
-			{
-				thumbnail = editorService.editorThumbnail(Integer.parseInt(editor.getPlanId()));
-				editor.setThumbnail(thumbnail);
-				user = userService.userSelect(editor.getUserId());
-	            userName = user.getUserName();
-	            userImgEx = user.getUserProfile();
-	            editor.setUserName(userName);
-	            editor.setUserImgEx(userImgEx);
-	            comCount = pcommentService.pcommentCount(Integer.parseInt(editor.getPlanId()));
-	            editor.setComCount(comCount);
-			}
 		}
 		catch(Exception e)
 		{
@@ -140,7 +122,6 @@ public class MypageController {
 		User user = null;
 		String userName = "";
 		String userImgEx = "";
-		int comCount = 0;
 		try
 		{
 			list = recommendService.recommendList(userId);
@@ -155,8 +136,6 @@ public class MypageController {
 	            userImgEx = user.getUserProfile();
 	            editor.setUserName(userName);
 	            editor.setUserImgEx(userImgEx);
-	            comCount = pcommentService.pcommentCount(planId);
-	            editor.setComCount(comCount);
 	            editorlist.add(editor);
 			}
 		}
@@ -227,4 +206,5 @@ public class MypageController {
 		return "/mypage/orderdetail";
 	}
 
+	//내 숙소 후기 보기
 }

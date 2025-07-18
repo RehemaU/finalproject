@@ -65,7 +65,7 @@
 <h2>판매자 관리</h2>
 
 <div style="margin-bottom: 15px;">
-    <input type="text" id="sellerSearchInput" placeholder="아이디 검색" style="padding: 5px;">
+    <input type="text" id="sellerSearchInput" value="${keyword}" placeholder="아이디 검색" style="padding: 5px;">
     <button onclick="searchSeller()" style="padding: 5px 10px;">검색</button>
 </div>
 

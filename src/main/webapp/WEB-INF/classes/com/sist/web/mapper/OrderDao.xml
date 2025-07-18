@@ -177,12 +177,12 @@
 	      AND <![CDATA[ ORDER_DATE < SYSDATE - (1/24) ]]>
 	</select>
 	
-	<delete id="deleteOrderDetailsByOrderId">
+	<delete id="deleteOrderDetails">
 	    DELETE FROM T_ORDER_DETAILS
 	    WHERE ORDER_ID = #{orderId}
 	</delete>
 	
-	<delete id="deleteOrderById">
+	<delete id="deleteOrder">
 	    DELETE FROM T_ORDER
 	    WHERE ORDER_ID = #{orderId}
 	</delete>
