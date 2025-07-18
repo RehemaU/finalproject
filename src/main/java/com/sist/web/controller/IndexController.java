@@ -87,5 +87,10 @@ public class IndexController
 
 		return "/index";
 	}
+	@RequestMapping(value = "/walkthrough", method=RequestMethod.GET)
+	public String walkthrough(HttpServletRequest request, HttpServletResponse response, Model model)
+	{
+		return "/walkthrough";
+	}
 	
 }

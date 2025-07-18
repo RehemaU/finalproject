@@ -1,16 +1,18 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%
-  /* ─ JSP 상단에서 세션 값 꺼냄 ─ */
-  String listName       = (String) session.getAttribute("listName");
-  String calanderListId = (String) session.getAttribute("calanderListId");
-%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title><%= listName %> · 일정 수정</title>
+<title>
+  <c:choose>
+    <c:when test="${not empty listName}">${listName}</c:when>
+    <c:when test="${not empty sessionScope.listName}">${sessionScope.listName}</c:when>
+    <c:otherwise>일정 수정</c:otherwise>
+  </c:choose>
+  · 일정 수정
+</title>
 
 <!-- 폰트 -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
@@ -19,7 +21,7 @@
 <!-- Kakao Map -->
 <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=e91447aad4b4b7e4b923ab8dd1acde77&libraries=services,clusterer"></script>
 
-<!-- ▸ CSS (addDetail 와 동일 + 삭제버튼) -->
+<!-- CSS -->
 <style>
 :root{
   --bd:#e4e4e4; --bg:#fdfdfd; --subbg:#fafafa;
@@ -72,7 +74,7 @@ button.filter-btn{
 }
 #pagination button.active,#pagination button:hover{background:#000;color:#fff;border-color:#000}
 
-/* ─ 선택 일정 패널 ─ */
+/* 선택 일정 패널 */
 .plan-panel h3{font-size:18px;font-weight:700;margin-bottom:16px}
 #selectedBox{
   max-height:calc(100vh - 270px);overflow-y:auto;display:flex;flex-direction:column;gap:10px;
@@ -112,7 +114,7 @@ button.filter-btn{
 }
 #scheduleForm button[type=submit]:hover{background:#222}
 
-/* ───── 수동 주소 추가 섹션 ───── */
+/* 수동 주소 추가 섹션 */
 .manual-section{
   border-top:1px solid var(--bd);padding-top:20px;margin-top:20px
 }
@@ -135,10 +137,21 @@ button.filter-btn{
 </head>
 
 <body>
-<h2><c:out value="${listName}"/> <small style="font-size:16px;color:#666">(수정)</small></h2>
+<h2>
+  <c:choose>
+    <c:when test="${not empty listName}">
+      <c:out value="${listName}"/>
+    </c:when>
+    <c:when test="${not empty sessionScope.listName}">
+      <c:out value="${sessionScope.listName}"/>
+    </c:when>
+    <c:otherwise>일정 수정</c:otherwise>
+  </c:choose>
+  <small style="font-size:16px;color:#666">(수정)</small>
+</h2>
 
 <div class="page-wrap">
-  <!-- ▸ 왼쪽 : 장소 검색 -->
+  <!-- 왼쪽 : 장소 검색 -->
   <aside class="sidebar">
     <!-- 날짜 탭 -->
     <div class="day-tabs">
@@ -181,11 +194,23 @@ button.filter-btn{
     </div>
   </aside>
 
-  <!-- ▸ 오른쪽 : 기존 일정 + 수정 -->
+  <!-- 오른쪽 : 기존 일정 + 수정 -->
   <aside class="plan-panel">
     <h3>선택 일정</h3>
     <form id="scheduleForm" action="${pageContext.request.contextPath}/schedule/updateDetail" method="post">
-      <input type="hidden" name="calanderListId" value="<%=calanderListId%>">
+      <!-- calanderListId 우선순위 수정 -->
+      <c:choose>
+        <c:when test="${not empty param.listId}">
+          <input type="hidden" name="calanderListId" value="${param.listId}">
+        </c:when>
+        <c:when test="${not empty calanderListId}">
+          <input type="hidden" name="calanderListId" value="${calanderListId}">
+        </c:when>
+        <c:when test="${not empty sessionScope.calanderListId}">
+          <input type="hidden" name="calanderListId" value="${sessionScope.calanderListId}">
+        </c:when>
+      </c:choose>
+      
       <div id="selectedBox">
         <!-- 서버에서 받은 calList 미리 렌더 -->
         <c:forEach var="c" items="${calList}">
@@ -213,11 +238,11 @@ button.filter-btn{
     </form>
   </aside>
 
-  <!-- ▸ 지도 -->
+  <!-- 지도 -->
   <div id="map"></div>
 </div>
 
-<!-- ▸ JS : 시·군·구 데이터 주입 -->
+<!-- JS : 시·군·구 데이터 주입 -->
 <script>
 const sigunguData=[];
 <c:forEach var="s" items="${sigunguList}">
@@ -235,9 +260,18 @@ function updateSigunguOptions(){
 }
 </script>
 
-<!-- ▸ JS : 검색·추가(기존 addDetail 코드 그대로) -->
+<!-- JS : 검색·추가 -->
 <script>
-const selectedDates = <%= new com.google.gson.Gson().toJson(session.getAttribute("selectedDates")) %> || [];
+// selectedDates 안전하게 처리
+const selectedDates = 
+  <c:choose>
+    <c:when test="${not empty sessionScope.selectedDates}">
+      ${sessionScope.selectedDatesJson}
+    </c:when>
+    <c:otherwise>
+      []
+    </c:otherwise>
+  </c:choose>;
 
 document.addEventListener('DOMContentLoaded',()=>{
   let currentDayNo=1,currentType='accom',currentPage=1,itemsPerPage=6,
@@ -256,12 +290,25 @@ document.addEventListener('DOMContentLoaded',()=>{
     currentPage=1;renderPage();
   });
 
-  // Kakao 지도
-  kakao.maps.load(()=>{
-    map=new kakao.maps.Map(document.getElementById('map'),{
-      center:new kakao.maps.LatLng(37.5665,126.9780),level:6
-    });
-  });
+  // Kakao 지도 - 안전한 초기화
+  function initMap() {
+    try {
+      if (typeof kakao !== 'undefined' && kakao.maps) {
+        kakao.maps.load(()=>{
+          map=new kakao.maps.Map(document.getElementById('map'),{
+            center:new kakao.maps.LatLng(37.5665,126.9780),level:6
+          });
+          console.log('카카오 지도 초기화 완료');
+        });
+      } else {
+        console.log('카카오 지도 API 로딩 중...');
+        setTimeout(initMap, 100);
+      }
+    } catch (error) {
+      console.error('지도 초기화 오류:', error);
+    }
+  }
+  initMap();
 
   // 데이터 fetch
   Promise.all([
@@ -290,14 +337,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     };
     return text.replace(/[&<>"']/g, function(m) { return map[m]; });
   }
-
-  /* 일정 삭제 함수 */
-  window.removeSpot = function(button) {
-    if (confirm('이 일정을 삭제하시겠습니까?')) {
-      var entry = button.closest('.entry');
-      entry.remove();
-    }
-  };
 
   // 목록 렌더 함수
   function renderPage(){
@@ -353,59 +392,62 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   // Spot 추가 함수 (수동 추가 지원)
   function addSpot(loc){
-	  if (!loc || !loc.name) return;
-	  if (!currentDayNo) return;
+    if (!loc || !loc.name) return;
+    if (!currentDayNo) return;
 
-	  const pos = new kakao.maps.LatLng(loc.lat, loc.lon);
-	  map.setCenter(pos);
-	  new kakao.maps.Marker({ map, position: pos, title: loc.name });
+    // 지도 마커 추가 (지도가 있을 때만)
+    if (map && typeof kakao !== 'undefined' && kakao.maps) {
+      const pos = new kakao.maps.LatLng(loc.lat, loc.lon);
+      map.setCenter(pos);
+      new kakao.maps.Marker({ map, position: pos, title: loc.name });
+    }
 
-	  const card = document.createElement('div');
-	  card.className = 'entry';
+    const card = document.createElement('div');
+    card.className = 'entry';
 
-	  const dayNoValue = currentDayNo;
-	  const spotIdValue = loc.id;
-	  let displayText = '[Day ' + dayNoValue + '] ' + loc.name;
+    const dayNoValue = currentDayNo;
+    const spotIdValue = loc.id;
+    let displayText = '[Day ' + dayNoValue + '] ' + loc.name;
 
-	  let html = '';
-	  html += '<button type="button" class="del-btn" onclick="this.parentElement.remove()">🗑</button>';
-	  html += '<input type="hidden" name="calanderIds" value="">';
-	  html += '<input type="hidden" name="dayNos" value="' + dayNoValue + '">';
-	  html += '<input type="hidden" name="spotIds" value="' + spotIdValue + '">';
+    let html = '';
+    html += '<button type="button" class="del-btn" onclick="this.parentElement.remove()">🗑</button>';
+    html += '<input type="hidden" name="calanderIds" value="">';
+    html += '<input type="hidden" name="dayNos" value="' + dayNoValue + '">';
+    html += '<input type="hidden" name="spotIds" value="' + spotIdValue + '">';
 
-	  if (loc.isManual) {
-	    html += '<input type="hidden" name="isManual" value="true">';
-	    html += '<input type="hidden" name="manualNames" value="' + escapeHtml(loc.name) + '">';
-	    html += '<input type="hidden" name="manualAddresses" value="' + escapeHtml(loc.address) + '">';
-	    html += '<input type="hidden" name="manualLats" value="' + loc.lat + '">';
-	    html += '<input type="hidden" name="manualLons" value="' + loc.lon + '">';
-	    displayText += ' (직접 입력: ' + loc.address + ')';
-	  } else {
-	    html += '<input type="hidden" name="isManual" value="false">';
-	    html += '<input type="hidden" name="manualNames" value="">';
-	    html += '<input type="hidden" name="manualAddresses" value="">';
-	    html += '<input type="hidden" name="manualLats" value="">';
-	    html += '<input type="hidden" name="manualLons" value="">';
-	  }
+    if (loc.isManual) {
+      html += '<input type="hidden" name="isManual" value="true">';
+      html += '<input type="hidden" name="manualNames" value="' + escapeHtml(loc.name) + '">';
+      html += '<input type="hidden" name="manualAddresses" value="' + escapeHtml(loc.address) + '">';
+      html += '<input type="hidden" name="manualLats" value="' + loc.lat + '">';
+      html += '<input type="hidden" name="manualLons" value="' + loc.lon + '">';
+      displayText += ' (직접 입력: ' + loc.address + ')';
+    } else {
+      html += '<input type="hidden" name="isManual" value="false">';
+      html += '<input type="hidden" name="manualNames" value="">';
+      html += '<input type="hidden" name="manualAddresses" value="">';
+      html += '<input type="hidden" name="manualLats" value="">';
+      html += '<input type="hidden" name="manualLons" value="">';
+    }
 
-	  html += '<strong>' + escapeHtml(displayText) + '</strong>';
+    html += '<strong>' + escapeHtml(displayText) + '</strong>';
 
-	  // ✅ 날짜 고정 & 현재 이전 시간 막기
-	  let dateStr = selectedDates[dayNoValue - 1]; // ex: '2025-07-14'
-	  const now = new Date();
-	  let minTime = now.toISOString().slice(0, 16); // 기본 min
+    // 날짜 고정 & 현재 이전 시간 막기
+    let dateStr = selectedDates[dayNoValue - 1];
+    const now = new Date();
+    let minTime = now.toISOString().slice(0, 16);
 
-	  let defaultTime = dateStr ? dateStr + 'T09:00' : '';
-	  if (dateStr && new Date(dateStr) > now) {
-	    minTime = dateStr + 'T00:00';
-	  }
+    let defaultTime = dateStr ? dateStr + 'T09:00' : '';
+    if (dateStr && new Date(dateStr) > now) {
+      minTime = dateStr + 'T00:00';
+    }
 
-	  html += '시작 <input type="datetime-local" name="startTimes" required value="' + defaultTime + '" min="' + minTime + '">';
-	  html += '종료 <input type="datetime-local" name="endTimes" required value="' + defaultTime + '" min="' + minTime + '">';
+    html += '시작 <input type="datetime-local" name="startTimes" required value="' + defaultTime + '" min="' + minTime + '">';
+    html += '종료 <input type="datetime-local" name="endTimes" required value="' + defaultTime + '" min="' + minTime + '">';
 
-	  card.innerHTML = html;
-	  document.getElementById('selectedBox').appendChild(card);
-	}
+    card.innerHTML = html;
+    document.getElementById('selectedBox').appendChild(card);
+  }
 
   /* 수동 주소 추가 버튼 이벤트 */
   document.getElementById('addByAddressBtn').onclick = function() {
@@ -425,11 +467,11 @@ document.addEventListener('DOMContentLoaded',()=>{
       if (status === kakao.maps.services.Status.OK) {
         var loc = {
           name: placeName,
-          id: 'MANUAL_' + Date.now(), // 고유한 ID 생성
+          id: 'MANUAL_' + Date.now(),
           lat: parseFloat(result[0].y),
           lon: parseFloat(result[0].x),
           address: addr,
-          isManual: true // 수동 추가 플래그
+          isManual: true
         };
         
         addSpot(loc);

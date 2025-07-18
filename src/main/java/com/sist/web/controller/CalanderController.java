@@ -392,6 +392,7 @@ public class CalanderController {
         List<Calander> calList = calanderService.getCalanders(listId);
 
         model.addAttribute("list", list);
+        model.addAttribute("listName", list.getCalanderListName());
         model.addAttribute("calList", calList);
         model.addAttribute("regionList", regionService.getAllRegions());
         model.addAttribute("sigunguList", sigunguService.getAllSigungus());

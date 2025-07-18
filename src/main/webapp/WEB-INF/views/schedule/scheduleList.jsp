@@ -3,9 +3,6 @@
 <%@ include file="/WEB-INF/views/include/head.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%
-    String listName = (String) session.getAttribute("listName");
-%>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
@@ -76,14 +73,19 @@
   <br>
 <h2 style="margin-left: 280px;">
   <c:choose>
-    <c:when test="${empty list.calanderListName}">
-      <%= session.getAttribute("listName") != null ? session.getAttribute("listName") : "" %>
+    <c:when test="${not empty list.calanderListName}">
+      ${list.calanderListName}
+    </c:when>
+    <c:when test="${not empty sessionScope.listName}">
+      ${sessionScope.listName}
     </c:when>
     <c:otherwise>
-      ${list.calanderListName}
+      일정 보기
     </c:otherwise>
   </c:choose>
-</h2>  <c:choose>
+</h2>  
+  
+  <c:choose>
     <c:when test="${empty calList}">
       <p>저장된 일정이 없습니다.</p>
     </c:when>
@@ -110,16 +112,44 @@
         </section>
         <div id="map"></div>
       </div>
+
+<!-- 수정된 버튼 그룹 -->
 <div class="btn-group">
-  <a href="/schedule/myList" class="action-btn">일정 목록</a>
-  <a href="/schedule/editForm?listId=${sessionScope.calanderListId}" class="action-btn">일정 수정</a>
-  <form action="${pageContext.request.contextPath}/schedule/deleteList" method="post" onsubmit="return confirm('정말 삭제하시겠습니까?');">
-    <input type="hidden" name="listId" value="${sessionScope.calanderListId}" />
+  <a href="${pageContext.request.contextPath}/schedule/myList" class="action-btn">일정 목록</a>
+  
+  <!-- listId 파라미터 우선순위 수정 -->
+  <c:choose>
+    <c:when test="${not empty param.listId}">
+      <a href="${pageContext.request.contextPath}/schedule/editForm?listId=${param.listId}" class="action-btn">일정 수정</a>
+    </c:when>
+    <c:when test="${not empty list.calanderListId}">
+      <a href="${pageContext.request.contextPath}/schedule/editForm?listId=${list.calanderListId}" class="action-btn">일정 수정</a>
+    </c:when>
+    <c:when test="${not empty sessionScope.calanderListId}">
+      <a href="${pageContext.request.contextPath}/schedule/editForm?listId=${sessionScope.calanderListId}" class="action-btn">일정 수정</a>
+    </c:when>
+  </c:choose>
+  
+  <!-- 삭제 폼도 동일한 우선순위 적용 -->
+  <form action="${pageContext.request.contextPath}/schedule/deleteList" method="post" 
+        onsubmit="return confirm('정말 삭제하시겠습니까?');">
+    <c:choose>
+      <c:when test="${not empty param.listId}">
+        <input type="hidden" name="listId" value="${param.listId}" />
+      </c:when>
+      <c:when test="${not empty list.calanderListId}">
+        <input type="hidden" name="listId" value="${list.calanderListId}" />
+      </c:when>
+      <c:when test="${not empty sessionScope.calanderListId}">
+        <input type="hidden" name="listId" value="${sessionScope.calanderListId}" />
+      </c:when>
+    </c:choose>
     <button type="submit" class="action-btn gray">일정 삭제</button>
   </form>
 </div>
     </c:otherwise>
   </c:choose>
+  
   <script>
     const calList = [
       <c:forEach var="c" items="${calList}" varStatus="s">
