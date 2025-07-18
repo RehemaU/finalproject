@@ -10,5 +10,5 @@ public interface RoomManageDao {
     AccommodationRoom findByRoomId(String roomId);
     String getNextAccommRoomSeq();
     void deleteRoomById(String roomId);
-
+ 
 }
