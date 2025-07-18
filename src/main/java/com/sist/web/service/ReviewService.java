@@ -169,4 +169,21 @@ public class ReviewService {
 		
 		return count;
 	}
+	
+	//평균별점업뎃쳐야할숙소아이디리스트
+	public List<String> reviewUpdateList(String userId)
+	{
+		List<String> list = null;
+		
+		try
+		{
+			list = reviewDao.reviewUpdateList(userId);
+		}
+		catch(Exception e)
+		{
+			logger.error("[ReviewService]reviewUpdateList Exception", e);			
+		}
+		
+		return list;
+	}
 }

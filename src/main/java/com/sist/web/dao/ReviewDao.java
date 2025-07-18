@@ -24,4 +24,6 @@ public interface ReviewDao {
 	public Review reviewSelect(String accommReviewId);
 	//리뷰 업데이트
 	public int reviewUpdate(String userId);
+	//평균별점업뎃쳐야할숙소아이디리스트
+	public List<String> reviewUpdateList(String userId);
 }
