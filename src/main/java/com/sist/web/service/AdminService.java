@@ -99,5 +99,17 @@ public class AdminService {
         return adminDao.approveAccomm(accommId) > 0;
     }
     
+    public List<Map<String,Object>> getReviewList(Map<String,Object> param) {
+    	return adminDao.getReviewList(param);
+    }
+    public int getReviewCount(Map<String,Object> param) {
+    	return adminDao.getReviewCount(param);
+    }
+    
+    public int updateReviewStatus(int planId, String status) {
+        return adminDao.updateReviewStatus(planId, status); // DAO 호출
+    }
+    
+    
     
 }
