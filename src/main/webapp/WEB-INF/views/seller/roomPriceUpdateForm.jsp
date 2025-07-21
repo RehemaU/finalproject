@@ -7,32 +7,157 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>객실 요금 수정</title>
-  <style>
-    .container { width: 800px; margin: 30px auto; font-family: sans-serif; }
-    .form-row { margin-bottom: 20px; }
-    .form-row label { display: inline-block; width: 120px; font-weight: bold; }
-    select, input[type="date"], input[type="number"] {
-      padding: 6px; width: 200px;
-    }
-    table {
-      width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px;
-    }
-    table th, table td {
-      border: 1px solid #ccc; padding: 10px; text-align: center;
-    }
-    thead { background-color: #f0f0f0; }
-    #noPriceMsg { text-align: center; color: #888; margin-top: 20px; }
-    button {
-      padding: 8px 20px; background-color: #3478f6; color: white;
-      border: none; border-radius: 6px; font-size: 14px; cursor: pointer;
-    }
-    button:hover { background-color: #2d64c7; }
-  </style>
+  <title>객실 요금 설정</title>
+ <style>
+  body {
+    background-color: #f9f9f9;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+
+  .container {
+    width: 800px; /* 고정폭 */
+    margin: 40px auto;
+    padding: 40px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    box-sizing: border-box;
+  }
+
+  h2, h3 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 24px;
+  }
+
+  .form-row {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    width: 100%; /* 줄 고정 */
+  }
+
+  .form-row label {
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  select,
+  input[type="date"],
+  input[type="number"] {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    width: 100%; /* 부모 row 기준 고정 */
+    max-width: 100%; /* 넘어가지 않게 */
+    box-sizing: border-box;
+  }
+
+  select option {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  button {
+    padding: 12px 20px;
+    background-color: #000;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%; /* 버튼도 통일 */
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  button:hover {
+    background-color: #333;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 14px;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    table-layout: fixed; /* 칸 고정 */
+  }
+
+  table th,
+  table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: center;
+    word-wrap: break-word;
+  }
+
+  table th:nth-child(1),
+  table td:nth-child(1) {
+    width: 24%; /* 적용 기간 */
+  }
+
+  table th:nth-child(2),
+  table th:nth-child(3),
+  table th:nth-child(4),
+  table th:nth-child(5),
+  table td:nth-child(2),
+  table td:nth-child(3),
+  table td:nth-child(4),
+  table td:nth-child(5) {
+    width: 12%;
+  }
+
+  table th:nth-child(6),
+  table td:nth-child(6) {
+    width: 16%;
+  }
+
+  thead {
+    background-color: #f0f0f0;
+  }
+
+  #noPriceMsg {
+    text-align: center;
+    color: #888;
+    margin-top: 20px;
+  }
+
+  .form-row.text-right {
+    text-align: right;
+  }
+
+  .form-section {
+    margin-bottom: 30px;
+  }
+
+  .danger-btn {
+    background-color: #d9534f;
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .danger-btn:hover {
+    background-color: #c9302c;
+  }
+</style>
+
+
 </head>
 <body>
 <div class="container">
-  <h2>객실 요금 수정</h2>
+  <h2>객실 요금 설정</h2>
 
   <!-- 객실 선택 -->
   <div class="form-row">
