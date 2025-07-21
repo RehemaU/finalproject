@@ -155,6 +155,11 @@
   ]]>
 </select>
 
+	<!-- 금액 가져오는 로직(standard) -->
+	<select id = "getStandardPrice" resultType = "int" parameterType = "String">
+	SELECT ACCOMM_ROOM_STANDARD_PRICE FROM T_ACCOMM_ROOM
+	WHERE ACCOMM_ROOM_ID = #{roomId}
+	</select>
 
 
 	
