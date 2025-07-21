@@ -62,11 +62,13 @@
 <body>
 <div style="margin-bottom: 15px;">
     <!-- 고유 ID 부여 -->
-    <input type="text" id="accommSearchInput_acc" placeholder="판매자 ID 검색" style="padding:5px;">
+    <input type="text" id="accommSearchInput_acc" value="${keyword}" placeholder="판매자 ID 검색" style="padding:5px;">
+
     <!-- 고유 ID 부여 + type="button" -->
     <button id="accommSearchBtn_acc" type="button" class="filter-btn">검색</button>
-    <button id="filterPendingBtn" class="filter-btn" data-status="N">요청 대기 숙소만</button>
-    <button id="filterAllBtn" class="filter-btn" data-status="">전체 숙소 보기</button>
+    <button id="filterPendingBtn" class="filter-btn ${status == 'N' ? 'active' : ''}" data-status="N">요청 대기 숙소만</button>
+	<button id="filterAllBtn" class="filter-btn ${empty status ? 'active' : ''}" data-status="">전체 숙소 보기</button>
+
 </div>
 <div id="accommTableArea">
     <table>
