@@ -78,7 +78,8 @@ public class AccommodationRoomPriceService {
                 }
             } else {
                 // 가격 정책이 없을 경우 기본 standardPrice 사용
-                int standardPrice =10;
+            	
+                int standardPrice = accommodationRoomDao.getStandardPrice(roomId);
                 dailyPrice = standardPrice;
             }
 
