@@ -321,5 +321,6 @@
 		    JOIN T_ACCOMM a ON r.ACCOMM_ID = a.ACCOMM_ID
 		WHERE
 		    a.SELLER_ID = #{value}
+		    AND d.ORDER_DETAILS_CHECKIN_DATE >= ADD_MONTHS(SYSDATE, -1)
 	</select>
 </mapper>
