@@ -163,6 +163,10 @@ public class AccommodationController {
     public String accommDetail(@RequestParam("accommId") String accommId, Model model) {
     	List<AccommodationRoom> roomList = accommodationRoomService.searchByAccommid(accommId);
     	Accommodation accommodation = accommodationService.selectAccommodation(accommId);
+    	
+    	if(accommodation.getAccomStatus().equals("N")) {
+    		return "/accomm/list";
+    	}
     	List<Review> review = reviewService.reviewAccommList(accommId);
     	
     	model.addAttribute("roomList", roomList);
