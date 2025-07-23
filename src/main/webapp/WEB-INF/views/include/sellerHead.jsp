@@ -322,4 +322,10 @@
       }
     }
   </style>
+  <!-- ① jQuery -->
+<script type="text/javascript" src="/resources/js/jquery-3.5.1.min.js"></script>
+
+<!-- ② 공통 유틸 함수 (Ajax 처리 등 포함) -->
+<script type="text/javascript" src="/resources/js/icia.common.js"></script>
+<script type="text/javascript" src="/resources/js/icia.ajax.js"></script>
 </head>

@@ -172,7 +172,7 @@ public class AccommController
 	        //-------------------------------------------------------------
 
 	        accommodationService.insertAccommodationForm(accom);
-	        return "redirect:/accomm/list";
+	        return "redirect:/seller/accommList";
 
 	    } catch (Exception e) {
 	        logger.error("숙소 등록 오류", e);

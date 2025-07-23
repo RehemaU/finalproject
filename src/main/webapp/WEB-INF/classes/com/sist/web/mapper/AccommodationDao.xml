@@ -124,7 +124,9 @@
 	    SELECT a.*, ROWNUM rnum FROM (
 	      SELECT * FROM T_ACCOMM
 	      <where>
+	      ACCOMM_STATUS = 'Y'
 	        <if test="list != null and !list.isEmpty()">
+	          AND (
 	          <foreach collection="list" item="sigungu" separator="OR" open="(" close=")">
 	            <choose>
 	              <when test="sigungu.sigunguId == null or sigungu.sigunguId == ''">
@@ -135,6 +137,7 @@
 	              </otherwise>
 	            </choose>
 	          </foreach>
+	           )
 	        </if>
 	        <if test="keyword != null and keyword != ''">
 			  AND ACCOMM_NAME LIKE '%' || #{keyword} || '%'

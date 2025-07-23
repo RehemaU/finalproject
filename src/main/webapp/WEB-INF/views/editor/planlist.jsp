@@ -221,9 +221,18 @@
                 </p>
                 <!-- 유저 · 추천수 · 조회수 -->
                 <div class="d-flex align-items-center">
-                  <img src="${pageContext.request.contextPath}/resources/upload/${post.userId}.${post.userImgEx}"
-                       style="width:32px; height:32px; object-fit:cover; border-radius:50%; border:1px solid #ccc;"
-                       alt="작성자"/>
+<c:choose>
+  <c:when test="${empty post.userImgEx}">
+    <img src="${pageContext.request.contextPath}/resources/upload/profileImages.png"
+         style="width:32px; height:32px; object-fit:cover; border-radius:50%; border:1px solid #ccc;"
+         alt="기본프로필"/>
+  </c:when>
+  <c:otherwise>
+    <img src="${pageContext.request.contextPath}/resources/upload/${post.userId}.${post.userImgEx}"
+         style="width:32px; height:32px; object-fit:cover; border-radius:50%; border:1px solid #ccc;"
+         alt="작성자"/>
+  </c:otherwise>
+</c:choose>
                   <span class="ms-2">${post.userName}</span>
                   <span class="ms-auto">
                     <i class="far fa-comment"></i> ${post.comCount}&nbsp;&nbsp;

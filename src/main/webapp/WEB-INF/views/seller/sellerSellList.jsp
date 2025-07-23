@@ -13,9 +13,9 @@
 <%@ include file="/WEB-INF/views/include/sellerNavigation.jsp" %>
 <div class="container mt-5">
 
-<h2 class="mb-4">📦 판매자 정산 내역</h2>
+<h2 class="mb-4">최근 한달 판매자 정산 내역</h2>
 <h4 class="mb-4 text-secondary" style="font-weight: 500;">
-  💰 총 정산 금액: <span class="text-dark"><fmt:formatNumber value="${sum}" type="number" pattern="#,###"/> 원</span>
+  총 정산 금액: <span class="text-dark"><fmt:formatNumber value="${sum}" type="number" pattern="#,###"/> 원</span>
 </h4>
 
   <c:choose>
