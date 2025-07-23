@@ -32,13 +32,20 @@
   </div>
   <div class="hero-slide" style="background-image: url('/resources/images/main4.jpg');">
     <div class="hero-content">
-      <p class="hero-subtitle">여행 계획</p>
-      <h1 class="hero-title">나만의 여행 일정,<br>MYTRIP으로 간편해졌어요</h1>
-      <p class="hero-desc">여행을 한눈에, 그리고 한 번에!</p>
-      <a href="/schedule/addList" class="hero-btn">계획 만들러가기</a>
+      <p class="hero-subtitle">사이트 이용 가이드</p>
+      <h1 class="hero-title">사이트 이용법을 알고싶다면,<br>PDF로도 제공되는 가이드</h1>
+      <p class="hero-desc">쉽고 간편하게 사이트를 이용해보세요!</p>
+      <a href="/walkthrough" class="hero-btn">이용 가이드 보러가기</a>
     </div>
   </div>
-
+  <div class="hero-slide" style="background-image: url('/resources/images/banner3.jpg');">
+    <div class="hero-content">
+      <p class="hero-subtitle">오늘의 날씨</p>
+      <h1 class="hero-title">오늘, 어딘가로 떠나고 싶나요?<br>전국 날씨를 알려드려요</h1>
+      <p class="hero-desc">날씨까지 한번에 확인할 수 있어요.</p>
+      <a href="/weather" class="hero-btn">전국 날씨 보러가기</a>
+    </div>
+  </div>
 
 
   <!-- 슬라이드 화살표 -->
