@@ -55,6 +55,8 @@
             <li class="menu-item" data-url="/admin/userList">유저 관리</li>
             <li class="menu-item" data-url="/admin/reviewList">리뷰 관리</li>
             <li class="menu-item" data-url="/admin/sellerList">판매자 관리</li>
+            <li class="menu-item" data-url="/admin/noticeList">공지사항 관리</li>
+            <li class="menu-item" data-url="/admin/eventList">이벤트 관리<li>
         </ul>
     </div>
 
@@ -66,7 +68,7 @@
 <script>
 let accommParams = { keyword: '', status: '', page: 1 };
 
-// ✅ 공통 AJAX 로딩 함수
+//  공통 AJAX 로딩 함수
 function loadContent(url) {
     $("#contentArea").html("<p style='text-align:center; margin-top: 50px;'>불러오는 중입니다...</p>");
     $.ajax({
@@ -81,7 +83,7 @@ function loadContent(url) {
     });
 }
 
-// ✅ 숙소 리스트 파라미터 보존 로딩 함수
+//  숙소 리스트 파라미터 보존 로딩 함수
 function loadAccommList() {
     const { keyword, status, page } = accommParams;
     const url = "/admin/accommList?keyword=" + encodeURIComponent(keyword)
@@ -90,7 +92,7 @@ function loadAccommList() {
     loadContent(url);
 }
 
-// ✅ 유저 관련 초기 이벤트 바인딩
+//  유저 관련 초기 이벤트 바인딩
 function initUserEvents() {
     // 유저 검색
     $(document).on('click', '#userSearchBtn', function () {
@@ -150,7 +152,7 @@ function initUserEvents() {
     });
 }
 
-// ✅ 숙소 관련 초기 이벤트 바인딩
+//  숙소 관련 초기 이벤트 바인딩
 function initAccommEvents() {
     // 숙소 검색
     $(document).on("click", "#accommSearchBtn_acc", function () {
@@ -254,7 +256,7 @@ function initReviewEvents() {
 }
 
 
-// ✅ 전체 초기화
+//  전체 초기화
 function initDashboard() {
     loadAccommList();          // 초기 로딩은 숙소
     initUserEvents();          // 유저 이벤트 등록
@@ -274,8 +276,8 @@ $(document).ready(function () {
     initDashboard();
 });
 
-//✅ 리뷰 비공개 처리 버튼 이벤트 위임
-//✅ 리뷰 비공개 처리 버튼 이벤트 위임 (고친 버전)
+
+//리뷰 비공개 처리 버튼 이벤트 위임 (고친 버전)
 $(document).on("click", ".review-hide-btn", function () {
     const planId = $(this).data("plan-id");
 
@@ -292,7 +294,7 @@ $(document).on("click", ".review-hide-btn", function () {
             if (data.code === 0) {
                 alert("비공개 처리 완료");
 
-                // ✅ 현재 검색어, 정렬, 상태, 페이지 유지
+                //  현재 검색어, 정렬, 상태, 페이지 유지
                 const keyword = $("#reviewSearchInput_rev").val();
                 const order = $("#reviewOrderSelect_rev").val();
                 const status = $(".filter-btn.active").data("status") || "Y";
@@ -314,7 +316,7 @@ $(document).on("click", ".review-hide-btn", function () {
     }
 });
 
-//✅ 꼭 이벤트 위임 방식이어야 함 (즉시 바인딩 X)
+
 $(document).on("click", ".review-title-link", function () {
     const planId = $(this).data("plan-id");
     const calendarId = $(this).data("calendar-id");
@@ -332,6 +334,150 @@ $(document).on("click", ".review-title-link", function () {
     window.open(url, "_blank");
 });
 
+function initNoticeEvents() {
+    let noticeParams = { keyword: '', page: 1 };
+
+
+    function renderNoticeTable(noticeList, totalCount, curPage, totalPage) {
+        let html = "";
+        if (noticeList.length === 0) {
+            html = "<tr><td colspan='5'>등록된 공지사항이 없습니다.</td></tr>";
+        } else {
+            for (let i = 0; i < noticeList.length; i++) {
+                const notice = noticeList[i];
+                const index = totalCount - ((curPage - 1) * 10) - i;
+                html += `
+                    <tr>
+                        <td>${index}</td>
+                        <td class="title-cell">
+                            <a href="/notice/noticeDetail?noticeId=${notice.noticeId}">
+                                ${notice.noticeTitle}
+                            </a>
+                        </td>
+                        <td>${notice.noticeCount}</td>
+                        <td>${notice.noticeRegdate ? notice.noticeRegdate.substring(0, 10) : ''}</td>
+                        <td>
+                            <button class="action-btn edit-btn" data-id="${notice.noticeId}">수정</button>
+                            <button class="action-btn delete-btn" data-id="${notice.noticeId}">삭제</button>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+        $("#noticeTableBody").html(html);
+        renderNoticePagination(curPage, totalPage);
+    }
+
+    function renderNoticePagination(curPage, totalPage) {
+        let html = "";
+        if (curPage > 1) html += `<a href="#" data-page="${curPage - 1}">이전</a>`;
+        
+        for (let i = 1; i <= totalPage; i++) {
+            const isActive = (i == curPage) ? 'active' : '';
+            html += `<a href="#" class="\${isActive}" data-page="\${i}">\${i}</a>`
+                .replace(/\$\{isActive\}/g, isActive)
+                .replace(/\$\{i\}/g, i);
+        }
+
+        if (curPage < totalPage) html += `<a href="#" data-page="${curPage + 1}">다음</a>`;
+        $("#noticePagination").html(html);
+    }
+
+    // 이벤트 바인딩
+    $(document).off("click", "#noticeSearchBtn").on("click", "#noticeSearchBtn", function () {
+        noticeParams.keyword = $("#noticeSearchInput").val().trim();
+        noticeParams.page = 1;
+        loadNoticeList();
+    });
+
+    $(document).off("click", "#noticePagination a").on("click", "#noticePagination a", function (e) {
+        e.preventDefault();
+        noticeParams.page = $(this).data("page");
+        loadNoticeList();
+    });
+
+    $(document).off("click", "#noticeWriteBtn").on("click", "#noticeWriteBtn", function (e) {
+        e.preventDefault(); // ✅ 페이지 이동 방지
+        $.ajax({
+            url: "/admin/noticeWriteForm",
+            type: "GET",
+            success: function (res) {
+                $("#contentArea").html(res); // ✅ 대시보드 우측 영역에 폼 삽입
+            },
+            error: function () {
+                alert("작성 폼 로딩 실패");
+            }
+        });
+    });
+    
+    $(document).off("click", ".edit-btn").on("click", ".edit-btn", function () {
+        const noticeId = $(this).data("id");
+        console.log("수정 클릭 - noticeId:", noticeId);
+
+        $.ajax({
+            url: "/admin/noticeUpdateForm",
+            type: "GET",
+            data: { noticeId: noticeId },
+            success: function (html) {
+                $("#contentArea").html(html);
+            },
+            error: function () {
+                alert("수정 폼 로딩 실패");
+            }
+        });
+    });
+
+    $(document).on("click", ".delete-btn", function () {
+        const noticeId = $(this).data("id");
+        deleteNotice(noticeId);
+    });
+
+    function deleteNotice(noticeId) {
+        if (confirm("정말 삭제하시겠습니까?")) {
+            $.ajax({
+                url: "/admin/noticeDelete",
+                type: "POST",
+                data: { noticeId: noticeId },  // ✅ 이게 필수
+                success: function (res) {
+                    if (res.code === 0) {
+                        alert("삭제 완료");
+                        loadNoticeList();  // 다시 리스트 불러오기
+                    } else {
+                        alert("삭제 실패: " + res.msg);
+                    }
+                },
+                error: function () {
+                    alert("서버 오류");
+                }
+            });
+        }
+    }
+    loadNoticeList();  // ✅ 초기에 불러오기
+    
+    
+    
+}
+//대시보드에서 이벤트 목록 로드
+$(document).on("click", "#eventManageBtn", function () {
+    $.ajax({
+        url: "/admin/eventList",
+        type: "GET",
+        success: function (html) {
+            $("#adminContentArea").html(html);
+        }
+    });
+});
+//이벤트 탭 페이징 버튼 클릭 처리
+$(document).on("click", ".event-page-link", function () {
+    const page = $(this).data("page");
+    const keyword = $("#adminEventSearchInput").val().trim();
+
+    $("#contentArea").load("/admin/eventList?page=" + page + "&keyword=" + encodeURIComponent(keyword));
+});
+
+$(document).on("click", "#openEventWriteBtn", function () {
+	  $("#contentArea").load("/admin/eventWriteForm");
+	});
 </script>
 
 </body>

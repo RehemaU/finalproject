@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 import com.sist.web.dao.AdminDao;
 import com.sist.web.dao.SellerDao;
 import com.sist.web.model.Admin;
+import com.sist.web.model.Coupon;
+import com.sist.web.model.Event;
+import com.sist.web.model.Notice;
 import com.sist.web.model.Seller;
 import com.sist.web.model.User;
 
@@ -110,6 +113,73 @@ public class AdminService {
         return adminDao.updateReviewStatus(planId, status); // DAO 호출
     }
     
+    public List<Notice> searchNoticeList(Map<String, Object> param) {
+        return adminDao.searchNoticeList(param);
+    }
     
+    public int getSearchNoticeCount(Map<String, Object> param) {
+        return adminDao.getSearchNoticeCount(param);
+    }
+    
+    public void insertNotice(Map<String, Object> param) {
+        adminDao.insertNotice(param);
+    }
+    
+    public void updateNotice(Notice notice) {
+        adminDao.updateNotice(notice);
+    }
+    
+    public Notice getNoticeById(String noticeId) {
+        return adminDao.selectNoticeById(noticeId);
+    }
+    
+    public int deleteNotice(String noticeId) {
+        return adminDao.deleteNoticeById(noticeId);
+    }
+    
+
+
+    public List<Event> searchEventList(Map<String, Object> map) {
+        return adminDao.searchEventList(map);
+    }
+
+
+    public int getSearchEventCount(String keyword) {
+        return adminDao.getSearchEventCount(keyword);
+    }
+
+
+    public void insertEvent(Event event) {
+        adminDao.insertEvent(event);
+    }
+
+
+    public Event getEventById(String eventId) {
+        return adminDao.getEventById(eventId);
+    }
+
+
+    public void updateEvent(Event event) {
+        adminDao.updateEvent(event);
+    }
+
+
+    public void deleteEvent(String eventId) {
+        adminDao.deleteEvent(eventId);
+    }
+
+    public List<Coupon> getAllCoupons() {
+        return adminDao.getAllCoupons();
+    }
+
+
+    public Coupon getCouponById(String couponId) {
+        return adminDao.getCouponById(couponId);
+    }
+    
+    public String getNextEventId() {
+        int seq = adminDao.getNextEventSeq(); // 시퀀스 값만 가져옴
+        return "EVT" + String.format("%03d", seq);
+    }
     
 }

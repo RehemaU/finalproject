@@ -66,6 +66,39 @@
 	    <result column="T_CALANDER_LIST_ID" property="tCalanderListId"/>
 	</resultMap>
 
+	<resultMap id="noticeResultMap" type="com.sist.web.model.Notice">
+    <id property="noticeId" column="NOTICE_ID" />
+    <result property="adminId" column="ADMIN_ID" />
+    <result property="noticeTitle" column="NOTICE_TITLE" />
+    <result property="noticeContent" column="NOTICE_CONTENT" />
+    <result property="noticeRegdate" column="NOTICE_REGDATE" />
+    <result property="noticeCount" column="NOTICE_COUNT" />
+	</resultMap>
+	
+	<resultMap id="eventResultMap" type="com.sist.web.model.Event">
+    <id     property="eventId"            column="EVENT_ID"/>
+    <result property="adminId"            column="ADMIN_ID"/>
+    <result property="eventTitle"         column="EVENT_TITLE"/>
+    <result property="eventContent"       column="EVENT_CONTENT"/>
+    <result property="eventRegdate"       column="EVENT_REGDATE"/>
+    <result property="eventCount"         column="EVENT_COUNT"/>
+    <result property="couponId"           column="COUPON_ID"/>
+    <result property="eventThumbnailUrl"  column="EVENT_THUMBNAIL_URL"/>
+    <result property="eventEnddate"       column="EVENT_ENDDATE"/>
+    <result property="eventImageUrl"      column="EVENT_IMAGE_URL"/>
+</resultMap>
+
+
+	<resultMap id="couponResultMap" type="com.sist.web.model.Coupon">
+    <id     property="couponId"        column="COUPON_ID"/>
+    <result property="couponName"      column="COUPON_NAME"/>
+    <result property="couponType"      column="COUPON_TYPE"/>
+    <result property="couponAmount"    column="COUPON_AMOUNT"/>
+    <result property="couponCreatedate" column="COUPON_CREATEDATE"/>
+    <result property="couponExpiredate" column="COUPON_EXPIREDATE"/>
+    <result property="couponMaxAmount"  column="COUPON_MAX_AMOUNT"/>
+    <result property="couponCount"      column="COUPON_COUNT"/>
+</resultMap>
 	
 	    <!-- 관리자 조회 -->
     <select id="selectAdminById" parameterType="string" resultMap="adminResultMap">
@@ -303,5 +336,171 @@ WHERE RN &gt;= #{start}
     WHERE PLAN_ID = #{planId}
 	</update>
 	
+	<select id="searchNoticeList" parameterType="map" resultMap="noticeResultMap">
+    SELECT *
+    FROM (
+        SELECT T.*, ROWNUM RNUM
+        FROM (
+            SELECT *
+            FROM T_NOTICE
+            <where>
+                <if test="keyword != null and keyword != ''">
+                    AND NOTICE_TITLE LIKE '%' || #{keyword} || '%'
+                </if>
+            </where>
+            ORDER BY NOTICE_REGDATE DESC
+        ) T
+        WHERE ROWNUM &lt;= #{startRow} + #{pageSize}
+    )
+    WHERE RNUM &gt; #{startRow}
+	</select>
 	
+	<select id="getSearchNoticeCount" parameterType="map" resultType="int">
+    SELECT COUNT(*)
+    FROM T_NOTICE
+    <where>
+        <if test="keyword != null and keyword != ''">
+            AND NOTICE_TITLE LIKE '%' || #{keyword} || '%'
+        </if>
+    </where>
+	</select>
+	
+	<insert id="insertNotice" parameterType="map">
+    INSERT INTO T_NOTICE (
+        NOTICE_ID,
+        NOTICE_TITLE,
+        NOTICE_CONTENT,
+        NOTICE_COUNT,
+        NOTICE_REGDATE
+    ) VALUES (
+        'NTC'||LPAD(SEQ_NOTICE.NEXTVAL, 3, '0'),
+        #{noticeTitle},
+        #{noticeContent},
+        0,
+        SYSDATE
+    )
+</insert>
+
+<select id="getNoticeById" parameterType="String" resultMap="noticeResultMap">
+    SELECT * FROM T_NOTICE WHERE NOTICE_ID = #{noticeId}
+</select>	
+	
+<update id="updateNotice" parameterType="com.sist.web.model.Notice">
+    UPDATE T_NOTICE
+    SET 
+        NOTICE_TITLE = #{noticeTitle},
+        NOTICE_CONTENT = #{noticeContent}
+    WHERE NOTICE_ID = #{noticeId}
+</update>
+	
+<select id="selectNoticeById" parameterType="String" resultMap="noticeResultMap">
+    SELECT NOTICE_ID, NOTICE_TITLE, NOTICE_CONTENT, NOTICE_REGDATE, NOTICE_COUNT
+    FROM T_NOTICE
+    WHERE NOTICE_ID = #{noticeId}
+</select>	
+
+<delete id="deleteNoticeById" parameterType="String">
+    DELETE FROM T_NOTICE WHERE NOTICE_ID = #{noticeId}
+</delete>
+
+
+<!-- Event 목록 검색 -->
+<select id="searchEventList" resultMap="eventResultMap">
+    SELECT *
+    FROM (
+        SELECT ROWNUM AS RN, A.*
+        FROM (
+            SELECT *
+            FROM T_EVENT
+            WHERE 1 = 1
+            <if test="keyword != null and keyword != ''">
+                AND EVENT_TITLE LIKE '%' || #{keyword} || '%'
+            </if>
+            <if test="status == 'active'">
+                AND EVENT_ENDDATE &gt;= SYSDATE
+            </if>
+            <if test="status == 'closed'">
+                AND EVENT_ENDDATE &lt; SYSDATE
+            </if>
+            ORDER BY EVENT_REGDATE DESC
+        ) A
+        WHERE ROWNUM &lt;= #{startRow} + #{pageSize}
+    )
+    WHERE RN &gt; #{startRow}
+</select>
+
+<!-- 검색된 Event 수 -->
+<select id="getSearchEventCount" resultType="int">
+    SELECT COUNT(*)
+    FROM T_EVENT
+    WHERE 1 = 1
+    <if test="keyword != null and keyword != ''">
+        AND EVENT_TITLE LIKE '%' || #{keyword} || '%'
+    </if>
+    <if test="status == 'active'">
+        AND EVENT_ENDDATE &gt;= SYSDATE
+    </if>
+    <if test="status == 'closed'">
+        AND EVENT_ENDDATE &lt; SYSDATE
+    </if>
+</select>
+
+<!-- 이벤트 등록 -->
+
+
+<!-- 이벤트 단건 조회 -->
+<select id="getEventById" resultMap="eventResultMap">
+    SELECT *
+    FROM T_EVENT
+    WHERE EVENT_ID = #{eventId}
+</select>
+
+<!-- 이벤트 수정 -->
+<update id="updateEvent" parameterType="com.sist.web.model.Event">
+    UPDATE T_EVENT
+    SET EVENT_TITLE = #{eventTitle},
+        EVENT_CONTENT = #{eventContent},
+        COUPON_ID = #{couponId},
+        EVENT_THUMBNAIL_URL = #{eventThumbnailUrl},
+        EVENT_ENDDATE = #{eventEnddate},
+        EVENT_IMAGE_URL = #{eventImageUrl}
+    WHERE EVENT_ID = #{eventId}
+</update>
+
+<!-- 이벤트 삭제 -->
+<delete id="deleteEvent">
+    DELETE FROM T_EVENT
+    WHERE EVENT_ID = #{eventId}
+</delete>
+
+<!-- 모든 쿠폰 조회 -->
+<select id="getAllCoupons" resultMap="couponResultMap">
+    SELECT *
+    FROM T_COUPON
+    ORDER BY COUPON_CREATEDATE DESC
+</select>
+
+<!-- 쿠폰 단건 조회 -->
+<select id="getCouponById" resultMap="couponResultMap">
+    SELECT *
+    FROM T_COUPON
+    WHERE COUPON_ID = #{couponId}
+</select>
+
+<!-- AdminDao.xml -->
+<select id="getNextEventSeq" resultType="int">
+    SELECT EVT_SEQ.NEXTVAL FROM DUAL
+</select>
+
+<insert id="insertEvent" parameterType="com.sist.web.model.Event">
+    INSERT INTO T_EVENT (
+        EVENT_ID, EVENT_TITLE, EVENT_CONTENT, EVENT_ENDDATE, COUPON_ID,
+        EVENT_THUMBNAIL_URL, EVENT_IMAGE_URL, EVENT_REGDATE, EVENT_COUNT
+    )
+    VALUES (
+        #{eventId}, #{eventTitle}, '', #{eventEnddate}, #{couponId},
+        #{eventThumbnailUrl}, #{eventImageUrl}, SYSDATE, 0
+    )
+</insert>
+
 </mapper>
