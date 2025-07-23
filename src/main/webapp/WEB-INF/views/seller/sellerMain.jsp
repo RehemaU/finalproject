@@ -91,7 +91,7 @@
       <div class="card">
         <h3>정산 내역</h3>
         <p>예약된 내역과 정산금 정보를 확인할 수 있습니다.</p>
-        <a href="/seller/reservation/list">정산 보기</a>
+        <a href="/seller/sellerSellList">정산 보기</a>
       </div>
     </div>
   </main>
