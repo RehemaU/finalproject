@@ -6,6 +6,9 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Param;
 
 import com.sist.web.model.Admin;
+import com.sist.web.model.Coupon;
+import com.sist.web.model.Event;
+import com.sist.web.model.Notice;
 import com.sist.web.model.Seller;
 import com.sist.web.model.User;
 
@@ -48,5 +51,28 @@ public interface AdminDao {
     
     int updateReviewStatus(@Param("planId") int planId, @Param("status") String status);
     
+    public List<Notice> searchNoticeList(Map<String, Object> param);
+    public int getSearchNoticeCount(Map<String, Object> param);
     
+    void insertNotice(Map<String, Object> param);
+    
+    public void updateNotice(Notice notice);
+    
+    Notice selectNoticeById(String noticeId);
+    int deleteNoticeById(String noticeId);
+
+    List<Event> searchEventList(Map<String, Object> map);
+    int getSearchEventCount(String keyword);
+
+    Event getEventById(String eventId);
+    void updateEvent(Event event);
+    void deleteEvent(String eventId);
+
+    List<Coupon> getAllCoupons();
+    Coupon getCouponById(String couponId);
+    
+    String getNextEventId();  
+    void insertEvent(Event event);
+    
+    int getNextEventSeq(); 
 }
