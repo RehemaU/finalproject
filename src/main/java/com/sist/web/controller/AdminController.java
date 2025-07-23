@@ -3,13 +3,15 @@ package com.sist.web.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.io.File;
+import java.util.Collections;
 import javax.servlet.http.HttpServletRequest;
 
 import com.sist.web.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -19,11 +21,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.sist.common.util.StringUtil;
 import com.sist.web.model.Admin;
+import com.sist.web.model.Coupon;
+import com.sist.web.model.Event;
+import com.sist.web.model.Notice;
 import com.sist.web.model.Seller;
 import com.sist.web.service.AdminService;
+import com.sist.web.service.EventService;
 import com.sist.web.service.SellerService;
 
 @Controller("adminController")
@@ -282,6 +290,8 @@ public class AdminController {
         return "/admin/reviewList";
     }
 
+
+    
     @PostMapping("/admin/updateReviewStatus")
     @ResponseBody
     public Map<String, Object> updateReviewStatus(@RequestBody Map<String, Object> param) {
@@ -303,4 +313,213 @@ public class AdminController {
         }
         return response;
     }
+    
+    @GetMapping("/admin/noticeList")
+    public String noticeList(@RequestParam(value = "keyword", required = false) String keyword,
+                             @RequestParam(value = "page", defaultValue = "1") int page,
+                             Model model) {
+        int pageSize = 10;
+        int startRow = (page - 1) * pageSize;
+        int endRow = page * pageSize;
+
+        Map<String, Object> param = new HashMap<>();
+        param.put("keyword", keyword);
+        param.put("startRow", startRow);
+        param.put("pageSize", pageSize);
+
+        List<Notice> noticeList = adminService.searchNoticeList(param);
+        int totalCount = adminService.getSearchNoticeCount(param);
+        int totalPage = (int) Math.ceil((double) totalCount / pageSize);
+
+        int blockSize = 10;
+        int blockStart = ((page - 1) / blockSize) * blockSize + 1;
+        int blockEnd = Math.min(blockStart + blockSize - 1, totalPage);
+
+        model.addAttribute("noticeList", noticeList);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("curPage", page);
+        model.addAttribute("totalPage", totalPage);
+        model.addAttribute("blockStart", blockStart);
+        model.addAttribute("blockEnd", blockEnd);
+        model.addAttribute("totalCount", totalCount);
+
+        return "/admin/noticeList";
+    }
+
+    @GetMapping("/admin/noticeWriteForm")
+    public String noticeWriteForm() {
+        return "/admin/noticeWriteForm";  // 위의 JSP 위치
+    }
+
+    @PostMapping("/admin/noticeWriteProc")
+    public String noticeWriteProc(@RequestParam Map<String, Object> param) {
+        adminService.insertNotice(param);  // 작성 로직
+        return "redirect:/admin/noticeList";
+    }
+    
+    @PostMapping("/admin/noticeUpdate")
+    @ResponseBody
+    public Map<String, Object> updateNotice(@RequestBody Notice notice) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            adminService.updateNotice(notice);
+            result.put("code", 0);
+        } catch (Exception e) {
+            result.put("code", -1);
+            result.put("msg", "수정 중 오류 발생");
+        }
+        return result;
+    }
+    
+    @GetMapping("/admin/noticeUpdateForm")
+    public String showUpdateForm(@RequestParam("noticeId") String noticeId, Model model) {
+        Notice notice = adminService.getNoticeById(noticeId);
+        model.addAttribute("notice", notice);
+        return "/admin/noticeUpdateForm";
+    }
+    
+    @PostMapping("/admin/noticeDelete")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> deleteNotice(@RequestParam("noticeId") String noticeId) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            int deleted = adminService.deleteNotice(noticeId);  // 삭제 처리
+            if (deleted > 0) {
+                result.put("code", 0);
+                result.put("msg", "삭제 성공");
+            } else {
+                result.put("code", -1);
+                result.put("msg", "삭제 대상 없음");
+            }
+        } catch (Exception e) {
+            result.put("code", -500);
+            result.put("msg", "서버 오류");
+        }
+        return ResponseEntity.ok(result);
+    }
+    
+
+
+    // ✅ 이벤트 리스트 페이지 이동
+    @GetMapping("/admin/eventList")
+    public String eventList(ModelMap model,
+                            @RequestParam(value = "page", defaultValue = "1") int curPage,
+                            @RequestParam(value = "keyword", required = false) String keyword) {
+        final int pageSize = 10;
+        final int blockSize = 5;
+
+        int startRow = (curPage - 1) * pageSize;
+
+        Map<String, Object> param = new HashMap<>();
+        param.put("startRow", startRow);
+        param.put("pageSize", pageSize);
+        param.put("keyword", keyword);
+
+        List<Event> list = adminService.searchEventList(param);
+        int totalCount = adminService.getSearchEventCount(keyword);
+        int totalPage = (int) Math.ceil(totalCount / (double) pageSize);
+
+        int blockStart = ((curPage - 1) / blockSize) * blockSize + 1;
+        int blockEnd = blockStart + blockSize - 1;
+        if (blockEnd > totalPage) blockEnd = totalPage;
+
+        model.addAttribute("eventList", list);
+        model.addAttribute("curPage", curPage);
+        model.addAttribute("totalPage", totalPage);
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("blockStart", blockStart);
+        model.addAttribute("blockEnd", blockEnd);
+        model.addAttribute("keyword", keyword);
+
+        return "/admin/eventList";
+    }
+
+    // ✅ 작성 폼 Ajax 로딩
+    @GetMapping("/admin/eventWriteForm")
+    public String eventWriteForm(ModelMap model) {
+        List<Coupon> couponList = adminService.getAllCoupons();
+        model.addAttribute("couponList", couponList);
+        return "/admin/eventWriteForm";
+    }
+
+
+    // ✅ 수정 폼 Ajax 로딩
+    @GetMapping("/admin/eventUpdateForm")
+    public String eventUpdateForm(@RequestParam("eventId") String eventId, ModelMap model) {
+        Event event = adminService.getEventById(eventId);
+        List<Coupon> couponList = adminService.getAllCoupons();
+
+        model.addAttribute("event", event);
+        model.addAttribute("couponList", couponList);
+        return "/admin/eventUpdateForm";
+    }
+
+    // ✅ 이벤트 수정 처리
+    @PostMapping("/admin/eventUpdate")
+    public String eventUpdate(Event event) {
+        adminService.updateEvent(event);
+        return "redirect:/admin/eventList";
+    }
+
+    @PostMapping("/admin/eventDelete")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> eventDelete(@RequestParam("eventId") String eventId) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            adminService.deleteEvent(eventId);
+            result.put("code", 0);
+            result.put("msg", "삭제 완료");
+        } catch (Exception e) {
+            result.put("code", -500);
+            result.put("msg", "서버 오류 발생");
+        }
+        return ResponseEntity.ok(result);
+    }
+    
+    @PostMapping("/admin/eventInsert")
+    public String insertEvent(MultipartHttpServletRequest request) {
+        String eventTitle = request.getParameter("eventTitle");
+        String couponId = request.getParameter("couponId");
+        String endDate = request.getParameter("eventEnddate");
+
+        //  시퀀스로 ID 생성 
+        String eventId = adminService.getNextEventId(); // → "EVT" + 시퀀스 값
+
+        // ✅ 이미지 저장 경로
+        String thumbDir = "C:\\project\\webapps\\finalproject\\src\\main\\webapp\\WEB-INF\\views\\resources\\eventimage\\";
+        
+        String detailDir = "C:\\project\\webapps\\finalproject\\src\\main\\webapp\\WEB-INF\\views\\resources\\eventdetailimage\\";
+
+        try {
+            // 썸네일 저장
+            MultipartFile thumbFile = request.getFile("eventThumbnail");
+            if (thumbFile != null && !thumbFile.isEmpty()) {
+                thumbFile.transferTo(new File(thumbDir + File.separator + eventId + ".png"));
+            }
+
+            // 본문 이미지 저장
+            MultipartFile detailFile = request.getFile("eventDetailImage");
+            if (detailFile != null && !detailFile.isEmpty()) {
+                detailFile.transferTo(new File(detailDir + File.separator + eventId + ".png"));
+            }
+
+            // DB 저장
+            Event event = new Event();
+            event.setEventId(eventId);
+            event.setEventTitle(eventTitle);
+            event.setCouponId(couponId);
+            event.setEventEnddate(endDate);
+            event.setEventThumbnailUrl("/resources/eventimage/" + eventId + ".png");
+            event.setEventImageUrl("/resources/eventdetailimage/" + eventId + ".png");
+
+            adminService.insertEvent(event);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "/error/500";
+        }
+
+        return "redirect:/admin/eventList";
+    }
+    
 }
