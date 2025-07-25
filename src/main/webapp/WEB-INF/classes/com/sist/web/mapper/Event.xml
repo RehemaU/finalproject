@@ -147,47 +147,65 @@
     </select>
 
     <!-- 검색어에 따른 이벤트 개수 -->
-    <select id="getSearchEventCount" resultType="int" parameterType="map">
+<select id="getSearchEventCount" resultType="int" parameterType="map">
+    <![CDATA[
     SELECT COUNT(*) 
     FROM T_EVENT
-    <where>
-        <if test="keyword != null and keyword != ''">
-            EVENT_TITLE LIKE '%' || #{keyword} || '%'
-        </if>
-        <if test="status == 'active'">
-            AND EVENT_ENDDATE &gt;= SYSDATE
-        </if>
-        <if test="status == 'closed'">
-            AND EVENT_ENDDATE &lt; SYSDATE
-        </if>
-    </where>
+    WHERE 1=1
+    ]]>
+    <if test="keyword != null and keyword != ''">
+        <![CDATA[
+        AND EVENT_TITLE LIKE '%' || #{keyword} || '%'
+        ]]>
+    </if>
+    <if test="status == 'active'">
+        <![CDATA[
+        AND TO_DATE(EVENT_ENDDATE, 'RR/MM/DD') >= SYSDATE
+        ]]>
+    </if>
+    <if test="status == 'closed'">
+        <![CDATA[
+        AND TO_DATE(EVENT_ENDDATE, 'RR/MM/DD') < SYSDATE
+        ]]>
+    </if>
 </select>
 
+
     <!-- 검색어에 따른 이벤트 목록 (페이징 포함) -->
-    <select id="searchEventList" resultMap="eventResultMap" parameterType="map">
-    SELECT * 
-    FROM (
-        SELECT A.*, ROWNUM AS RN 
-        FROM (
-            SELECT * 
-            FROM T_EVENT
-            <where>
-                <if test="keyword != null and keyword != ''">
-                    EVENT_TITLE LIKE '%' || #{keyword} || '%'
-                </if>
-                <if test="status == 'active'">
-                    AND EVENT_ENDDATE &gt;= SYSDATE
-                </if>
-                <if test="status == 'closed'">
-                    AND EVENT_ENDDATE &lt; SYSDATE
-                </if>
-            </where>
-            ORDER BY EVENT_REGDATE DESC, EVENT_ID DESC
-        ) A
-        WHERE ROWNUM &lt;= #{startRow} + #{pageSize}
-    ) 
-    WHERE RN &gt; #{startRow}
-</select>
+	<select id="searchEventList" resultMap="eventResultMap" parameterType="map">
+	    <![CDATA[
+	    SELECT * 
+	    FROM (
+	        SELECT A.*, ROWNUM AS RN 
+	        FROM (
+	            SELECT * 
+	            FROM T_EVENT
+	            WHERE 1=1
+	    ]]>
+	    <if test="keyword != null and keyword != ''">
+	        <![CDATA[
+	        AND EVENT_TITLE LIKE '%' || #{keyword} || '%'
+	        ]]>
+	    </if>
+	    <if test="status == 'active'">
+	        <![CDATA[
+	        AND TO_DATE(EVENT_ENDDATE, 'RR/MM/DD') >= SYSDATE
+	        ]]>
+	    </if>
+	    <if test="status == 'closed'">
+	        <![CDATA[
+	        AND TO_DATE(EVENT_ENDDATE, 'RR/MM/DD') < SYSDATE
+	        ]]>
+	    </if>
+	    <![CDATA[
+	            ORDER BY EVENT_REGDATE DESC, EVENT_ID DESC
+	        ) A
+	        WHERE ROWNUM <= #{startRow} + #{pageSize}
+	    ) 
+	    WHERE RN > #{startRow}
+	    ]]>
+	</select>
+
 
 	<!-- 진행중인이벤트개수 -->
 	<select id="countActiveEvents" resultType="int">
