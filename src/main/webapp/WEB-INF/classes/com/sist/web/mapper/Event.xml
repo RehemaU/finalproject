@@ -96,19 +96,21 @@
     </select>
 
     <!-- 진행중 이벤트 더보기 방식 (ROWNUM 기반 페이징) -->
-    <select id="selectActiveEventsByPage" resultMap="eventResultMap">
-        SELECT * FROM (
-            SELECT A.*, ROWNUM RN
-            FROM (
-                SELECT *
-                FROM T_EVENT
-                WHERE EVENT_ENDDATE &gt;= SYSDATE
-                ORDER BY EVENT_REGDATE DESC
-            ) A
-            WHERE ROWNUM &lt;= #{startRow} + #{pageSize}
-        )
-        WHERE RN &gt; #{startRow}
-    </select>
+	<select id="selectActiveEventsByPage" resultMap="eventResultMap">
+	    <![CDATA[
+	    SELECT * FROM (
+	        SELECT A.*, ROWNUM RN
+	        FROM (
+	            SELECT *
+	            FROM T_EVENT
+	            WHERE TO_DATE(EVENT_ENDDATE, 'RR/MM/DD') >= SYSDATE
+	            ORDER BY EVENT_REGDATE DESC
+	        ) A
+	        WHERE ROWNUM <= #{startRow} + #{pageSize}
+	    )
+	    WHERE RN > #{startRow}
+	    ]]>
+	</select>
 
     <!-- 종료된 이벤트 조회 -->
     <select id="selectEndedEvents" resultMap="eventResultMap">
