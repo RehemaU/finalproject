@@ -30,7 +30,6 @@ jobs:
 
             # 톰캣 종료 및 프로세스 강제 종료 (오류 무시)
             sudo /home/ubuntu/tomcat9/bin/shutdown.sh || true
-            sudo /home/ubuntu/tomcat9/bin/shutdown.sh || true
             sleep 10  
             sudo pkill -f tomcat || true  # 만약 종료가 안 됐으면 강제 종료
 
