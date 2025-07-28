@@ -526,7 +526,7 @@ public class AdminController {
             event.setEventId(eventId);
             event.setAdminId(admin.getAdminId());
             event.setEventTitle(eventTitle);
-            event.setEventContent(eventContent == null || eventContent.trim().isEmpty() ? "내용 없음" : eventContent);
+            event.setEventContent(eventContent == null || eventContent.trim().isEmpty() ? " " : eventContent);
             event.setEventEnddate(formattedEndDate);
             event.setCouponId(couponId);
             event.setEventThumbnailUrl("/resources/eventimage/" + eventId + ".png");

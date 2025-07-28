@@ -58,6 +58,10 @@
             <div class="event-date">
                 등록일: ${event.eventRegdate} &nbsp; | &nbsp; 종료일: ${event.eventEnddate}
             </div>
+            
+            <div class="event-content">
+                ${event.eventContent}
+            </div>
 
             <img src="${event.eventImageUrl}" class="event-image" alt="이벤트 본문 이미지" />
 
@@ -68,9 +72,7 @@
                 </div>
             </c:if>
 
-            <div class="event-content">
-                ${event.eventContent}
-            </div>
+
         </div>
     </div>
 

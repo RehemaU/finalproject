@@ -69,13 +69,16 @@
 let accommParams = { keyword: '', status: '', page: 1 };
 
 //  공통 AJAX 로딩 함수
-function loadContent(url) {
+function loadContent(url, callback) {
     $("#contentArea").html("<p style='text-align:center; margin-top: 50px;'>불러오는 중입니다...</p>");
     $.ajax({
         url: url,
         type: "GET",
         success: function (data) {
             $("#contentArea").html(data);
+            if (typeof callback === "function") {
+                callback();  // ✅ 콜백 실행 (예: initNoticeEvents)
+            }
         },
         error: function () {
             $("#contentArea").html("<p>불러오기 실패</p>");
@@ -405,7 +408,7 @@ function initNoticeEvents() {
             success: function (res) {
                 if (res.code === 0) {
                     alert("공지사항이 수정되었습니다.");
-                    loadContent("/admin/noticeList");
+                    loadContent("/admin/noticeList",initNoticeEvents);
                 } else {
                     alert("수정 실패: " + res.msg);
                 }
@@ -492,7 +495,13 @@ function initNoticeEvents() {
                 success: function (res) {
                     if (res.code === 0) {
                         alert("삭제 완료");
-                        loadNoticeList(); // 다시 리스트 불러오기
+                        
+                        const keyword = $("#noticeSearchInput").val().trim();
+                        const curPage = noticeParams?.page || 1;
+
+                        const query = "?page=" + curPage + "&keyword=" + encodeURIComponent(keyword);
+                        loadContent("/admin/noticeList", initNoticeEvents);
+                      
                     } else {
                         alert("삭제 실패: " + res.msg);
                     }
@@ -502,7 +511,7 @@ function initNoticeEvents() {
                 }
             });
         }
-        loadContent("/admin/noticeList");
+        loadContent("/admin/noticeList",initNoticeEvents);
     });
 	
     
@@ -543,7 +552,7 @@ function initEventWriteEvents() {
 	      success: function (res) {
 	        if (res.code === 0) {
 	          alert("이벤트가 등록되었습니다.");
-	          loadContent("/admin/eventList");
+	          loadContent("/admin/eventList",initNoticeEvents);
 	        } else {
 	          alert("이벤트 등록 실패: " + res.msg);
 	        }
@@ -574,7 +583,7 @@ $(document).off("submit", "#noticeWriteForm").on("submit", "#noticeWriteForm", f
         data: formData,
         success: function () {
             alert("공지사항이 등록되었습니다.");
-            loadContent("/admin/noticeList"); // 대시보드에서 동적으로 로딩 
+            loadContent("/admin/noticeList",initNoticeEvents); // 대시보드에서 동적으로 로딩 
         },
         error: function () {
             alert("등록 실패");
