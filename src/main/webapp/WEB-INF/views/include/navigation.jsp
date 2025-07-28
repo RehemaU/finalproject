@@ -25,10 +25,10 @@
   <!-- 메인 태그라인 -->
   <div class="tagline wrap">
     <a class="tag-item" href="/walkthrough">Walkthrough</a>
-    <a class="tag-item" href="/tour/list">Explore</a>
-    <a class="tag-item" href="/accomm/list">Stay</a>
-    <a class="tag-item" href="/schedule/addList"">Plan</a>
     <a class="tag-item" href="/editor/planmenu">Share</a>
+    <a class="tag-item" href="/schedule/addList"">Plan</a>
+    <a class="tag-item" href="/event/eventList">Event</a>
+    <a class="tag-item" href="/accomm/list">Stay</a>
   </div>
 
   <!-- GNB -->
