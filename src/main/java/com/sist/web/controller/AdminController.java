@@ -506,9 +506,9 @@ public class AdminController {
             String eventId = adminService.getNextEventId();
 
             // 이미지 저장 경로
-            String thumbDir = "C:\\project\\webapps\\finalproject\\src\\main\\webapp\\WEB-INF\\views\\resources\\eventimage\\";
-            String detailDir = "C:\\project\\webapps\\finalproject\\src\\main\\webapp\\WEB-INF\\views\\resources\\eventdetailimage\\";
-
+            String thumbDir = "/home/ubuntu/tomcat9/webapps/ROOT/WEB-INF/views/resources/eventimage/";
+            String detailDir = "/home/ubuntu/tomcat9/webapps/ROOT/WEB-INF/views/resources/eventdetailimage/";
+            
             // 썸네일 저장
             MultipartFile thumbFile = request.getFile("eventThumbnail");
             if (thumbFile != null && !thumbFile.isEmpty()) {
