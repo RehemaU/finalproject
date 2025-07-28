@@ -21,28 +21,36 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           port: 22
           script: |
-            # EC2 프로젝트 디렉터리로 이동
             cd /home/ubuntu/finalproject
-
-
-            # 최신 master 브랜치 pull
             git pull origin master
+            sleep 5
 
-            # 톰캣 종료 및 프로세스 강제 종료 (오류 무시)
-            sudo /home/ubuntu/tomcat9/bin/shutdown.sh || true
-            sleep 10  
-            sudo pkill -f tomcat || true  # 만약 종료가 안 됐으면 강제 종료
+            # 톰캣 프로세스 확인 및 종료 시도
+            PID=$(pgrep -f tomcat)
+            if [ -n "$PID" ]; then
+              echo "톰캣 종료 시도 (PID: $PID)"
+              sudo /home/ubuntu/tomcat9/bin/shutdown.sh || true
+              sleep 5
 
+              PID=$(pgrep -f tomcat)
+              if [ -n "$PID" ]; then
+                echo "톰캣 강제 종료 (PID: $PID)"
+                sudo pkill -f tomcat || true
+                sleep 5
+              fi
+            else
+              echo "톰캣 프로세스 없음, 종료 불필요"
+            fi
 
-            # 기존 배포물 제거
             sudo rm -rf /home/ubuntu/tomcat9/webapps/ROOT
             sudo rm -f /home/ubuntu/tomcat9/webapps/ROOT.war
+            sleep 5
 
-            # Maven 빌드 (테스트 제외)
             mvn clean package -DskipTests
+            sleep 5
 
-            # 빌드 결과 WAR 복사
             sudo cp /home/ubuntu/finalproject/target/web.war /home/ubuntu/tomcat9/webapps/ROOT.war
+            sleep 5
 
-            # 톰캣 시작
             sudo /home/ubuntu/tomcat9/bin/startup.sh
+            echo "배포 완료"
