@@ -69,22 +69,58 @@
 let accommParams = { keyword: '', status: '', page: 1 };
 
 //  공통 AJAX 로딩 함수
-function loadContent(url, callback) {
+function loadContent(url) {
     $("#contentArea").html("<p style='text-align:center; margin-top: 50px;'>불러오는 중입니다...</p>");
     $.ajax({
         url: url,
         type: "GET",
         success: function (data) {
             $("#contentArea").html(data);
-            if (typeof callback === "function") {
-                callback();  // ✅ 콜백 실행 (예: initNoticeEvents)
-            }
+            // ✅ 콜백 제거 → 이벤트 바인딩은 최초 1회만 initDashboard에서 실행
         },
         error: function () {
             $("#contentArea").html("<p>불러오기 실패</p>");
         }
     });
 }
+
+function bindUpdateNoticeBtn() {
+    $("#contentArea").off("click", "#updateNoticeBtn").on("click", "#updateNoticeBtn", function () {
+        console.log("✅ updateNoticeBtn 클릭됨");
+
+        const noticeId = $("#noticeId").val();
+        const title = $("#noticeTitle").val();
+        const content = $("#noticeContent").val();
+
+        if (!title || !content) {
+            alert("제목과 내용을 모두 입력하세요.");
+            return;
+        }
+
+        $.ajax({
+            url: "/admin/noticeUpdate",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                noticeId: noticeId,
+                noticeTitle: title,
+                noticeContent: content
+            }),
+            success: function (res) {
+                if (res.code === 0) {
+                    alert("공지사항 수정 완료");
+                    loadContent("/admin/noticeList");
+                } else {
+                    alert("수정 실패: " + res.msg);
+                }
+            },
+            error: function () {
+                alert("서버 오류 발생");
+            }
+        });
+    });
+}
+
 
 //  숙소 리스트 파라미터 보존 로딩 함수
 function loadAccommList() {
@@ -279,7 +315,7 @@ function initDashboard() {
     initUserEvents();          // 유저 이벤트 등록
     initAccommEvents();        // 숙소 이벤트 등록
     initReviewEvents();
-
+    initNoticeEvents();
     // 메뉴 클릭 시 화면 전환
     $(document).on("click", ".menu-item", function () {
         $(".menu-item").removeClass("active");
@@ -333,6 +369,20 @@ $(document).on("click", ".review-hide-btn", function () {
     }
 });
 
+$(document).on("click", ".notice-title-link", function () {
+    const noticeId = $(this).data("notice-id");
+
+    const url = "/notice/noticeDetail?noticeId=" + encodeURIComponent(noticeId)
+    window.open(url, "_blank");
+});
+
+$(document).on("click", ".event-title-link", function () {
+    const eventId = $(this).data("event-id");
+
+    const url = "/event/eventDetail?eventId=" + encodeURIComponent(eventId)
+    window.open(url, "_blank");
+});
+
 
 $(document).on("click", ".review-title-link", function () {
     const planId = $(this).data("plan-id");
@@ -350,74 +400,14 @@ $(document).on("click", ".review-title-link", function () {
                 "&tCalanderListId=" + encodeURIComponent(calendarId);
     window.open(url, "_blank");
 });
-
+let noticeParams = { keyword: '', page: 1 };
 function initNoticeEvents() {
-    let noticeParams = { keyword: '', page: 1 };
+    
 
-
-    function renderNoticeTable(noticeList, totalCount, curPage, totalPage) {
-        let html = "";
-        if (noticeList.length === 0) {
-            html = "<tr><td colspan='5'>등록된 공지사항이 없습니다.</td></tr>";
-        } else {
-            for (let i = 0; i < noticeList.length; i++) {
-                const notice = noticeList[i];
-                const index = totalCount - ((curPage - 1) * 10) - i;
-                html += `
-                    <tr>
-                        <td>${index}</td>
-                        <td class="title-cell">
-                            <a href="/notice/noticeDetail?noticeId=${notice.noticeId}">
-                                ${notice.noticeTitle}
-                            </a>
-                        </td>
-                        <td>${notice.noticeCount}</td>
-                        <td>${notice.noticeRegdate ? notice.noticeRegdate.substring(0, 10) : ''}</td>
-                        <td>
-                            <button class="action-btn edit-btn" data-id="${notice.noticeId}">수정</button>
-                            <button class="action-btn delete-btn" data-id="${notice.noticeId}">삭제</button>
-                        </td>
-                    </tr>
-                `;
-            }
-        }
-        $("#noticeTableBody").html(html);
-        renderNoticePagination(curPage, totalPage);
-    }
 
  // 공지사항 수정 처리 (대시보드 전역에서 한 번만 바인딩)
-    $(document).off("click", "#updateNoticeBtn").on("click", "#updateNoticeBtn", function () {
-        const noticeId = $("#noticeId").val();
-        const title = $("#noticeTitle").val();
-        const content = $("#noticeContent").val();
-
-        if (!title.trim() || !content.trim()) {
-            alert("제목과 내용을 모두 입력하세요.");
-            return;
-        }
-
-        $.ajax({
-            url: "/admin/noticeUpdate",
-            type: "POST",
-            contentType: "application/json",
-            data: JSON.stringify({
-                noticeId: noticeId,
-                noticeTitle: title,
-                noticeContent: content
-            }),
-            success: function (res) {
-                if (res.code === 0) {
-                    alert("공지사항이 수정되었습니다.");
-                    loadContent("/admin/noticeList",initNoticeEvents);
-                } else {
-                    alert("수정 실패: " + res.msg);
-                }
-            },
-            error: function () {
-                alert("서버 오류 발생");
-            }
-        });
-    });
+ // 💡 "#contentArea"는 항상 고정된 컨테이너니까 이걸로 위임
+bindUpdateNoticeBtn();
     
     
     function renderNoticePagination(curPage, totalPage) {
@@ -466,7 +456,7 @@ function initNoticeEvents() {
         });
     });
     
-    $(document).off("click", ".edit-btn").on("click", ".edit-btn", function () {
+    $(document).off("click", ".notice-edit-btn").on("click", ".notice-edit-btn", function () {
         const noticeId = $(this).data("id");
         console.log("수정 클릭 - noticeId:", noticeId);
 
@@ -483,7 +473,6 @@ function initNoticeEvents() {
         });
     });
 
- // ✅ 공지사항 삭제 버튼 이벤트 위임 (중복 방지용 off 포함)
     $(document).off("click", ".notice-delete-btn").on("click", ".notice-delete-btn", function () {
         const noticeId = $(this).data("id");
 
@@ -497,11 +486,10 @@ function initNoticeEvents() {
                         alert("삭제 완료");
                         
                         const keyword = $("#noticeSearchInput").val().trim();
-                        const curPage = noticeParams?.page || 1;
+                        const curPage = noticeParams.page || 1;
 
                         const query = "?page=" + curPage + "&keyword=" + encodeURIComponent(keyword);
-                        loadContent("/admin/noticeList", initNoticeEvents);
-                      
+                        loadContent("/admin/noticeList" + query);  // ✅ 한 번만
                     } else {
                         alert("삭제 실패: " + res.msg);
                     }
@@ -511,9 +499,7 @@ function initNoticeEvents() {
                 }
             });
         }
-        loadContent("/admin/noticeList",initNoticeEvents);
     });
-	
     
     
     
@@ -552,7 +538,7 @@ function initEventWriteEvents() {
 	      success: function (res) {
 	        if (res.code === 0) {
 	          alert("이벤트가 등록되었습니다.");
-	          loadContent("/admin/eventList",initNoticeEvents);
+	          loadContent("/admin/eventList");
 	        } else {
 	          alert("이벤트 등록 실패: " + res.msg);
 	        }
