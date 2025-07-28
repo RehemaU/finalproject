@@ -24,9 +24,6 @@ jobs:
             # EC2 프로젝트 디렉터리로 이동
             cd /home/ubuntu/finalproject
 
-            # 작업물 정리 (git reset, clean)
-            git reset --hard HEAD
-            git clean -fd
 
             # 최신 master 브랜치 pull
             git pull origin master
