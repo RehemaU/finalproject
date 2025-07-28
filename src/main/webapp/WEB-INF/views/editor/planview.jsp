@@ -440,10 +440,10 @@ function openReportPopup(planId) {
       }
       else if(res.code === -1)
       {
-		alert("안좋아요");
+		alert("좋아요취소");
 	  }
       else {
-        alert("뭘까요이건: " + res.code);
+        alert("오류: " + res.code);
       }
       // 무조건 새로고침
       location.reload();
