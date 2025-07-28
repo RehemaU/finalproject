@@ -24,14 +24,14 @@ jobs:
             # EC2 프로젝트 디렉터리로 이동
             cd /home/ubuntu/finalproject
 
-            # 변경사항 초기화 및 클린 상태 유지
+            # 작업물 정리 (git reset, clean)
             git reset --hard HEAD
             git clean -fd
 
             # 최신 master 브랜치 pull
             git pull origin master
 
-            # 톰캣 종료 및 프로세스 강제 종료
+            # 톰캣 종료 및 프로세스 강제 종료 (오류 무시)
             sudo /home/ubuntu/tomcat9/bin/shutdown.sh || true
             sudo pkill -f tomcat || true
 
@@ -39,11 +39,11 @@ jobs:
             sudo rm -rf /home/ubuntu/tomcat9/webapps/ROOT
             sudo rm -f /home/ubuntu/tomcat9/webapps/ROOT.war
 
-            # Maven 빌드 (skipTests 옵션 조정 가능)
+            # Maven 빌드 (테스트 제외)
             mvn clean package -DskipTests
 
             # 빌드 결과 WAR 복사
-            cp /home/ubuntu/finalproject/target/web.war /home/ubuntu/tomcat9/webapps/ROOT.war
+            sudo cp /home/ubuntu/finalproject/target/web.war /home/ubuntu/tomcat9/webapps/ROOT.war
 
             # 톰캣 시작
             sudo /home/ubuntu/tomcat9/bin/startup.sh
