@@ -101,7 +101,11 @@
             <tr>
                 <td>${notice.noticeId}</td>
                 <td class="title-cell">
-                    <a href="/admin/noticeView?noticeId=${notice.noticeId}">${notice.noticeTitle}</a>
+                    	<a href="javascript:void(0);"
+					       class="notice-title-link"
+					       data-notice-id="${notice.noticeId}">
+					       ${notice.noticeTitle}
+					    </a>
                 </td>
                 <td>${notice.noticeCount}</td>
 <td>${notice.noticeRegdate.substring(0, 10)}</td>
@@ -140,11 +144,6 @@
 <div id="noticeContent"></div>
 
 <script>
-$(document).ready(function () {
-    if (typeof initNoticeEvents === 'function') {
-        initNoticeEvents();  // ✅ 대시보드에서 삽입되면 호출됨
-    }
-});
 
 
 $("#noticeWriteBtn").click(function () {

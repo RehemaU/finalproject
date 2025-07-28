@@ -113,9 +113,11 @@
                 <tr>
                     <td>${event.eventId}</td>
                     <td class="title-cell">
-                        <a href="/event/eventDetail?eventId=${event.eventId}" target="_blank">
-                            ${event.eventTitle}
-                        </a>
+                    	<a href="javascript:void(0);"
+					       class="event-title-link"
+					       data-event-id="${event.eventId}">
+					       ${event.eventTitle}
+					    </a>
                     </td>
                     <td>${event.couponId}</td>
 <td>
