@@ -2,10 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page import="java.text.SimpleDateFormat, java.util.Date" %>
-<%
-    SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd");
-    Date now = new Date();
-%>
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -92,8 +89,10 @@
         <div>
             <input type="text" id="adminEventSearchInput" placeholder="제목 검색..." />
             <button id="adminEventSearchBtn">검색</button>
+            <!-- 
             <button class="filter-btn" data-status="active">진행 중 이벤트</button>
             <button class="filter-btn" data-status="closed">종료된 이벤트</button>
+             -->
         </div>
         <button id="openEventWriteBtn" class="write-btn" type="button">+ 작성</button>
     </div>
@@ -120,9 +119,12 @@
                     </td>
                     <td>${event.couponId}</td>
 <td>
-    <%
+     <%
         String endDateStr = (String) pageContext.findAttribute("event").getClass().getMethod("getEventEnddate").invoke(pageContext.findAttribute("event"));
-        Date endDate = sdf.parse(endDateStr);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yy/MM/dd"); // DB형식 그대로
+        Date now = new Date();
+        Date endDate = sdf.parse(endDateStr); // 이걸 기반으로 비교
 
         if (endDate.compareTo(now) >= 0) {
     %>
@@ -139,8 +141,10 @@
 
                     <td>${event.eventRegdate.substring(0, 10)}</td>
                     <td>
+                    <!-- 
                         <button class="edit-btn" onclick="loadEventUpdateForm('${event.eventId}')">수정</button>
-                        <button class="delete-btn" onclick="deleteEvent('${event.eventId}')">삭제</button>
+                         -->
+                        <button class="delete-btn event-delete-btn" onclick="deleteEvent('${event.eventId}')">삭제</button>
                     </td>
                 </tr>
             </c:forEach>

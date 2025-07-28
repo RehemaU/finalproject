@@ -4,7 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.sist.web.model.User;
@@ -477,20 +480,35 @@ public class AdminController {
     }
     
     @PostMapping("/admin/eventInsert")
-    public String insertEvent(MultipartHttpServletRequest request) {
-        String eventTitle = request.getParameter("eventTitle");
-        String couponId = request.getParameter("couponId");
-        String endDate = request.getParameter("eventEnddate");
-
-        //  시퀀스로 ID 생성 
-        String eventId = adminService.getNextEventId(); // → "EVT" + 시퀀스 값
-
-        // ✅ 이미지 저장 경로
-        String thumbDir = "C:\\project\\webapps\\finalproject\\src\\main\\webapp\\WEB-INF\\views\\resources\\eventimage\\";
-        
-        String detailDir = "C:\\project\\webapps\\finalproject\\src\\main\\webapp\\WEB-INF\\views\\resources\\eventdetailimage\\";
+    @ResponseBody // ✅ Ajax 응답을 위해 추가
+    public ResponseEntity<Map<String, Object>> insertEvent(MultipartHttpServletRequest request) {
+        Map<String, Object> result = new HashMap<>();
 
         try {
+            String eventTitle = request.getParameter("eventTitle");
+            String eventContent = request.getParameter("eventContent");
+            String couponId = request.getParameter("couponId");
+            String endDateRaw = request.getParameter("eventEnddate");
+
+            // ✅ 날짜 형식 변환: yyyy-MM-dd → yy/MM/dd
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat outputFormat = new SimpleDateFormat("yy/MM/dd");
+            Date parsedDate = inputFormat.parse(endDateRaw);
+            String formattedEndDate = outputFormat.format(parsedDate);
+
+            Admin admin = (Admin) request.getSession().getAttribute("adminLogin");
+            if (admin == null) {
+                result.put("code", -1);
+                result.put("msg", "관리자 인증 실패");
+                return ResponseEntity.ok(result);
+            }
+
+            String eventId = adminService.getNextEventId();
+
+            // 이미지 저장 경로
+            String thumbDir = "C:\\project\\webapps\\finalproject\\src\\main\\webapp\\WEB-INF\\views\\resources\\eventimage\\";
+            String detailDir = "C:\\project\\webapps\\finalproject\\src\\main\\webapp\\WEB-INF\\views\\resources\\eventdetailimage\\";
+
             // 썸네일 저장
             MultipartFile thumbFile = request.getFile("eventThumbnail");
             if (thumbFile != null && !thumbFile.isEmpty()) {
@@ -506,20 +524,25 @@ public class AdminController {
             // DB 저장
             Event event = new Event();
             event.setEventId(eventId);
+            event.setAdminId(admin.getAdminId());
             event.setEventTitle(eventTitle);
+            event.setEventContent(eventContent == null || eventContent.trim().isEmpty() ? " " : eventContent);
+            event.setEventEnddate(formattedEndDate);
             event.setCouponId(couponId);
-            event.setEventEnddate(endDate);
             event.setEventThumbnailUrl("/resources/eventimage/" + eventId + ".png");
             event.setEventImageUrl("/resources/eventdetailimage/" + eventId + ".png");
+            event.setEventCount(0); // ✅ 기본값 명시적으로 넣음
 
             adminService.insertEvent(event);
 
+            result.put("code", 0);
+            result.put("msg", "이벤트 등록 성공");
         } catch (Exception e) {
             e.printStackTrace();
-            return "/error/500";
+            result.put("code", -99);
+            result.put("msg", "서버 오류: " + e.getMessage());
         }
 
-        return "redirect:/admin/eventList";
+        return ResponseEntity.ok(result);
     }
-    
 }

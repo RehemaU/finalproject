@@ -15,23 +15,5 @@
 </div>
 
 <script>
-    // 폼 submit 처리
-    $("#noticeWriteForm").on("submit", function (e) {
-        e.preventDefault();
 
-        const formData = $(this).serialize();
-
-        $.ajax({
-            url: "/admin/noticeWriteProc",
-            type: "POST",
-            data: formData,
-            success: function () {
-                alert("공지사항이 등록되었습니다.");
-                location.reload(); // 또는 noticeList 다시 호출
-            },
-            error: function () {
-                alert("등록 실패");
-            }
-        });
-    });
 </script>
