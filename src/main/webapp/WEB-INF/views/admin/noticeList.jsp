@@ -46,9 +46,32 @@
             border-radius: 4px;
             cursor: pointer;
         }
+        .noticepagination a {
+            display: inline-block;
+            margin: 0 4px;
+            padding: 6px 12px;
+            text-decoration: none;
+            border: 1px solid #ccc;
+            color: #333;
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: #f9f9f9;
+            transition: all 0.2s;
+        }
+        .noticepagination a:hover {
+            background-color: #e0e0e0;
+        }
+        .noticepagination a.active {
+            background-color: #1ab394;
+            color: white;
+            font-weight: bold;
+            border-color: #1ab394;
+        }
+        
+        
     </style>
 </head>
-<body>
+<body> 
 
 <div class="container">
     <h2>공지사항 관리</h2>
@@ -83,8 +106,8 @@
                 <td>${notice.noticeCount}</td>
 <td>${notice.noticeRegdate.substring(0, 10)}</td>
                 <td>
-                    <button class="edit-btn" data-id="${notice.noticeId}">수정</button>
-                    <button class="delete-btn" data-id="${notice.noticeId}">삭제</button>
+                    <button class="edit-btn notice-edit-btn" data-id="${notice.noticeId}">수정</button>
+                    <button class="delete-btn notice-delete-btn" data-id="${notice.noticeId}">삭제</button>
                 </td>
             </tr>
         </c:forEach>
@@ -92,7 +115,26 @@
 </table>
 
     <!-- 페이징 -->
-    <div id="noticePagination" style="text-align: center; margin-top: 20px;"></div>
+    <div id="pagination" style="text-align:center; margin-top:20px;">
+    <c:if test="${blockStart > 1}">
+        <a href="javascript:void(0);" class="notice-page-link" data-page="${blockStart - 1}">« 이전</a>
+    </c:if>
+
+    <c:forEach var="i" begin="${blockStart}" end="${blockEnd}">
+        <c:choose>
+            <c:when test="${i == curPage}">
+                <a href="javascript:void(0);" class="notice-page-link active" data-page="${i}">${i}</a>
+            </c:when>
+            <c:otherwise>
+                <a href="javascript:void(0);" class="notice-page-link" data-page="${i}">${i}</a>
+            </c:otherwise>
+        </c:choose>
+    </c:forEach>
+
+    <c:if test="${blockEnd < totalPage}">
+        <a href="javascript:void(0);" class="notice-page-link" data-page="${blockEnd + 1}">다음 »</a>
+    </c:if>
+</div>
 </div>
 
 <div id="noticeContent"></div>
@@ -118,38 +160,7 @@ $("#noticeWriteBtn").click(function () {
     });
 });
 
-$(document).on("click", "#updateNoticeBtn", function () {
-    const noticeId = $("#noticeId").val();
-    const title = $("#noticeTitle").val();
-    const content = $("#noticeContent").val();
 
-    if (title.trim() === "" || content.trim() === "") {
-        alert("제목과 내용을 입력하세요.");
-        return;
-    }
-
-    $.ajax({
-        url: "/admin/noticeUpdate",
-        type: "POST",
-        contentType: "application/json",
-        data: JSON.stringify({
-            noticeId: noticeId,
-            noticeTitle: title,
-            noticeContent: content
-        }),
-        success: function (res) {
-            if (res.code === 0) {
-                alert("수정 완료");
-                loadContent("/admin/noticeList");
-            } else {
-                alert("수정 실패: " + res.msg);
-            }
-        },
-        error: function () {
-            alert("서버 오류");
-        }
-    });
-});
 
 
 </script>

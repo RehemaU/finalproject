@@ -25,7 +25,7 @@
         }
         .event-image {
             width: 100%;
-            max-height: 600px;
+            height: auto;
             object-fit: contain; /* ✅ 이미지 전체 보여주기 */
             border-radius: 10px;
             margin-bottom: 30px;

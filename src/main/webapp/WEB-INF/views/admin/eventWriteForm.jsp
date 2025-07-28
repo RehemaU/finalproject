@@ -58,7 +58,10 @@
     <form id="eventForm" method="post" enctype="multipart/form-data" action="/admin/eventInsert">
         <label for="eventTitle">이벤트 제목</label>
         <input type="text" id="eventTitle" name="eventTitle" placeholder="이벤트 제목" required />
-
+		
+		<label for="eventContent">이벤트 내용</label>
+		<textarea id="eventContent" name="eventContent" rows="5" placeholder="이벤트 본문 내용 입력" required></textarea>
+		
         <label for="couponId">쿠폰 선택</label>
         <select name="couponId" id="couponId">
             <option value="">-- 쿠폰 선택 --</option>
@@ -69,7 +72,7 @@
 
         <label for="eventEnddate">이벤트 종료일</label>
         <input type="date" id="eventEnddate" name="eventEnddate" required />
-
+	
         <label for="eventThumbnail">썸네일 이미지 업로드</label>
         <input type="file" id="eventThumbnail" name="eventThumbnail" accept="image/png" required />
 
@@ -81,28 +84,6 @@
 </div>
 
 <script>
-$(document).on("click", "#submitEventBtn", function (e) {
-    e.preventDefault();
-    const form = $("#eventForm")[0];
-    const formData = new FormData(form);
 
-    $.ajax({
-        url: "/admin/eventInsert",
-        type: "POST",
-        data: formData,
-        contentType: false,
-        processData: false,
-        success: function (res) {
-            if (res.code === 0) {
-                alert("이벤트가 등록되었습니다.");
-                loadContent("/admin/eventList");
-            } else {
-                alert("이벤트 등록 실패: " + res.msg);
-            }
-        },
-        error: function () {
-            alert("서버 오류 발생");
-        }
-    });
-});
+
 </script>

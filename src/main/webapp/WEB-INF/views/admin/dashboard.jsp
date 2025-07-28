@@ -254,7 +254,21 @@ function initReviewEvents() {
     });
     
 }
-
+function loadNoticeList() {
+    const { keyword, page } = noticeParams;
+    $.ajax({
+        url: "/admin/ajaxNoticeList",  // ✨ Ajax 응답용 컨트롤러 엔드포인트
+        type: "GET",
+        data: { keyword, page },
+        success: function (res) {
+            const { list, totalCount, curPage, totalPage } = res;
+            renderNoticeTable(list, totalCount, curPage, totalPage);
+        },
+        error: function () {
+            alert("공지사항 불러오기 실패");
+        }
+    });
+}
 
 //  전체 초기화
 function initDashboard() {
@@ -368,18 +382,57 @@ function initNoticeEvents() {
         renderNoticePagination(curPage, totalPage);
     }
 
-    function renderNoticePagination(curPage, totalPage) {
-        let html = "";
-        if (curPage > 1) html += `<a href="#" data-page="${curPage - 1}">이전</a>`;
-        
-        for (let i = 1; i <= totalPage; i++) {
-            const isActive = (i == curPage) ? 'active' : '';
-            html += `<a href="#" class="\${isActive}" data-page="\${i}">\${i}</a>`
-                .replace(/\$\{isActive\}/g, isActive)
-                .replace(/\$\{i\}/g, i);
+ // 공지사항 수정 처리 (대시보드 전역에서 한 번만 바인딩)
+    $(document).off("click", "#updateNoticeBtn").on("click", "#updateNoticeBtn", function () {
+        const noticeId = $("#noticeId").val();
+        const title = $("#noticeTitle").val();
+        const content = $("#noticeContent").val();
+
+        if (!title.trim() || !content.trim()) {
+            alert("제목과 내용을 모두 입력하세요.");
+            return;
         }
 
-        if (curPage < totalPage) html += `<a href="#" data-page="${curPage + 1}">다음</a>`;
+        $.ajax({
+            url: "/admin/noticeUpdate",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                noticeId: noticeId,
+                noticeTitle: title,
+                noticeContent: content
+            }),
+            success: function (res) {
+                if (res.code === 0) {
+                    alert("공지사항이 수정되었습니다.");
+                    loadContent("/admin/noticeList");
+                } else {
+                    alert("수정 실패: " + res.msg);
+                }
+            },
+            error: function () {
+                alert("서버 오류 발생");
+            }
+        });
+    });
+    
+    
+    function renderNoticePagination(curPage, totalPage) {
+        let html = "";
+
+        if (curPage > 1) {
+            html += `<a href="#" data-page="${curPage - 1}">« 이전</a>`;
+        }
+
+        for (let i = 1; i <= totalPage; i++) {
+            const isActive = (i === curPage) ? "active" : "";
+            html += `<a href="#" class="${isActive}" data-page="${i}">${i}</a>`;
+        }
+
+        if (curPage < totalPage) {
+            html += `<a href="#" data-page="${curPage + 1}">다음 »</a>`;
+        }
+
         $("#noticePagination").html(html);
     }
 
@@ -427,21 +480,19 @@ function initNoticeEvents() {
         });
     });
 
-    $(document).on("click", ".delete-btn", function () {
+ // ✅ 공지사항 삭제 버튼 이벤트 위임 (중복 방지용 off 포함)
+    $(document).off("click", ".notice-delete-btn").on("click", ".notice-delete-btn", function () {
         const noticeId = $(this).data("id");
-        deleteNotice(noticeId);
-    });
 
-    function deleteNotice(noticeId) {
         if (confirm("정말 삭제하시겠습니까?")) {
             $.ajax({
                 url: "/admin/noticeDelete",
                 type: "POST",
-                data: { noticeId: noticeId },  // ✅ 이게 필수
+                data: { noticeId: noticeId },
                 success: function (res) {
                     if (res.code === 0) {
                         alert("삭제 완료");
-                        loadNoticeList();  // 다시 리스트 불러오기
+                        loadNoticeList(); // 다시 리스트 불러오기
                     } else {
                         alert("삭제 실패: " + res.msg);
                     }
@@ -451,8 +502,9 @@ function initNoticeEvents() {
                 }
             });
         }
-    }
-    loadNoticeList();  // ✅ 초기에 불러오기
+        loadContent("/admin/noticeList");
+    });
+	
     
     
     
@@ -475,9 +527,60 @@ $(document).on("click", ".event-page-link", function () {
     $("#contentArea").load("/admin/eventList?page=" + page + "&keyword=" + encodeURIComponent(keyword));
 });
 
+function initEventWriteEvents() {
+	  $("#submitEventBtn").off("click").on("click", function (e) {
+	    e.preventDefault();
+
+	    const form = $("#eventForm")[0];
+	    const formData = new FormData(form);
+
+	    $.ajax({
+	      url: "/admin/eventInsert",
+	      type: "POST",
+	      data: formData,
+	      contentType: false,
+	      processData: false,
+	      success: function (res) {
+	        if (res.code === 0) {
+	          alert("이벤트가 등록되었습니다.");
+	          loadContent("/admin/eventList");
+	        } else {
+	          alert("이벤트 등록 실패: " + res.msg);
+	        }
+	      },
+	      error: function () {
+	        alert("서버 오류 발생");
+	      }
+	    });
+	  });
+	}
+
 $(document).on("click", "#openEventWriteBtn", function () {
-	  $("#contentArea").load("/admin/eventWriteForm");
-	});
+    $("#contentArea").load("/admin/eventWriteForm", function () {
+        initEventWriteEvents();  // ✅ 폼 로딩 후에 바인딩 실행
+    });
+});
+
+
+//✅ 공지사항 등록 폼 제출 처리
+$(document).off("submit", "#noticeWriteForm").on("submit", "#noticeWriteForm", function (e) {
+    e.preventDefault();
+
+    const formData = $(this).serialize();
+
+    $.ajax({
+        url: "/admin/noticeWriteProc",
+        type: "POST",
+        data: formData,
+        success: function () {
+            alert("공지사항이 등록되었습니다.");
+            loadContent("/admin/noticeList"); // 대시보드에서 동적으로 로딩 
+        },
+        error: function () {
+            alert("등록 실패");
+        }
+    });
+});
 </script>
 
 </body>
