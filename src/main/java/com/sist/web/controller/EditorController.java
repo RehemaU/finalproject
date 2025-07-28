@@ -85,7 +85,7 @@ public class EditorController
 
 	    try {
 	        // 실제 파일 저장 경로 (절대경로로 바꿔줘야 함)
-	    	String uploadDir = "/home/ubuntu/tomcat9/webapps/finalproject/WEB-INF/views/resources/editorupload";
+	    	String uploadDir = "/home/ubuntu/tomcat9/webapps/ROOT/WEB-INF/views/resources/editorupload";
 	        File dir = new File(uploadDir);
 	        if (!dir.exists()) {
 	            dir.mkdirs();
