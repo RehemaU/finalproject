@@ -29,7 +29,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
           port: 22
-          source: target/finalproject.war
+          source: target/web.war
           target: /home/ubuntu/
 
       - name: SSH and Restart Tomcat
