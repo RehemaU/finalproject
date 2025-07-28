@@ -42,5 +42,5 @@ jobs:
           script: |
             /home/ubuntu/tomcat9/bin/shutdown.sh || true
             rm -rf /home/ubuntu/tomcat9/webapps/ROOT
-            cp /home/ubuntu/finalproject.war /home/ubuntu/tomcat9/webapps/ROOT.war
+            cp /home/ubuntu/web.war /home/ubuntu/tomcat9/webapps/ROOT.war
             /home/ubuntu/tomcat9/bin/startup.sh
