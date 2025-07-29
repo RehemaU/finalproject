@@ -85,7 +85,7 @@ private static Logger logger = LoggerFactory.getLogger(UserController.class);
 	@RequestMapping(value = "/user/login", method=RequestMethod.GET)
 	public String login(HttpServletRequest request, HttpServletResponse response)
 	{
-		return "/user/login";
+		return "/user/login"; 
 	}	
 	
 	//로그인
