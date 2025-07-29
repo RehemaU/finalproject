@@ -6,6 +6,7 @@ import com.sist.web.dao.RegionDao;
 import com.sist.web.model.Region;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -137,6 +138,7 @@ public class RegionService {
         }
     }
     
+    @Cacheable(value = "permanentCache", key = "'Region'")
     public List<Region> getAllRegions(){
     	return regionDao.getAllRegions();
     }

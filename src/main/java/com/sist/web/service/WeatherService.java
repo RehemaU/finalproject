@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -20,7 +21,8 @@ import com.sist.web.model.WeatherInfo;
 public class WeatherService {
 
     private final String SERVICE_KEY = "MHbE44hd7kHCOFVk5VucNc1XiPWTzxPAraI2RBlclEk8DFoZtBZWPX1gTMSVJ5j1U6ggq3bD6eViUAyxJfBpdQ==";
-
+    
+    @Cacheable(value = "permanentCache", key = "#lat + ',' + #lon")
     public WeatherInfo getWeather(double lat, double lon) {
         Map<String, Integer> grid = GeoUtil.convertToGrid(lat, lon);
 

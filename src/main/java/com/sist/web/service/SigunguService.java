@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sist.web.dao.SigunguDao;
 import com.sist.web.model.Sigungu;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -87,6 +88,7 @@ public class SigunguService {
         }
     }
     
+    @Cacheable(value = "permanentCache", key = "'signugu'")
     public List<Sigungu> getAllSigungus() {
         return sigunguDao.getAllSigungu();
     }
