@@ -164,10 +164,10 @@
     </dependency>
     <!-- 캐싱 관련 -->
 	<dependency>
-	    <groupId>com.github.ben-manes.caffeine</groupId>
-	    <artifactId>caffeine</artifactId>
-	    <version>3.1.6</version>
-	</dependency>
+    <groupId>com.github.ben-manes.caffeine</groupId>
+    <artifactId>caffeine</artifactId>
+    <version>2.9.3</version> <!-- Java 8 호환 버전 -->
+</dependency>
 	<!--  캐싱 관련 카페인 라이브러리 -->
 	<dependency>
 	    <groupId>org.springframework</groupId>
